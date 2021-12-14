@@ -28,7 +28,7 @@ void MainWindow::column_config_all()
 {
     QStringList column;
     column << "Address"
-           << "Value";
+           << "Value" << "mem";
 
     QStringList column_infos;
     column_infos << "Address_on"
@@ -36,7 +36,7 @@ void MainWindow::column_config_all()
                  << "Size_map";
 
     // view address
-    ui->viewAddress->setColumnCount(2);
+    ui->viewAddress->setColumnCount(3);
     ui->viewAddress->setHorizontalHeaderLabels(column);
     ui->viewAddress->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
@@ -47,7 +47,7 @@ void MainWindow::column_config_all()
 void MainWindow::set_values_column_heap()
 {
     // heaView config
-    int rowCount_heap = ui->viewAddress->rowCount();
+    //int rowCount_heap = ui->viewAddress->rowCount();
 
     ui->viewAddress->setShowGrid(false);
     ui->viewAddress->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -139,7 +139,7 @@ bool MainWindow::verify_pid()
                            "Empty pid passed");
         return false;
     }
-    if (mapper.verify_pid(pid) == false)
+    if (mapper.map_pid(pid) == -1)
     {
         QMessageBox::about(nullptr,
                            "Warning",
@@ -155,7 +155,7 @@ bool MainWindow::verify_pid()
 bool MainWindow::mapper_heap()
 {
     bool status_exit = true;
-    if (mapper.verify_mem("[heap]") == false)
+    if (mapper.map_mem("[heap]") == false)
     {
         QMessageBox::about(nullptr,
                            "Warning",
@@ -169,7 +169,7 @@ bool MainWindow::mapper_heap()
 bool MainWindow::mapper_stack()
 {
     bool status_exit = true;
-    if (mapper.verify_mem("[stack]") == false)
+    if (mapper.map_mem("[stack]") == false)
     {
         QMessageBox::about(nullptr,
                            "Warning",
