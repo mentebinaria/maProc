@@ -17,30 +17,30 @@
     #define key_t uint32_t;
 #endif
 
+
 class mapper_memory
 {
 
 private:
-    std::string pid, mem, addr_on, addr_off;
-
-    //std::pair<bool, std::string> mapper_line(std::string __find, std::string __pid);
+    std::string pid, mem_line, maps_buf, addr_on, addr_off;
+    std::fstream fs; 
 
     bool mem_write(off_t __addr, void* __val);
-    void mem_read(std::string __pid, std::string __on, std::string __off);
+    void mem_read(std::string __on, std::string __off);
     void mem_address();
 
 public:
     mapper_memory();
     ~mapper_memory();
 
-    bool verify_pid(std::string __pid);
-    bool verify_mem(std::string __mem);
+    int map_pid(std::string __pid);
+    bool map_mem(std::string __mem);
 
     bool map_write();
     bool map_read();
 
-    std::string get_addr_on();
-    std::string get_addr_off();
+    std::string get_addr_on() const;
+    std::string get_addr_off() const;
 
     size_t get_size_address();
 };
