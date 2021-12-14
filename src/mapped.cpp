@@ -32,6 +32,8 @@ static bool verify_pid(std::string __pid)
  */
 static void split_line(std::string __find, std::string &__load, std::string &__buffer)
 {
+    __load.clear();
+
     std::size_t find_pos = __buffer.find(__find);
 
     if (find_pos != std::string::npos)
@@ -45,6 +47,7 @@ static void split_line(std::string __find, std::string &__load, std::string &__b
         format += __load[i];
 
     __load = format;
+    format.clear();
 }
 
 /**
@@ -107,11 +110,17 @@ mapper_memory::~mapper_memory()
  */
 int mapper_memory::map_pid(std::string __pid)
 {
+    if(fs.is_open())
+        CLOSE_FILE;
+    
     int status_exit;
+
     if (!verify_pid(__pid))
         status_exit = -1;
     else
     {
+        maps_buf.clear();
+
         status_exit = 1;
         pid = __pid;
         std::string maps = PROC + __pid + MAPS;
