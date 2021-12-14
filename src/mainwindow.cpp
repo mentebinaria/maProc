@@ -28,7 +28,7 @@ void MainWindow::column_config_all()
 {
     QStringList column;
     column << "Address"
-           << "Value" << "mem";
+           << "Value" << "Memory";
 
     QStringList column_infos;
     column_infos << "Address_on"
@@ -132,7 +132,7 @@ bool MainWindow::verify_pid()
 {
     pid = ui->setPid->text().toStdString();
 
-    if (strlen(pid.data()) == 0)
+    if (pid.size() == 0)
     {
         QMessageBox::about(nullptr,
                            "Error",
@@ -192,7 +192,7 @@ void MainWindow::on_mapButton_clicked()
     // heap class mapping
     if (mapper_heap())
     {
-        if (strlen(mapper.get_addr_on().data()) == 0)
+        if (mapper.get_addr_on().size() == 0)
         {
             QMessageBox::about(nullptr,
                                "Info",
@@ -205,7 +205,7 @@ void MainWindow::on_mapButton_clicked()
     // stack class mapping
     if (mapper_stack())
     {
-        if (strlen(mapper.get_addr_on().data()) == 0)
+        if (mapper.get_addr_on().size() == 0)
         {
             QMessageBox::about(nullptr,
                                "Info",
