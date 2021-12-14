@@ -14,6 +14,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
+set(CMAKE_CXX_FLAGS "-Wall -Werror -fno-stack-protector -march=native")
 set(PROJECT_SOURCES
         src/main.cpp
         src/mainwindow.cpp
