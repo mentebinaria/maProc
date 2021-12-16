@@ -18,8 +18,8 @@
 
 struct Address_info
 {
-    std::string addr_on;
-    std::string addr_off;
+    off_t addr_on;
+    off_t addr_off;
 };
 
 class mapper_memory
@@ -46,8 +46,8 @@ public:
     bool map_write();
     bool map_read();
 
-    std::string get_addr_on() const;
-    std::string get_addr_off() const;
+    off_t get_addr_on() const;
+    off_t get_addr_off() const;
 
     size_t get_size_address();
 };
