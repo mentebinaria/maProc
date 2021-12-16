@@ -4,11 +4,13 @@
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
+#include "structures/utils.hpp"
 
 #define off_t long
 #define PROC "/proc/"
 #define MAPS "/maps"
 #define STATUS "/status"
+#define LIMITE_PID "/proc/sys/kernel/pid_max"
 
 #if __x86_64__
 #define key_t uint64_t;
@@ -16,11 +18,6 @@
 #define key_t uint32_t;
 #endif
 
-struct Address_info
-{
-    off_t addr_on;
-    off_t addr_off;
-};
 
 class mapper_memory
 {
@@ -34,20 +31,21 @@ private: std::string pid, maps_buf, status_buf;
 
     bool mem_write(off_t __addr, void *__val);
     void mem_read(std::string __on, std::string __off);
-    void split_mem_address(std::string __line);
+    void split_mem_address(std::string , Address_info *addr=nullptr);
+    void split_status_process();
 
 public:
     mapper_memory();
     ~mapper_memory();
 
     int map_pid(std::string __pid);
-    bool map_mem(std::string __mem);
+    bool map_mem(std::string __mem, Address_info *addr=nullptr);
 
     bool map_write();
     bool map_read();
 
-    off_t get_addr_on() const;
-    off_t get_addr_off() const;
+    off_t get_addrOn() const;
+    off_t get_addrOff() const;
 
     size_t get_size_address();
 };
