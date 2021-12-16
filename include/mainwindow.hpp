@@ -5,6 +5,7 @@
 #include <QMainWindow>
 
 #include "mapped.hpp"
+#include "dirprocess.hpp"
 
 namespace Ui
 {
@@ -21,7 +22,14 @@ public:
 
 private slots:
 
+    void conf_button_clean();
+    void conf_button_pass_pid();
+    void conf_button_search();
+
     void on_mapButton_clicked();
+    void on_pidButton_clicked();
+    void on_cleanButton_clicked();
+
     bool verify_pid();
 
     void column_config_all();
@@ -33,9 +41,10 @@ private slots:
     bool mapper_heap();
     bool mapper_stack();
 
-    void on_cleanButton_clicked();
 
 private:
+    std::string pid;
+
     enum Heap_Stack
     {
         Address,
@@ -49,11 +58,9 @@ private:
         Size_map
     };
 
-    Ui::MainWindow *ui;
-    std::string pid;
-
     mapper_memory mapper;
-
+    DirProcess dir;
+    Ui::MainWindow *ui;
 };
 
 #endif // MAINWINDOW_HPP
