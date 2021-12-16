@@ -15,6 +15,11 @@
 
 #define CLEAR_STRING(__str) __str.clear();
 
+#define SAVE_BUF_FILE(__fs, __buf, __load) \
+    CLEAR_STRING(__buf);                   \
+    while (getline(__fs, __buf))           \
+    __load.operator+=(__buf += '\0')
+
 /**
  * @brief function verify pid for passed in user
  * @param std::string __pid pass pid for verification
@@ -97,6 +102,69 @@ void mapper_memory::mem_read(std::string __on, std::string __off)
 }
 
 /**
+ * @brief will do a get the addresses from the line
+ * @param std::string __line which line to pass to get the addresses
+ * @param Address_info *addr [opcional] save address in struct create struct Address_info addr;
+
+ * @return void
+ */
+void mapper_memory::split_mem_address(std::string __line, Address_info *addr)
+{
+    std::string addr_on;
+    std::string addr_off;
+
+    if (addr_on.size() == 0 && addr_off.size() == 0)
+    {
+        CLEAR_STRING(addr_on)
+        CLEAR_STRING(addr_off)
+    }
+    
+    // get address start
+    for (std::size_t i = 1; i <= __line.size(); i++)
+    {
+        if (__line[i] == '-')
+            break;
+        addr_on += __line[i];
+    }
+
+    // get address end
+    for (std::size_t i = addr_on.size() + 2; i <= __line.size(); i++)
+    {
+        addr_off += __line[i];
+        if (__line[i] == ' ')
+            break;
+    }
+
+    off_t addr_on_long = std::stoul(addr_on, nullptr, 16);
+    off_t addr_off_long = std::stoul(addr_off, nullptr, 16);
+
+    if (addr_on.size() == 0 || addr_on.size() == 0)
+        std::exit(EXIT_FAILURE);
+
+    if (addr != nullptr)
+    {
+        addr->addr_on = addr_on_long;
+        addr->addr_off = addr_off_long;
+    }
+
+    ADDR_INFO.addr_on = addr_on_long;
+    ADDR_INFO.addr_off = addr_off_long;
+
+    CLEAR_STRING(__line)
+}
+
+/**
+ * @brief get status process
+ * 
+ */
+void mapper_memory::split_status_process()
+{
+
+
+}
+
+
+/**
  *  @brief Constructor
  */
 mapper_memory::mapper_memory()
@@ -142,23 +210,18 @@ int mapper_memory::map_pid(std::string __pid)
         CLEAR_STRING(maps_buf);
         CLEAR_STRING(status_buf);
 
-        status_exit = 1;
-
         OPEN_FILE(MAPS_FS, maps)
+
         OPEN_FILE(STATUS_FS, status)
 
-        while (getline(MAPS_FS, buffer))
-            maps_buf += buffer += '\0';
+        SAVE_BUF_FILE(MAPS_FS, buffer, maps_buf);
 
-        if (maps_buf.size() == 0)
+        SAVE_BUF_FILE(STATUS_FS, buffer, status_buf);
+
+        if (maps_buf.size() == 0 || status_buf.size() == 0)
             status_exit = -2;
-
-        CLEAR_STRING(buffer)
-
-        while (getline(STATUS_FS, buffer))
-            status_buf += buffer += '\0';
-
-        CLEAR_STRING(buffer)
+        else
+            CLEAR_STRING(buffer)
     }
 
     return status_exit;
@@ -167,13 +230,14 @@ int mapper_memory::map_pid(std::string __pid)
 /**
  * @brief verify mem if process usage
  * @param std::string __mem memory to be mapped will check if it exists and map such memory
+ * @param Address_info *addr [opcional] save address in struct create struct Address_info addr;
  * @return bool
  *
  * if the use of memory is `not` being used it returns true or returns false
  * if the memory is not being used by the process, it will map right away
  * that the memory is being used
  */
-bool mapper_memory::map_mem(std::string __mem)
+bool mapper_memory::map_mem(std::string __mem, Address_info *addr)
 {
     bool status_exit = true;
 
@@ -183,48 +247,11 @@ bool mapper_memory::map_mem(std::string __mem)
     if (found.size() == 0)
         status_exit = false;
     else
-        split_mem_address(found);
+        split_mem_address(found, addr);
 
     return status_exit;
 }
 
-/**
- * @brief will do a get the addresses from the line
- * @param std::string __line which line to pass to get the addresses
- * @return void
- */
-void mapper_memory::split_mem_address(std::string __line)
-{
-    std::string addr_on;
-    std::string addr_off;
-
-    CLEAR_STRING(addr_on)
-    CLEAR_STRING(addr_off)
-
-    // get address start
-    for (std::size_t i = 1; i <= __line.size(); i++)
-    {
-        if (__line[i] == '-')
-            break;
-        addr_on += __line[i];
-    }
-
-    // get address end
-    for (std::size_t i = addr_on.size() + 2; i <= __line.size(); i++)
-    {
-        addr_off += __line[i];
-        if (__line[i] == ' ')
-            break;
-    }
-
-    if (addr_on.size() == 0 || addr_on.size() == 0)
-        std::exit(EXIT_FAILURE);
-
-    ADDR_INFO.addr_on  = std::stoul(addr_on, nullptr, 16);
-    ADDR_INFO.addr_off = std::stoul(addr_off, nullptr, 16);
-
-    CLEAR_STRING(__line)
-}
 
 /**
  * @brief get address on
@@ -232,7 +259,7 @@ void mapper_memory::split_mem_address(std::string __line)
  *
  * in address start for mem process
  */
-off_t mapper_memory::get_addr_on() const
+off_t mapper_memory::get_addrOn() const
 {
     return ADDR_INFO.addr_on;
 }
@@ -243,7 +270,7 @@ off_t mapper_memory::get_addr_on() const
  *
  * in address stop for mem process
  */
-off_t mapper_memory::get_addr_off() const
+off_t mapper_memory::get_addrOff() const
 {
     return ADDR_INFO.addr_off;
 }
