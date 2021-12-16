@@ -58,6 +58,7 @@ private:
         Size_map
     };
 
+    Address_info addr;
     mapper_memory mapper;
     DirProcess dir;
     Ui::MainWindow *ui;
