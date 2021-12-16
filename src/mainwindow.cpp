@@ -4,10 +4,10 @@
 #include <QMessageBox>
 
 #define ICON_PASS_PID "../src/assets/pid_proc.png"
-#define ICON_CLEAN "../src/assets/clean.png"
-#define ICON_SEARCH "../src/assets/search.png"
-#define TITLE_WINDOW "maProc v1.0"
-#define CLEAN_ROW " "
+#define ICON_CLEAN    "../src/assets/clean.png"
+#define ICON_SEARCH   "../src/assets/search.png"
+#define TITLE_WINDOW  "maProc v1.0"
+#define CLEAN_ROW     " "
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           ui(new Ui::MainWindow)
@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     conf_button_pass_pid();
     conf_button_clean();
     conf_button_search();
-    
+
     column_config_all();
 }
 
@@ -81,8 +81,8 @@ void MainWindow::set_values_column_heap()
     // ui->viewAddress->insertRow(rowCount_heap);
 
     // infos_addr
-    QString on = QString::number(mapper.get_addr_on(), 16);
-    QString off = QString::number(mapper.get_addr_off(), 16);
+    QString on = QString::number(addr.addr_on, 16);
+    QString off = QString::number(addr.addr_off, 16);
 
     ui->infos_addr->setShowGrid(false);
     ui->infos_addr->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -118,8 +118,8 @@ void MainWindow::set_values_column_stack()
     // ui->viewAddress->insertRow(rowCount_heap);
 
     // infos_addr
-    QString on = QString::number(mapper.get_addr_on(), 16);
-    QString off = QString::number(mapper.get_addr_off(), 16);
+    QString on = QString::number(addr.addr_on, 16);
+    QString off = QString::number(addr.addr_off, 16);
 
     // config itens
     QTableWidgetItem *on_item = new QTableWidgetItem(on);
@@ -158,45 +158,54 @@ void MainWindow::column_clean(QTableWidget *__column, bool __delete = false)
 bool MainWindow::verify_pid()
 {
     pid = ui->setPid->text().toStdString();
+    int status_pid = mapper.map_pid(pid);
+
+    bool status_exit = true;
 
     if (pid.size() == 0)
     {
         QMessageBox::about(nullptr,
                            "Error",
                            "Empty pid passed");
-        return false;
+        status_exit = false;
     }
-    if (mapper.map_pid(pid) == -1)
+    if (status_pid == -1)
     {
         QMessageBox::about(nullptr,
                            "Warning",
                            "Error not found pid");
-        return false;
+        status_exit = false;
+    }
+    else if(status_pid == -2)
+    {
+        QMessageBox::about(nullptr,
+                           "Warning",
+                           "Not possible len infos in process");
+        status_exit = false;
     }
     else
         ui->statusBar->showMessage("Mapping process PID " + ui->setPid->text()); // tell the status bar which pid is being mapped
 
-    return true;
+    return status_exit;
 }
 
 bool MainWindow::mapper_heap()
 {
     bool status_exit = true;
-    if (mapper.map_mem("[heap]") == false)
+    if (mapper.map_mem("[heap]", &addr) == false)
     {
         QMessageBox::about(nullptr,
                            "Warning",
                            "Error heap not mapped");
         status_exit = false;
     }
-
     return status_exit;
 }
 
 bool MainWindow::mapper_stack()
 {
     bool status_exit = true;
-    if (mapper.map_mem("[stack]") == false)
+    if (mapper.map_mem("[stack]", &addr) == false)
     {
         QMessageBox::about(nullptr,
                            "Warning",
@@ -219,7 +228,7 @@ void MainWindow::on_mapButton_clicked()
     // heap class mapping
     if (mapper_heap())
     {
-        if (mapper.get_addr_on() == 0)
+        if (mapper.get_addrOn() == 0)
         {
             QMessageBox::about(nullptr,
                                "Info",
@@ -232,7 +241,7 @@ void MainWindow::on_mapButton_clicked()
     // stack class mapping
     if (mapper_stack())
     {
-        if (mapper.get_addr_on() == 0)
+        if (mapper.get_addrOn() == 0)
         {
             QMessageBox::about(nullptr,
                                "Info",
