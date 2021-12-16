@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     setWindowTitle(TITLE_WINDOW);
 
     // status bar conf default
-    ui->statusBar->showMessage("Not passed process for map");
+    ui->statusBar->showMessage("No processes are currently being mapped");
 
     // buttons
     ui->statusBar->addPermanentWidget(ui->setPid);
