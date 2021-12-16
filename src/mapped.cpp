@@ -57,7 +57,8 @@ static void search_line(std::string __find, std::string &__load, std::string &__
         format += __load[i];
 
     __load = format;
-    CLEAR_STRING(format)
+
+    CLEAR_STRING(format);
 }
 
 /**
@@ -139,6 +140,7 @@ int mapper_memory::map_pid(std::string __pid)
     else
     {
         CLEAR_STRING(maps_buf);
+        CLEAR_STRING(status_buf);
 
         status_exit = 1;
 
@@ -151,12 +153,12 @@ int mapper_memory::map_pid(std::string __pid)
         if (maps_buf.size() == 0)
             status_exit = -2;
 
-        CLEAR_STRING(buffer);
+        CLEAR_STRING(buffer)
 
         while (getline(STATUS_FS, buffer))
             status_buf += buffer += '\0';
 
-        buffer.clear();
+        CLEAR_STRING(buffer)
     }
 
     return status_exit;
@@ -181,9 +183,7 @@ bool mapper_memory::map_mem(std::string __mem)
     if (found.size() == 0)
         status_exit = false;
     else
-    {
         split_mem_address(found);
-    }
 
     return status_exit;
 }
@@ -223,12 +223,12 @@ void mapper_memory::split_mem_address(std::string __line)
     ADDR_INFO.addr_on  = std::stoul(addr_on, nullptr, 16);
     ADDR_INFO.addr_off = std::stoul(addr_off, nullptr, 16);
 
-    CLEAR_STRING(__line);
+    CLEAR_STRING(__line)
 }
 
 /**
  * @brief get address on
- * @return std::string
+ * @return off_t
  *
  * in address start for mem process
  */
@@ -239,7 +239,7 @@ off_t mapper_memory::get_addr_on() const
 
 /**
  * @brief get address off
- * @return std::string
+ * @return off_t
  *
  * in address stop for mem process
  */
