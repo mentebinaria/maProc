@@ -2,32 +2,39 @@
 #define MAPPED_H
 
 #include <iostream>
-#include <sstream>
 #include <fstream>
-#include <stack>
 #include <unordered_map>
 
 #define off_t long
 #define PROC "/proc/"
 #define MAPS "/maps"
+#define STATUS "/status"
 
 #if __x86_64__
-    #define key_t uint64_t;
-#else 
-    #define key_t uint32_t;
+#define key_t uint64_t;
+#else
+#define key_t uint32_t;
 #endif
 
+struct Address_info
+{
+    std::string addr_on;
+    std::string addr_off;
+};
 
 class mapper_memory
 {
 
-private:
-    std::string pid, mem_line, maps_buf, addr_on, addr_off;
-    std::fstream fs; 
+private: std::string pid, maps_buf, status_buf;
+   
+    
+    std::fstream MAPS_FS;
+    std::fstream STATUS_FS;
+    Address_info ADDR_INFO;
 
-    bool mem_write(off_t __addr, void* __val);
+    bool mem_write(off_t __addr, void *__val);
     void mem_read(std::string __on, std::string __off);
-    void mem_address();
+    void split_mem_address(std::string __line);
 
 public:
     mapper_memory();
