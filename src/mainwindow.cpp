@@ -81,8 +81,8 @@ void MainWindow::set_values_column_heap()
     // ui->viewAddress->insertRow(rowCount_heap);
 
     // infos_addr
-    QString on = QString::fromStdString(mapper.get_addr_on());
-    QString off = QString::fromStdString(mapper.get_addr_off());
+    QString on = QString::number(mapper.get_addr_on(), 16);
+    QString off = QString::number(mapper.get_addr_off(), 16);
 
     ui->infos_addr->setShowGrid(false);
     ui->infos_addr->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -118,8 +118,8 @@ void MainWindow::set_values_column_stack()
     // ui->viewAddress->insertRow(rowCount_heap);
 
     // infos_addr
-    QString on = QString::fromStdString(mapper.get_addr_on());
-    QString off = QString::fromStdString(mapper.get_addr_off());
+    QString on = QString::number(mapper.get_addr_on(), 16);
+    QString off = QString::number(mapper.get_addr_off(), 16);
 
     // config itens
     QTableWidgetItem *on_item = new QTableWidgetItem(on);
@@ -219,7 +219,7 @@ void MainWindow::on_mapButton_clicked()
     // heap class mapping
     if (mapper_heap())
     {
-        if (mapper.get_addr_on().size() == 0)
+        if (mapper.get_addr_on() == 0)
         {
             QMessageBox::about(nullptr,
                                "Info",
@@ -232,7 +232,7 @@ void MainWindow::on_mapButton_clicked()
     // stack class mapping
     if (mapper_stack())
     {
-        if (mapper.get_addr_on().size() == 0)
+        if (mapper.get_addr_on() == 0)
         {
             QMessageBox::about(nullptr,
                                "Info",
