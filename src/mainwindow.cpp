@@ -3,19 +3,28 @@
 
 #include <QMessageBox>
 
+#define ICON_PASS_PID "../src/assets/pid_proc.png"
+#define ICON_CLEAN "../src/assets/clean.png"
+#define ICON_SEARCH "../src/assets/search.png"
+#define TITLE_WINDOW "maProc v1.0"
 #define CLEAN_ROW " "
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    setWindowTitle("Maproc v1.0");
+    setWindowTitle(TITLE_WINDOW);
+
+    // status bar conf default
+    ui->statusBar->showMessage("Not passed process for map");
 
     // buttons
-    ui->statusBar->addPermanentWidget(ui->cleanButton);
     ui->statusBar->addPermanentWidget(ui->setPid);
     ui->statusBar->addPermanentWidget(ui->mapButton);
-
+    conf_button_pass_pid();
+    conf_button_clean();
+    conf_button_search();
+    
     column_config_all();
 }
 
@@ -24,11 +33,29 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::conf_button_pass_pid()
+{
+    ui->pidButton->setIcon(QIcon(ICON_PASS_PID));
+}
+
+void MainWindow::conf_button_clean()
+{
+    ui->statusBar->addPermanentWidget(ui->cleanButton);
+
+    ui->cleanButton->setIcon(QIcon(ICON_CLEAN));
+}
+
+void MainWindow::conf_button_search()
+{
+    ui->searchButton->setIcon(QIcon(ICON_SEARCH));
+}
+
 void MainWindow::column_config_all()
 {
     QStringList column;
     column << "Address"
-           << "Value" << "Memory";
+           << "Value"
+           << "Memory";
 
     QStringList column_infos;
     column_infos << "Address_on"
@@ -47,11 +74,11 @@ void MainWindow::column_config_all()
 void MainWindow::set_values_column_heap()
 {
     // heaView config
-    //int rowCount_heap = ui->viewAddress->rowCount();
+    // int rowCount_heap = ui->viewAddress->rowCount();
 
     ui->viewAddress->setShowGrid(false);
     ui->viewAddress->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    //ui->viewAddress->insertRow(rowCount_heap);
+    // ui->viewAddress->insertRow(rowCount_heap);
 
     // infos_addr
     QString on = QString::fromStdString(mapper.get_addr_on());
@@ -147,7 +174,7 @@ bool MainWindow::verify_pid()
         return false;
     }
     else
-        ui->statusBar->showMessage("Pid " + ui->setPid->text()); // tell the status bar which pid is being mapped
+        ui->statusBar->showMessage("Mapping process PID " + ui->setPid->text()); // tell the status bar which pid is being mapped
 
     return true;
 }
@@ -223,4 +250,9 @@ void MainWindow::on_cleanButton_clicked()
     column_clean(ui->viewAddress, true);
     column_clean(ui->infos_addr);
     column_clean(ui->infos_addr);
+}
+
+void MainWindow::on_pidButton_clicked()
+{
+    dir.exec();
 }
