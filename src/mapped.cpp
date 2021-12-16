@@ -125,7 +125,7 @@ int mapper_memory::map_pid(std::string __pid)
     std::string maps = PROC + pid + MAPS;
     std::string status = PROC + pid + STATUS;
     std::string buffer;
-    
+
     VERIFY_OPEN_CLOSE(MAPS_FS)
     VERIFY_OPEN_CLOSE(STATUS_FS)
 
@@ -220,8 +220,8 @@ void mapper_memory::split_mem_address(std::string __line)
     if (addr_on.size() == 0 || addr_on.size() == 0)
         std::exit(EXIT_FAILURE);
 
-    ADDR_INFO.addr_on = addr_on;
-    ADDR_INFO.addr_off = addr_off;
+    ADDR_INFO.addr_on  = std::stoul(addr_on, nullptr, 16);
+    ADDR_INFO.addr_off = std::stoul(addr_off, nullptr, 16);
 
     CLEAR_STRING(__line);
 }
@@ -232,7 +232,7 @@ void mapper_memory::split_mem_address(std::string __line)
  *
  * in address start for mem process
  */
-std::string mapper_memory::get_addr_on() const
+off_t mapper_memory::get_addr_on() const
 {
     return ADDR_INFO.addr_on;
 }
@@ -243,7 +243,7 @@ std::string mapper_memory::get_addr_on() const
  *
  * in address stop for mem process
  */
-std::string mapper_memory::get_addr_off() const
+off_t mapper_memory::get_addr_off() const
 {
     return ADDR_INFO.addr_off;
 }
@@ -254,6 +254,6 @@ std::string mapper_memory::get_addr_off() const
  */
 size_t mapper_memory::get_size_address()
 {
-    off_t address_size = std::stoul(ADDR_INFO.addr_off, nullptr, 16) - std::stoul(ADDR_INFO.addr_on, nullptr, 16);
+    off_t address_size = ADDR_INFO.addr_off - ADDR_INFO.addr_on;
     return address_size;
 }
