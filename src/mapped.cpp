@@ -1,12 +1,19 @@
 #include <dirent.h>
 #include <sys/ptrace.h>
+#include <list>
 
 #include "include/mapped.hpp"
 
-#define OPEN_FILE(__file) \
-    fs.open(__file);
+#define OPEN_FILE(__fs, __name) \
+    __fs.open(__name);
 
-#define CLOSE_FILE fs.close()
+#define CLOSE_FILE(__fs) __fs.close()
+
+#define VERIFY_OPEN_CLOSE(__fs) \
+    if (__fs.is_open())         \
+        __fs.close();
+
+#define CLEAR_STRING(__str) __str.clear();
 
 /**
  * @brief function verify pid for passed in user
@@ -29,10 +36,13 @@ static bool verify_pid(std::string __pid)
  *  @param std::string &__load lading search buffer
  *  @param std::string &__buffer string to searching
  *  @return void
+ *
+ *  @note this function will get the line completely by
+ *  traversing the string backwards, will clear the string to be loaded the line
  */
-static void split_line(std::string __find, std::string &__load, std::string &__buffer)
+static void search_line(std::string __find, std::string &__load, std::string &__buffer)
 {
-    __load.clear();
+    CLEAR_STRING(__load)
 
     std::size_t find_pos = __buffer.find(__find);
 
@@ -47,7 +57,7 @@ static void split_line(std::string __find, std::string &__load, std::string &__b
         format += __load[i];
 
     __load = format;
-    format.clear();
+    CLEAR_STRING(format)
 }
 
 /**
@@ -97,7 +107,8 @@ mapper_memory::mapper_memory()
  */
 mapper_memory::~mapper_memory()
 {
-    CLOSE_FILE;
+    CLOSE_FILE(MAPS_FS);
+    CLOSE_FILE(STATUS_FS);
 }
 
 /**
@@ -110,29 +121,40 @@ mapper_memory::~mapper_memory()
  */
 int mapper_memory::map_pid(std::string __pid)
 {
-    if(fs.is_open())
-        CLOSE_FILE;
+    pid = __pid;
+    std::string maps = PROC + pid + MAPS;
+    std::string status = PROC + pid + STATUS;
+    std::string buffer;
     
-    int status_exit;
+    VERIFY_OPEN_CLOSE(MAPS_FS)
+    VERIFY_OPEN_CLOSE(STATUS_FS)
 
-    if (!verify_pid(__pid))
+    int status_exit = 1;
+
+    if (!verify_pid(pid))
+    {
         status_exit = -1;
+        pid = nullptr;
+    }
     else
     {
-        maps_buf.clear();
+        CLEAR_STRING(maps_buf);
 
         status_exit = 1;
-        pid = __pid;
-        std::string maps = PROC + __pid + MAPS;
 
-        OPEN_FILE(maps)
+        OPEN_FILE(MAPS_FS, maps)
+        OPEN_FILE(STATUS_FS, status)
 
-        std::string buffer;
-        while (getline(fs, buffer))
+        while (getline(MAPS_FS, buffer))
             maps_buf += buffer += '\0';
 
         if (maps_buf.size() == 0)
             status_exit = -2;
+
+        CLEAR_STRING(buffer);
+
+        while (getline(STATUS_FS, buffer))
+            status_buf += buffer += '\0';
 
         buffer.clear();
     }
@@ -154,49 +176,54 @@ bool mapper_memory::map_mem(std::string __mem)
     bool status_exit = true;
 
     std::string found;
-    split_line(__mem, found, maps_buf);
+    search_line(__mem, found, maps_buf);
 
     if (found.size() == 0)
         status_exit = false;
     else
     {
-        mem_line = found;
-        mem_address();
+        split_mem_address(found);
     }
 
     return status_exit;
 }
 
 /**
- * @brief  reading mem for address in process to preference heap or stack
- * @param __mem what memory for map process (stack or heap?)
+ * @brief will do a get the addresses from the line
+ * @param std::string __line which line to pass to get the addresses
  * @return void
  */
-void mapper_memory::mem_address()
+void mapper_memory::split_mem_address(std::string __line)
 {
-    addr_on.clear();
-    addr_off.clear();
+    std::string addr_on;
+    std::string addr_off;
+
+    CLEAR_STRING(addr_on)
+    CLEAR_STRING(addr_off)
 
     // get address start
-    for (std::size_t i = 1; i <= mem_line.size(); i++)
+    for (std::size_t i = 1; i <= __line.size(); i++)
     {
-        if (mem_line[i] == '-')
+        if (__line[i] == '-')
             break;
-        addr_on += mem_line[i];
+        addr_on += __line[i];
     }
 
     // get address end
-    for (std::size_t i = addr_on.size() + 2; i <= mem_line.size(); i++)
+    for (std::size_t i = addr_on.size() + 2; i <= __line.size(); i++)
     {
-        addr_off += mem_line[i];
-        if (mem_line[i] == ' ')
+        addr_off += __line[i];
+        if (__line[i] == ' ')
             break;
     }
 
-    if (addr_on.size() == 0)
+    if (addr_on.size() == 0 || addr_on.size() == 0)
         std::exit(EXIT_FAILURE);
 
-    mem_line.clear();
+    ADDR_INFO.addr_on = addr_on;
+    ADDR_INFO.addr_off = addr_off;
+
+    CLEAR_STRING(__line);
 }
 
 /**
@@ -207,7 +234,7 @@ void mapper_memory::mem_address()
  */
 std::string mapper_memory::get_addr_on() const
 {
-    return addr_on;
+    return ADDR_INFO.addr_on;
 }
 
 /**
@@ -218,7 +245,7 @@ std::string mapper_memory::get_addr_on() const
  */
 std::string mapper_memory::get_addr_off() const
 {
-    return addr_off;
+    return ADDR_INFO.addr_off;
 }
 
 /**
@@ -227,6 +254,6 @@ std::string mapper_memory::get_addr_off() const
  */
 size_t mapper_memory::get_size_address()
 {
-    off_t address_size = std::stoul(addr_off, nullptr, 16) - std::stoul(addr_on, nullptr, 16);
+    off_t address_size = std::stoul(ADDR_INFO.addr_off, nullptr, 16) - std::stoul(ADDR_INFO.addr_on, nullptr, 16);
     return address_size;
 }
