@@ -30,7 +30,7 @@ private slots:
     void on_pidButton_clicked();
     void on_cleanButton_clicked();
 
-    bool verify_pid();
+    void verify_pid();
 
     void column_config_all();
     void set_values_column_heap();
@@ -43,7 +43,7 @@ private slots:
 
 
 private:
-    std::string pid;
+    int pid;
 
     enum Heap_Stack
     {
