@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>938</width>
+    <width>928</width>
     <height>613</height>
    </rect>
   </property>
@@ -14,11 +14,23 @@
    <string>maproc v1.0</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QTabWidget" name="tabWidget">
+     <widget class="QTabWidget" name="MenuView">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="contextMenuPolicy">
+       <enum>Qt::NoContextMenu</enum>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
+      </property>
+      <property name="elideMode">
+       <enum>Qt::ElideRight</enum>
       </property>
       <property name="documentMode">
        <bool>true</bool>
@@ -27,9 +39,124 @@
        <attribute name="title">
         <string>Overview</string>
        </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QTableWidget" name="infosView">
+          <property name="maximumSize">
+           <size>
+            <width>180</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <row>
+           <property name="text">
+            <string>Name</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>Umask</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>State</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>Tgid</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>Ngid</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>Pid</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>PPid</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>TracerPid</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>Uid</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>Gid</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>FDSize</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>Groups</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>NStgid</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>NSpid</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>NSpgid</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>NSsid</string>
+           </property>
+          </row>
+          <column>
+           <property name="text">
+            <string>Infos_pid</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="Mapping">
+       <attribute name="title">
+        <string>Mapping</string>
+       </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <layout class="QGridLayout" name="grid_Overview">
+         <layout class="QGridLayout" name="grid_Mapping">
           <item row="4" column="3">
            <layout class="QFormLayout" name="formmap">
             <item row="1" column="0">
@@ -130,6 +257,22 @@
              </spacer>
             </item>
            </layout>
+          </item>
+          <item row="0" column="3">
+           <widget class="QPushButton" name="pidButton">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="text">
+             <string>PID</string>
+            </property>
+           </widget>
           </item>
           <item row="0" column="1">
            <widget class="QTableWidget" name="infos_addr">
@@ -240,25 +383,9 @@
             </column>
            </widget>
           </item>
-          <item row="0" column="3">
-           <widget class="QPushButton" name="pidButton">
-            <property name="maximumSize">
-             <size>
-              <width>60</width>
-              <height>40</height>
-             </size>
-            </property>
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
-            </property>
-            <property name="text">
-             <string>PID</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </item>
-        <item alignment="Qt::AlignRight">
+        <item>
          <widget class="QPushButton" name="cleanButton">
           <property name="maximumSize">
            <size>
