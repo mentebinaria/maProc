@@ -1,6 +1,5 @@
 #include <dirent.h>
 #include <sys/ptrace.h>
-#include <list>
 
 #include "include/mapped.hpp"
 
@@ -15,24 +14,55 @@
 
 #define CLEAR_STRING(__str) __str.clear();
 
-#define SAVE_BUF_FILE(__fs, __buf, __load) \
-    CLEAR_STRING(__buf);                   \
-    while (getline(__fs, __buf))           \
-    __load.operator+=(__buf += '\0')
+#define SAVE_BUF_FILE(__fs, __load)           \
+    {                                         \
+        std::string cache;                    \
+        CLEAR_STRING(cache);                  \
+        while (getline(__fs, cache))          \
+            __load.operator+=(cache += '\0'); \
+        CLEAR_STRING(cache);                  \
+    }
+
+#define PID_MAX                      \
+    {                                \
+        std::fstream fs;             \
+        std::string buffer;          \
+        OPEN_FILE(fs, LIMITE_PID);   \
+        SAVE_BUF_FILE(fs, buffer);   \
+        pid_max = std::stoi(buffer); \
+        CLEAR_STRING(buffer)         \
+        CLOSE_FILE(fs);              \
+    }
 
 /**
  * @brief function verify pid for passed in user
- * @param std::string __pid pass pid for verification
+ * @param unsigned int __pid pass pid for verification is exist
+ * @param unsigned int __max pass to max pid for verification for not ultrapassing
  * @return bool
  *
  * if process exist for linux return true else false
  */
-static bool verify_pid(std::string __pid)
+static int verify_pid(unsigned int __pid, unsigned int __max) throw()
 {
-    std::string proc = PROC + __pid;
+    bool status_exit = 0;
+
+    if (__pid <= 0 || __pid > __max)
+    {
+        status_exit = -3;
+        throw std::runtime_error("Pid " + std::to_string(__pid) + " passed is not valid, valid pid less 0 or larger " + std::to_string(__max));
+    }
+
+    std::string proc = PROC + std::to_string(__pid);
     DIR *dir = opendir(proc.c_str());
+
+    if (dir == NULL)
+    {
+        status_exit = -1;
+        throw std::runtime_error("Pid not found, verify to pid and pass pid valid");
+    }
+
     closedir(dir);
-    return (dir) ? true : false;
+    return status_exit;
 }
 
 /**
@@ -85,17 +115,11 @@ bool mapper_memory::mem_write(off_t __addr, void *__val)
  *  @param std::string __off for end address mapped
  *  @return void
  */
-void mapper_memory::mem_read(std::string __on, std::string __off)
+void mapper_memory::mem_read(off_t __on, off_t __off)
 {
-    ptrace(PTRACE_ATTACH, std::stoi(pid), 0, 0); // ptrace attach for reading process
+    ptrace(PTRACE_ATTACH, pid, 0, 0); // ptrace attach for reading process
 
-    off_t on_long = std::stoul(__on, nullptr, 16);
-    off_t off_long = std::stoul(__off, nullptr, 16);
-
-    if (on_long == 0)
-        return;
-
-    for (off_t i = on_long; i <= off_long; i++)
+    for (off_t i = __on; i <= __off; i++)
     {
         // off_t data = ptrace(PTRACE_PEEKTEXT, std::stoi(__pid), i, 0);
     }
@@ -118,7 +142,7 @@ void mapper_memory::split_mem_address(std::string __line, Address_info *addr)
         CLEAR_STRING(addr_on)
         CLEAR_STRING(addr_off)
     }
-    
+
     // get address start
     for (std::size_t i = 1; i <= __line.size(); i++)
     {
@@ -139,9 +163,8 @@ void mapper_memory::split_mem_address(std::string __line, Address_info *addr)
     off_t addr_off_long = std::stoul(addr_off, nullptr, 16);
 
     if (addr_on.size() == 0 || addr_on.size() == 0)
-        std::exit(EXIT_FAILURE);
-
-    if (addr != nullptr)
+        std::runtime_error("Error not found address_on and address_off");
+    else if (addr != nullptr)
     {
         addr->addr_on = addr_on_long;
         addr->addr_off = addr_off_long;
@@ -155,20 +178,18 @@ void mapper_memory::split_mem_address(std::string __line, Address_info *addr)
 
 /**
  * @brief get status process
- * 
+ *
  */
 void mapper_memory::split_status_process()
 {
-
-
 }
-
 
 /**
  *  @brief Constructor
  */
 mapper_memory::mapper_memory()
 {
+    PID_MAX;
 }
 
 /**
@@ -185,46 +206,42 @@ mapper_memory::~mapper_memory()
  *  @param  __pid pid of the process to be mapped
  *  @return int
  *
- * if pid not found return -1 else return 1
- * if process not len return -2
+ *  if pid not found return -1
+ *  if process not len -2
+ *  else is true return 0
  */
-int mapper_memory::map_pid(std::string __pid)
+int mapper_memory::map_pid(unsigned int __pid)
 {
-    pid = __pid;
-    std::string maps = PROC + pid + MAPS;
-    std::string status = PROC + pid + STATUS;
-    std::string buffer;
-
     VERIFY_OPEN_CLOSE(MAPS_FS)
     VERIFY_OPEN_CLOSE(STATUS_FS)
 
-    int status_exit = 1;
+    pid = __pid;
 
-    if (!verify_pid(pid))
-    {
-        status_exit = -1;
-        pid = nullptr;
-    }
-    else
+    std::string pid_str = std::to_string(pid);
+    std::string maps = PROC + pid_str + MAPS;
+    std::string status = PROC + pid_str + STATUS;
+
+    int status_pid = verify_pid(pid, pid_max);
+
+    if (status_pid == 0)
     {
         CLEAR_STRING(maps_buf);
         CLEAR_STRING(status_buf);
 
-        OPEN_FILE(MAPS_FS, maps)
+        OPEN_FILE(MAPS_FS, maps);
+        OPEN_FILE(STATUS_FS, status);
 
-        OPEN_FILE(STATUS_FS, status)
-
-        SAVE_BUF_FILE(MAPS_FS, buffer, maps_buf);
-
-        SAVE_BUF_FILE(STATUS_FS, buffer, status_buf);
+        SAVE_BUF_FILE(MAPS_FS, maps_buf);
+        SAVE_BUF_FILE(STATUS_FS, status_buf);
 
         if (maps_buf.size() == 0 || status_buf.size() == 0)
-            status_exit = -2;
-        else
-            CLEAR_STRING(buffer)
+        {
+            throw std::runtime_error("Not possible len infos to process");
+            status_pid = -2;
+        }
     }
 
-    return status_exit;
+    return status_pid;
 }
 
 /**
@@ -245,13 +262,15 @@ bool mapper_memory::map_mem(std::string __mem, Address_info *addr)
     search_line(__mem, found, maps_buf);
 
     if (found.size() == 0)
+    {
         status_exit = false;
+        throw std::runtime_error("Process not using memory " + __mem);
+    }
     else
         split_mem_address(found, addr);
 
     return status_exit;
 }
-
 
 /**
  * @brief get address on
