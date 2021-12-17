@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
-#include "structures/utils.hpp"
+#include "utils/structs.hpp"
 
 #define off_t long
 #define PROC "/proc/"
@@ -22,15 +22,16 @@
 class mapper_memory
 {
 
-private: std::string pid, maps_buf, status_buf;
-   
-    
+private: 
+    std::string  maps_buf, status_buf;
+    unsigned int pid, pid_max;
+
     std::fstream MAPS_FS;
     std::fstream STATUS_FS;
     Address_info ADDR_INFO;
 
     bool mem_write(off_t __addr, void *__val);
-    void mem_read(std::string __on, std::string __off);
+    void mem_read(off_t __on, off_t __off);
     void split_mem_address(std::string , Address_info *addr=nullptr);
     void split_status_process();
 
@@ -38,8 +39,8 @@ public:
     mapper_memory();
     ~mapper_memory();
 
-    int map_pid(std::string __pid);
-    bool map_mem(std::string __mem, Address_info *addr=nullptr);
+    int map_pid(unsigned int __pid);
+    bool map_mem(std::string __mem, Address_info *addr=nullptr); 
 
     bool map_write();
     bool map_read();
