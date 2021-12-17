@@ -4,10 +4,10 @@
 #include <QMessageBox>
 
 #define ICON_PASS_PID "../src/assets/pid_proc.png"
-#define ICON_CLEAN    "../src/assets/clean.png"
-#define ICON_SEARCH   "../src/assets/search.png"
-#define TITLE_WINDOW  "maProc v1.0"
-#define CLEAN_ROW     " "
+#define ICON_CLEAN "../src/assets/clean.png"
+#define ICON_SEARCH "../src/assets/search.png"
+#define TITLE_WINDOW "maProc v1.0"
+#define CLEAN_ROW " "
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           ui(new Ui::MainWindow)
@@ -61,6 +61,8 @@ void MainWindow::column_config_all()
     column_infos << "Address_on"
                  << "Address_off"
                  << "Size_map";
+
+    ui->infosView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     // view address
     ui->viewAddress->setColumnCount(3);
@@ -155,63 +157,29 @@ void MainWindow::column_clean(QTableWidget *__column, bool __delete = false)
     }
 }
 
-bool MainWindow::verify_pid()
+void MainWindow::verify_pid()
 {
-    pid = ui->setPid->text().toStdString();
+    pid = std::stoi(ui->setPid->text().toStdString());
     int status_pid = mapper.map_pid(pid);
 
-    bool status_exit = true;
-
-    if (pid.size() == 0)
-    {
-        QMessageBox::about(nullptr,
-                           "Error",
-                           "Empty pid passed");
-        status_exit = false;
-    }
-    if (status_pid == -1)
-    {
-        QMessageBox::about(nullptr,
-                           "Warning",
-                           "Error not found pid");
-        status_exit = false;
-    }
-    else if(status_pid == -2)
-    {
-        QMessageBox::about(nullptr,
-                           "Warning",
-                           "Not possible len infos in process");
-        status_exit = false;
-    }
-    else
+    if (status_pid != 0)
         ui->statusBar->showMessage("Mapping process PID " + ui->setPid->text()); // tell the status bar which pid is being mapped
-
-    return status_exit;
 }
 
 bool MainWindow::mapper_heap()
 {
     bool status_exit = true;
-    if (mapper.map_mem("[heap]", &addr) == false)
-    {
-        QMessageBox::about(nullptr,
-                           "Warning",
-                           "Error heap not mapped");
+    if (mapper.map_mem("[heap]", &addr) != true)
         status_exit = false;
-    }
+
     return status_exit;
 }
 
 bool MainWindow::mapper_stack()
 {
     bool status_exit = true;
-    if (mapper.map_mem("[stack]", &addr) == false)
-    {
-        QMessageBox::about(nullptr,
-                           "Warning",
-                           "Error stack not mapped");
+    if (mapper.map_mem("[stack]", &addr) != true)
         status_exit = false;
-    }
 
     return status_exit;
 }
@@ -222,34 +190,19 @@ void MainWindow::on_mapButton_clicked()
     column_clean(ui->viewAddress, true);
     column_clean(ui->infos_addr);
 
-    if (verify_pid() == false)
-        return;
-
-    // heap class mapping
-    if (mapper_heap())
+    try
     {
-        if (mapper.get_addrOn() == 0)
-        {
-            QMessageBox::about(nullptr,
-                               "Info",
-                               "Process not usage heap");
-        }
-        else
+        verify_pid();
+
+        if (mapper_heap()) 
             set_values_column_heap();
-    }
-
-    // stack class mapping
-    if (mapper_stack())
-    {
-        if (mapper.get_addrOn() == 0)
-        {
-            QMessageBox::about(nullptr,
-                               "Info",
-                               "Process not usage stack");
-            return;
-        }
-        else
+        
+        if (mapper_stack())
             set_values_column_stack();
+    }
+    catch (std::exception &error)
+    {
+        QMessageBox::about(nullptr, "Warning", error.what());
     }
 }
 
