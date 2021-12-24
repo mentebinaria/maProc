@@ -1,10 +1,10 @@
-#ifndef MAPPED_H
-#define MAPPED_H
+#pragma once
 
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
 #include "utils/structs.hpp"
+#include "proclib.hpp"
 
 #define off_t long
 #define PROC "/proc/"
@@ -19,7 +19,7 @@
 #endif
 
 
-class mapper_memory
+class mapper_memory : public RemoteProcess
 {
 
 private: 
@@ -51,4 +51,3 @@ public:
     size_t get_size_address();
 };
 
-#endif // MAPPED_H
