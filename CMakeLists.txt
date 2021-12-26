@@ -29,6 +29,9 @@ set(PROJECT_SOURCES
         include/proclib.hpp
         src/proclib.cpp
 
+        src/proclib.cpp
+        include/proclib.hpp
+
         include/mainwindow.hpp
         src/mainwindow.ui
 

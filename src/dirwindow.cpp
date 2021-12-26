@@ -39,8 +39,8 @@ void DirWindow::Conf_pidTable(void)
  */
 void DirWindow::Set_pidTable(void)
 {
-    std::list<std::string> NameProcess;
-    std::list<std::string> PidProcess;
+    std::vector<std::string> NameProcess;
+    std::vector<std::string> PidProcess;
 
     ps.Reading_DirProcess(NameProcess, PidProcess);
 

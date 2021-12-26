@@ -163,6 +163,8 @@ int mapper_memory::map_pid(pid_t __pid)
     int status_pid = verify_pid(pid, pid_max);
     RemoteProcess::openProcess(pid);
 
+    RemoteProcess::openProcess(pid);
+
     if (status_pid == 0)
     {
         CLEAR_STRING(maps_buf);
