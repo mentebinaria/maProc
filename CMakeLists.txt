@@ -16,17 +16,22 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 set(CMAKE_CXX_FLAGS "-Wall -Werror -fno-stack-protector -march=native")
 set(PROJECT_SOURCES
+
         src/main.cpp
         src/mainwindow.cpp
-
-        src/dirprocess.cpp
-        include/dirprocess.hpp
-
-        src/mapped.cpp
+        
+        include/ps.hpp
+        src/ps.cpp
+        
         include/mapped.hpp
+        src/mapped.cpp
 
         include/mainwindow.hpp
         src/mainwindow.ui
+
+        include/dirwindow.hpp 
+        src/dirwindow.cpp
+        src/dirwindow.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

@@ -1,15 +1,11 @@
-#ifndef STRUCTS_H
-#define STRUCTS_H 
+#ifndef STATUS_H
+#define STATUS_H 
 
 #include <string>
 
-#define off_t long
+#define STATUS "/status"
 
-struct __attribute__ ((packed)) Address_info
-{
-    off_t addr_on;
-    off_t addr_off;
-};
+#define off_t long
 
 struct Status_info
 {
@@ -18,7 +14,7 @@ struct Status_info
     std::string State;
     unsigned int Tgid;
     unsigned int Ngid;
-    unsigned int Pid;
+    unsigned int pid;
     unsigned int PPid;
     unsigned int TracerPid;
     unsigned int Uid;
@@ -71,4 +67,4 @@ struct Status_info
     unsigned int nonvoluntary_ctxt_switches;
 };
 
-#endif // ! STRUCTS_H
+#endif // !STATUS_H 

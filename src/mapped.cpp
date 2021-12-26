@@ -2,54 +2,25 @@
 #include <sys/ptrace.h>
 
 #include "include/mapped.hpp"
-
-#define OPEN_FILE(__fs, __name) \
-    __fs.open(__name);
-
-#define CLOSE_FILE(__fs) __fs.close()
-
-#define VERIFY_OPEN_CLOSE(__fs) \
-    if (__fs.is_open())         \
-        __fs.close();
-
-#define CLEAR_STRING(__str) __str.clear();
-
-#define SAVE_BUF_FILE(__fs, __load)           \
-    {                                         \
-        std::string cache;                    \
-        CLEAR_STRING(cache);                  \
-        while (getline(__fs, cache))          \
-            __load.operator+=(cache += '\0'); \
-        CLEAR_STRING(cache);                  \
-    }
-
-#define PID_MAX                      \
-    {                                \
-        std::fstream fs;             \
-        std::string buffer;          \
-        OPEN_FILE(fs, LIMITE_PID);   \
-        SAVE_BUF_FILE(fs, buffer);   \
-        pid_max = std::stoi(buffer); \
-        CLEAR_STRING(buffer)         \
-        CLOSE_FILE(fs);              \
-    }
+#include "include/structs/utils.hpp"
+#include "include/structs/erros.hpp"
 
 /**
  * @brief function verify pid for passed in user
- * @param unsigned int __pid pass pid for verification is exist
- * @param unsigned int __max pass to max pid for verification for not ultrapassing
- * @return bool
+ * @param __pid pass pid for verification is exist
+ * @param __max pass to max pid for verification for not ultrapassing pid limit
+ * @return int
  *
  * if process exist for linux return true else false
  */
-static int verify_pid(unsigned int __pid, unsigned int __max) throw()
+static int verify_pid(unsigned int __pid, unsigned int __max)
 {
-    bool status_exit = 0;
+    int status_exit = 0;
 
     if (__pid <= 0 || __pid > __max)
     {
-        status_exit = -3;
-        throw std::runtime_error("Pid " + std::to_string(__pid) + " passed is not valid, valid pid less 0 or larger " + std::to_string(__max));
+        status_exit = PID_OVERDRIVE;
+        throw std::runtime_error("Pid " + std::to_string(__pid) + " passed is not valid, valid pid not less 0 or larger " + std::to_string(__max));
     }
 
     std::string proc = PROC + std::to_string(__pid);
@@ -57,7 +28,7 @@ static int verify_pid(unsigned int __pid, unsigned int __max) throw()
 
     if (dir == NULL)
     {
-        status_exit = -1;
+        status_exit = PID_NOT_FOUND;
         throw std::runtime_error("Pid not found, verify to pid and pass pid valid");
     }
 
@@ -67,9 +38,9 @@ static int verify_pid(unsigned int __pid, unsigned int __max) throw()
 
 /**
  *  @brief Function static for search to passing
- *  @param std::string __find which string to search
- *  @param std::string &__load lading search buffer
- *  @param std::string &__buffer string to searching
+ *  @param __find which string to search
+ *  @param &__load lading search buffer
+ *  @param &__buffer string to searching
  *  @return void
  *
  *  @note this function will get the line completely by
@@ -98,8 +69,8 @@ static void search_line(std::string __find, std::string &__load, std::string &__
 
 /**
  *  @brief Mem write passing address for to modify
- *  @param off_t __addr pass address for modify
- *  @param void* __val pass value for modify
+ *  @param __addr pass address for modify
+ *  @param __val pass value for modify
  *  @return bool
  */
 bool mapper_memory::mem_write(off_t __addr, void *__val)
@@ -111,8 +82,8 @@ bool mapper_memory::mem_write(off_t __addr, void *__val)
 
 /**
  *  @brief Reading mem for address in process to preference heap or stack
- *  @param std::string __on address for init reading memory
- *  @param std::string __off for end address mapped
+ *  @param __on address for init reading memory
+ *  @param __off for end address mapped
  *  @return void
  */
 void mapper_memory::mem_read(off_t __on, off_t __off)
@@ -127,12 +98,11 @@ void mapper_memory::mem_read(off_t __on, off_t __off)
 
 /**
  * @brief will do a get the addresses from the line
- * @param std::string __line which line to pass to get the addresses
- * @param Address_info *addr [opcional] save address in struct create struct Address_info addr;
+ * @param __line which line to pass to get the addresses
 
  * @return void
  */
-void mapper_memory::split_mem_address(std::string __line, Address_info *addr)
+void mapper_memory::split_mem_address(std::string __line)
 {
     std::string addr_on;
     std::string addr_off;
@@ -159,26 +129,23 @@ void mapper_memory::split_mem_address(std::string __line, Address_info *addr)
             break;
     }
 
+    // convert to string for off_t
     off_t addr_on_long = std::stoul(addr_on, nullptr, 16);
     off_t addr_off_long = std::stoul(addr_off, nullptr, 16);
 
     if (addr_on.size() == 0 || addr_on.size() == 0)
-        std::runtime_error("Error not found address_on and address_off");
-    else if (addr != nullptr)
+        std::runtime_error("Error not split address_on and address_off");
+    else
     {
-        addr->addr_on = addr_on_long;
-        addr->addr_off = addr_off_long;
+        ADDR_INFO.addr_on = addr_on_long;
+        ADDR_INFO.addr_off = addr_off_long;
     }
-
-    ADDR_INFO.addr_on = addr_on_long;
-    ADDR_INFO.addr_off = addr_off_long;
 
     CLEAR_STRING(__line)
 }
 
 /**
  * @brief get status process
- *
  */
 void mapper_memory::split_status_process()
 {
@@ -187,9 +154,9 @@ void mapper_memory::split_status_process()
 /**
  *  @brief Constructor
  */
-mapper_memory::mapper_memory()
+mapper_memory::mapper_memory() throw()
 {
-    PID_MAX;
+    PID_MAX();
 }
 
 /**
@@ -206,9 +173,9 @@ mapper_memory::~mapper_memory()
  *  @param  __pid pid of the process to be mapped
  *  @return int
  *
- *  if pid not found return -1
- *  if process not len -2
- *  else is true return 0
+ *  pid not found return PID_NOT_FOUND
+ *  if the pid exists ira return 0
+ *
  */
 int mapper_memory::map_pid(unsigned int __pid)
 {
@@ -216,13 +183,13 @@ int mapper_memory::map_pid(unsigned int __pid)
     VERIFY_OPEN_CLOSE(STATUS_FS)
 
     pid = __pid;
-
+    
     std::string pid_str = std::to_string(pid);
     std::string maps = PROC + pid_str + MAPS;
     std::string status = PROC + pid_str + STATUS;
 
     int status_pid = verify_pid(pid, pid_max);
-
+    
     if (status_pid == 0)
     {
         CLEAR_STRING(maps_buf);
@@ -237,24 +204,23 @@ int mapper_memory::map_pid(unsigned int __pid)
         if (maps_buf.size() == 0 || status_buf.size() == 0)
         {
             throw std::runtime_error("Not possible len infos to process");
-            status_pid = -2;
+            status_pid = PID_NOT_READ;
         }
     }
-
+    
     return status_pid;
 }
 
 /**
  * @brief verify mem if process usage
- * @param std::string __mem memory to be mapped will check if it exists and map such memory
- * @param Address_info *addr [opcional] save address in struct create struct Address_info addr;
+ * @param __mem memory to be mapped will check if it exists and map such memory
  * @return bool
  *
  * if the use of memory is `not` being used it returns true or returns false
  * if the memory is not being used by the process, it will map right away
  * that the memory is being used
  */
-bool mapper_memory::map_mem(std::string __mem, Address_info *addr)
+bool mapper_memory::map_mem(std::string __mem)
 {
     bool status_exit = true;
 
@@ -267,7 +233,7 @@ bool mapper_memory::map_mem(std::string __mem, Address_info *addr)
         throw std::runtime_error("Process not using memory " + __mem);
     }
     else
-        split_mem_address(found, addr);
+        split_mem_address(found);
 
     return status_exit;
 }
@@ -298,7 +264,7 @@ off_t mapper_memory::get_addrOff() const
  * @brief get address size mapped
  * @return size_t
  */
-size_t mapper_memory::get_size_address()
+size_t mapper_memory::get_sizeAddress()
 {
     off_t address_size = ADDR_INFO.addr_off - ADDR_INFO.addr_on;
     return address_size;
