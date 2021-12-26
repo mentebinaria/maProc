@@ -25,6 +25,9 @@ set(PROJECT_SOURCES
         src/mapped.cpp
         include/mapped.hpp
 
+        src/proclib.cpp
+        include/proclib.hpp
+
         include/mainwindow.hpp
         src/mainwindow.ui
 )
