@@ -14,7 +14,7 @@ struct Status_info
     std::string State;
     unsigned int Tgid;
     unsigned int Ngid;
-    unsigned int pid;
+    pid_t pid;
     unsigned int PPid;
     unsigned int TracerPid;
     unsigned int Uid;

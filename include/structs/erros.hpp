@@ -1,4 +1,4 @@
-#ifndef ERROS_H
+#pragma once
 
 /**
  * @brief errors that can occur during the passing of the pid
@@ -10,4 +10,15 @@ enum ERROR_PID
     PID_NOT_FOUND
 };
 
-#endif // !ERROS_h
+/**
+ * @brief 
+ */
+enum ERROS_SUCESS_MEM
+{
+    OPEN_SUCCESS,
+    OPEN_FAIL,
+    READ_SUCCESS,
+    READ_FAIL,
+    WRITE_FAIL,
+    WRITE_SUCCESS
+};

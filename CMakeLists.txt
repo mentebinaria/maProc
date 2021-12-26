@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
-set(CMAKE_CXX_FLAGS "-Wall -Werror -fno-stack-protector -march=native")
+set(CMAKE_CXX_FLAGS "-Wall -Werror -fno-stack-protector -march=native -O2 -Os")
 set(PROJECT_SOURCES
 
         src/main.cpp
@@ -23,8 +23,11 @@ set(PROJECT_SOURCES
         include/ps.hpp
         src/ps.cpp
         
-        include/mapped.hpp
-        src/mapped.cpp
+        include/pmap.hpp
+        src/pmap.cpp
+
+        include/proclib.hpp
+        src/proclib.cpp
 
         include/mainwindow.hpp
         src/mainwindow.ui

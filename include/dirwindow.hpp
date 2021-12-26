@@ -1,5 +1,4 @@
-#ifndef DIRWINDOW_H
-#define DIRWINDOW_H
+#pragma once
 
 #include <QDialog>
 
@@ -22,7 +21,7 @@ public:
     unsigned int getPid();
 
 private:
-    unsigned int pid;
+    pid_t pid;
     Ui::DirWindow *ui;
     Ps ps;
 
@@ -32,5 +31,3 @@ private:
 private slots:
     void on_pidTable_doubleClicked(const QModelIndex &index);
 };
-
-#endif // !DIRWINDOW_H

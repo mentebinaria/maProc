@@ -1,10 +1,9 @@
-#ifndef MAINWINDOW_HPP
-#define MAINWINDOW_HPP
+#pragma once
 
 #include <QMainWindow>
 #include <QDialog>
 
-#include "mapped.hpp"
+#include "pmap.hpp"
 
 namespace Ui
 {
@@ -19,7 +18,7 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void Button_clicked(unsigned int __pid);
+    void Button_clicked(pid_t __pid);
 
 private slots:
     void conf_button_clean();
@@ -41,11 +40,8 @@ private slots:
     bool mapper_stack();
 
 private:
-    unsigned int pid;
+    pid_t pid;
 
     mapper_memory mapper;
     Ui::MainWindow *ui;
 };
-
-
-#endif // MAINWINDOW_HPP

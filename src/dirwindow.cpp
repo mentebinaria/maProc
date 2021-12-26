@@ -39,8 +39,8 @@ void DirWindow::Conf_pidTable(void)
  */
 void DirWindow::Set_pidTable(void)
 {
-    std::vector<std::string> NameProcess;
-    std::vector<std::string> PidProcess;
+    std::list<std::string> NameProcess;
+    std::list<std::string> PidProcess;
 
     ps.Reading_DirProcess(NameProcess, PidProcess);
 
@@ -71,7 +71,7 @@ void DirWindow::on_pidTable_doubleClicked(const QModelIndex &index)
 /**
  * @brief get pid clicked in pid table
  *
- * @return unsigned int pid
+ * @return pid_t pid
  */
 unsigned int DirWindow::getPid()
 {

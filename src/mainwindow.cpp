@@ -72,7 +72,7 @@ void MainWindow::conf_button_close()
     ui->closeButton->setIcon(QIcon(ICON_CLOSE));
 }
 
-void MainWindow::Button_clicked(unsigned int __pid)
+void MainWindow::Button_clicked(pid_t __pid)
 {
     pid = __pid;
 

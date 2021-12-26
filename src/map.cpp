@@ -1,7 +1,7 @@
 #include <dirent.h>
 #include <sys/ptrace.h>
 
-#include "include/mapped.hpp"
+#include "include/pmap.hpp"
 #include "include/structs/utils.hpp"
 #include "include/structs/erros.hpp"
 
@@ -13,7 +13,7 @@
  *
  * if process exist for linux return true else false
  */
-static int verify_pid(unsigned int __pid, unsigned int __max)
+static int verify_pid(pid_t __pid, pid_t __max)
 {
     int status_exit = 0;
 
@@ -67,34 +67,6 @@ static void search_line(std::string __find, std::string &__load, std::string &__
     CLEAR_STRING(format);
 }
 
-/**
- *  @brief Mem write passing address for to modify
- *  @param __addr pass address for modify
- *  @param __val pass value for modify
- *  @return bool
- */
-bool mapper_memory::mem_write(off_t __addr, void *__val)
-{
-    bool status_exit = true;
-
-    return status_exit;
-}
-
-/**
- *  @brief Reading mem for address in process to preference heap or stack
- *  @param __on address for init reading memory
- *  @param __off for end address mapped
- *  @return void
- */
-void mapper_memory::mem_read(off_t __on, off_t __off)
-{
-    ptrace(PTRACE_ATTACH, pid, 0, 0); // ptrace attach for reading process
-
-    for (off_t i = __on; i <= __off; i++)
-    {
-        // off_t data = ptrace(PTRACE_PEEKTEXT, std::stoi(__pid), i, 0);
-    }
-}
 
 /**
  * @brief will do a get the addresses from the line
@@ -177,7 +149,7 @@ mapper_memory::~mapper_memory()
  *  if the pid exists ira return 0
  *
  */
-int mapper_memory::map_pid(unsigned int __pid)
+int mapper_memory::map_pid(pid_t __pid)
 {
     VERIFY_OPEN_CLOSE(MAPS_FS)
     VERIFY_OPEN_CLOSE(STATUS_FS)
@@ -189,7 +161,8 @@ int mapper_memory::map_pid(unsigned int __pid)
     std::string status = PROC + pid_str + STATUS;
 
     int status_pid = verify_pid(pid, pid_max);
-    
+    RemoteProcess::openProcess(pid);
+
     if (status_pid == 0)
     {
         CLEAR_STRING(maps_buf);
@@ -236,6 +209,28 @@ bool mapper_memory::map_mem(std::string __mem)
         split_mem_address(found);
 
     return status_exit;
+}
+
+/**
+ *  @brief Mem write passing address for to modify
+ *  @param __addr pass address for modify
+ *  @param __val pass value for modify
+ *  @return bool
+ */
+bool mapper_memory::map_write()
+{
+  return true;
+}
+
+/**
+ *  @brief Reading mem for address in process to preference heap or stack
+ *  @param __on address for init reading memory
+ *  @param __off for end address mapped
+ *  @return void
+ */
+bool mapper_memory::map_read()
+{
+  return true;
 }
 
 /**
