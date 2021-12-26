@@ -95,7 +95,7 @@ Data::Data(uint __size)
 
 Data::~Data()
 {
-    delete buff;
+    delete[] buff;
 }
 
 void Data::write(uint8_t b) {

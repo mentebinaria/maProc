@@ -1,30 +1,47 @@
 #include "include/mainwindow.hpp"
+#include "include/structs/win_utils.hpp"
+#include "include/dirwindow.hpp"
+
 #include "ui_mainwindow.h"
+#include <string>
 
 #include <QMessageBox>
 
-#define ICON_PASS_PID "../src/assets/pid_proc.png"
-#define ICON_CLEAN "../src/assets/clean.png"
-#define ICON_SEARCH "../src/assets/search.png"
-#define TITLE_WINDOW "maProc v1.0"
-#define CLEAN_ROW " "
+#define column_clean(__column, __delete)                                            \
+    {                                                                               \
+        if (__delete)                                                               \
+        {                                                                           \
+            while (__column->rowCount() > 0)                                        \
+                __column->removeRow(0);                                             \
+        }                                                                           \
+        else                                                                        \
+        {                                                                           \
+            for (int i = 1; i >= 0; i--)                                            \
+            {                                                                       \
+                __column->setItem(i, Address_on, new QTableWidgetItem(CLEAN_ROW));  \
+                __column->setItem(i, Address_off, new QTableWidgetItem(CLEAN_ROW)); \
+                __column->setItem(i, Size_map, new QTableWidgetItem(CLEAN_ROW));    \
+            }                                                                       \
+        }                                                                           \
+    }
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     setWindowTitle(TITLE_WINDOW);
+    setWindowIcon(QIcon(ICON_WINDOW));
 
     // status bar conf default
     ui->statusBar->showMessage("No processes are currently being mapped");
 
-    // buttons
-    ui->statusBar->addPermanentWidget(ui->setPid);
-    ui->statusBar->addPermanentWidget(ui->mapButton);
+    // buttons conf
     conf_button_pass_pid();
     conf_button_clean();
     conf_button_search();
+    conf_button_close();
 
+    // tables conf
     column_config_all();
 }
 
@@ -41,13 +58,75 @@ void MainWindow::conf_button_pass_pid()
 void MainWindow::conf_button_clean()
 {
     ui->statusBar->addPermanentWidget(ui->cleanButton);
-
     ui->cleanButton->setIcon(QIcon(ICON_CLEAN));
 }
 
 void MainWindow::conf_button_search()
 {
     ui->searchButton->setIcon(QIcon(ICON_SEARCH));
+}
+
+void MainWindow::conf_button_close()
+{
+    ui->statusBar->addPermanentWidget(ui->closeButton);
+    ui->closeButton->setIcon(QIcon(ICON_CLOSE));
+}
+
+void MainWindow::Button_clicked(pid_t __pid)
+{
+    pid = __pid;
+
+    column_clean(ui->viewAddress, true);
+    column_clean(ui->viewAddress, true);
+    column_clean(ui->infos_addr, false);
+
+    try
+    {
+        verify_pid();
+
+        if (mapper_stack())
+            set_values_column_stack();
+
+        if (mapper_heap())
+            set_values_column_heap();
+    }
+    catch (std::exception &error)
+    {
+        QMessageBox::about(nullptr, "Warning", error.what());
+    }
+}
+
+void MainWindow::on_pidButton_clicked()
+{
+    DirWindow dir;
+    dir.exec();
+
+    if (dir.close() && pid != 0)
+    {
+        pid = dir.getPid();
+        Button_clicked(pid);
+    }
+}
+
+void MainWindow::on_cleanButton_clicked()
+{
+    column_clean(ui->viewAddress, true);
+    column_clean(ui->viewAddress, true);
+    column_clean(ui->infos_addr, false);
+    column_clean(ui->infos_addr, false);
+}
+
+void MainWindow::on_closeButton_clicked()
+{
+    this->close();
+}
+
+void MainWindow::verify_pid()
+{
+    int status_pid = mapper.map_pid(pid);
+
+    if (status_pid == 0)
+        ui->statusBar->showMessage("Mapping process PID " + QString::fromStdString(std::to_string(pid))); // tell the status bar which pid is being mapped
 }
 
 void MainWindow::column_config_all()
@@ -83,8 +162,8 @@ void MainWindow::set_values_column_heap()
     // ui->viewAddress->insertRow(rowCount_heap);
 
     // infos_addr
-    QString on = QString::number(addr.addr_on, 16);
-    QString off = QString::number(addr.addr_off, 16);
+    QString on = QString::number(mapper.get_addrOn(), 16);
+    QString off = QString::number(mapper.get_addrOff(), 16);
 
     ui->infos_addr->setShowGrid(false);
     ui->infos_addr->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -96,7 +175,7 @@ void MainWindow::set_values_column_heap()
     QTableWidgetItem *off_item = new QTableWidgetItem(off);
     off_item->setTextAlignment(100);
 
-    QTableWidgetItem *sizeMap_item = new QTableWidgetItem(QString::number(mapper.get_size_address()));
+    QTableWidgetItem *sizeMap_item = new QTableWidgetItem(QString::number(mapper.get_sizeAddress()));
     sizeMap_item->setTextAlignment(100);
 
     // QTableWidgetItem *Address_mapped = new QTableWidgetItem("done");
@@ -120,8 +199,8 @@ void MainWindow::set_values_column_stack()
     // ui->viewAddress->insertRow(rowCount_heap);
 
     // infos_addr
-    QString on = QString::number(addr.addr_on, 16);
-    QString off = QString::number(addr.addr_off, 16);
+    QString on = QString::number(mapper.get_addrOn(), 16);
+    QString off = QString::number(mapper.get_addrOff(), 16);
 
     // config itens
     QTableWidgetItem *on_item = new QTableWidgetItem(on);
@@ -130,7 +209,7 @@ void MainWindow::set_values_column_stack()
     QTableWidgetItem *off_item = new QTableWidgetItem(off);
     off_item->setTextAlignment(100);
 
-    QTableWidgetItem *sizeMap_item = new QTableWidgetItem(QString::number(mapper.get_size_address()));
+    QTableWidgetItem *sizeMap_item = new QTableWidgetItem(QString::number(mapper.get_sizeAddress()));
     sizeMap_item->setTextAlignment(100);
 
     // set itens
@@ -139,37 +218,10 @@ void MainWindow::set_values_column_stack()
     ui->infos_addr->setItem(1, Size_map, sizeMap_item);
 }
 
-void MainWindow::column_clean(QTableWidget *__column, bool __delete = false)
-{
-    if (__delete)
-    {
-        while (__column->rowCount() > 0)
-            __column->removeRow(0);
-    }
-    else
-    {
-        for (int i = 1; i >= 0; i--)
-        {
-            __column->setItem(i, Address_on, new QTableWidgetItem(CLEAN_ROW));
-            __column->setItem(i, Address_off, new QTableWidgetItem(CLEAN_ROW));
-            __column->setItem(i, Size_map, new QTableWidgetItem(CLEAN_ROW));
-        }
-    }
-}
-
-void MainWindow::verify_pid()
-{
-    pid = std::stoi(ui->setPid->text().toStdString());
-    int status_pid = mapper.map_pid(pid);
-
-    if (status_pid != 0)
-        ui->statusBar->showMessage("Mapping process PID " + ui->setPid->text()); // tell the status bar which pid is being mapped
-}
-
 bool MainWindow::mapper_heap()
 {
     bool status_exit = true;
-    if (mapper.map_mem("[heap]", &addr) != true)
+    if (mapper.map_mem("[heap]") != true)
         status_exit = false;
 
     return status_exit;
@@ -178,43 +230,8 @@ bool MainWindow::mapper_heap()
 bool MainWindow::mapper_stack()
 {
     bool status_exit = true;
-    if (mapper.map_mem("[stack]", &addr) != true)
+    if (mapper.map_mem("[stack]") != true)
         status_exit = false;
 
     return status_exit;
-}
-
-void MainWindow::on_mapButton_clicked()
-{
-    column_clean(ui->viewAddress, true);
-    column_clean(ui->viewAddress, true);
-    column_clean(ui->infos_addr);
-
-    try
-    {
-        verify_pid();
-
-        if (mapper_heap()) 
-            set_values_column_heap();
-        
-        if (mapper_stack())
-            set_values_column_stack();
-    }
-    catch (std::exception &error)
-    {
-        QMessageBox::about(nullptr, "Warning", error.what());
-    }
-}
-
-void MainWindow::on_cleanButton_clicked()
-{
-    column_clean(ui->viewAddress, true);
-    column_clean(ui->viewAddress, true);
-    column_clean(ui->infos_addr);
-    column_clean(ui->infos_addr);
-}
-
-void MainWindow::on_pidButton_clicked()
-{
-    dir.exec();
 }

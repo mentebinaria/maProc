@@ -7,15 +7,18 @@
 #include <string>
 #include <iostream>
 
-struct Process {
+#include "structs/erros.hpp"
+
+struct Process
+{
     pid_t pid;
     std::string name;
     off_t stackStart;
     off_t heapStart;
 };
 
-
-class Data {
+class Data
+{
 public:
     Data(uint __size);
     virtual ~Data();
@@ -23,30 +26,23 @@ public:
     uint8_t read();
 
     uint size;
+
 private:
-    uint8_t* buff;
+    uint8_t *buff;
     uint curr;
 };
 
-enum {
-    OPEN_SUCCESS,
-    OPEN_FAIL,
-    READ_SUCCESS,
-    READ_FAIL,
-    WRITE_FAIL,
-    WRITE_SUCCESS
-};
-
-class RemoteProcess {
-public:
-    RemoteProcess() {};
-    virtual ~RemoteProcess() {}
-
-    int openProcess(pid_t __pid);
-    int readMem(off_t start, Data* data);
-    int writeMem(off_t start, Data* data);
-
+class RemoteProcess
+{
 private:
     Process proc;
     int status;
+
+protected:
+    RemoteProcess(){};
+    virtual ~RemoteProcess() {}
+
+    int openProcess(pid_t __pid);
+    int readMem(off_t start, Data *data);
+    int writeMem(off_t start, Data *data);
 };
