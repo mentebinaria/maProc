@@ -7,7 +7,8 @@ enum ERROR_PID
 {
     PID_OVERDRIVE = -3,
     PID_NOT_READ,
-    PID_NOT_FOUND
+    PID_NOT_FOUND,
+    PID_SUCCESS
 };
 
 /**
