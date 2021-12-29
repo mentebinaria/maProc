@@ -13,5 +13,5 @@
 #define PID_MAX                                        \
     std::string buffer;                                \
     FS.SaveBuffer("/proc/sys/kernel/pid_max", buffer); \
-    pid_max = std::stoi(buffer);                                   \
+    pid_max = std::stoi(buffer);                       \
     CLEAR_STRING(buffer)
