@@ -1,9 +1,69 @@
 #include <dirent.h>
 #include <sys/ptrace.h>
+#include <sstream>
 
 #include "include/pmap.hpp"
-#include "include/structs/utils.hpp"
-#include "include/structs/erros.hpp"
+#include "include/datastructs/utils.hpp"
+#include "include/datastructs/erros.hpp"
+#include <unistd.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <string.h>
+
+/**
+ * @brief Construct a new File Descriptor:: File Descriptor object
+ *
+ */
+FileDescriptor::FileDescriptor()
+{
+}
+
+/**
+ * @brief Destroy the File Descriptor:: File Descriptor object
+ *
+ */
+FileDescriptor::~FileDescriptor()
+{
+}
+
+/**
+ * @brief
+ *
+ * @param __name
+ * @param __buffer
+ */
+void FileDescriptor::SaveBuffer(std::string __name, std::string &__buffer)
+{
+    std::stringstream str;
+
+    CLEAR_STRING(__buffer)
+    CLEAR_STRING(str);
+
+    const char *name = __name.data();
+    int FS = open(name, O_RDONLY);
+    if (FS < 0)
+        throw std::runtime_error("Error open file" + __name);
+
+    char buffer[1024];
+
+    if (FS != -1)
+    {
+        do
+        {
+            memset(buffer, 0, sizeof(buffer));
+            if (read(FS, buffer, sizeof(buffer)) == 0)
+                break;
+
+            str << buffer;
+
+        } while (FS != EOF);
+    }
+
+    __buffer = str.str();
+
+
+    close(FS);
+}
 
 /**
  * @brief function verify pid for passed in user
@@ -54,7 +114,7 @@ static void search_line(std::string __find, std::string &__load, std::string &__
 
     if (find_pos != std::string::npos)
     {
-        for (; __buffer[find_pos] != '\0'; find_pos--)
+        for (; __buffer[find_pos] != '\n'; find_pos--)
             __load += __buffer[find_pos];
     }
 
@@ -67,14 +127,13 @@ static void search_line(std::string __find, std::string &__load, std::string &__
     CLEAR_STRING(format);
 }
 
-
 /**
  * @brief will do a get the addresses from the line
  * @param __line which line to pass to get the addresses
 
  * @return void
  */
-void mapper_memory::split_mem_address(std::string __line)
+void Pmap::split_mem_address(std::string __line)
 {
     std::string addr_on;
     std::string addr_off;
@@ -119,25 +178,21 @@ void mapper_memory::split_mem_address(std::string __line)
 /**
  * @brief get status process
  */
-void mapper_memory::split_status_process()
+void Pmap::split_status_process()
 {
 }
 
 /**
  *  @brief Constructor
  */
-mapper_memory::mapper_memory() throw()
-{
-    PID_MAX();
-}
+Pmap::Pmap() throw(){
+    PID_MAX}
 
 /**
  *  @brief Destructor
  */
-mapper_memory::~mapper_memory()
+Pmap::~Pmap()
 {
-    CLOSE_FILE(MAPS_FS);
-    CLOSE_FILE(STATUS_FS);
 }
 
 /**
@@ -149,40 +204,26 @@ mapper_memory::~mapper_memory()
  *  if the pid exists ira return 0
  *
  */
-int mapper_memory::map_pid(pid_t __pid)
+int Pmap::map_pid(pid_t __pid)
 {
-    VERIFY_OPEN_CLOSE(MAPS_FS)
-    VERIFY_OPEN_CLOSE(STATUS_FS)
-
     pid = __pid;
-    
-    std::string pid_str = std::to_string(pid);
-    std::string maps = PROC + pid_str + MAPS;
-    std::string status = PROC + pid_str + STATUS;
 
     int status_pid = verify_pid(pid, pid_max);
     RemoteProcess::openProcess(pid);
 
-    RemoteProcess::openProcess(pid);
+    std::string pid_str = std::to_string(pid);
+    std::string maps = PROC + pid_str + MAPS;
+    std::string status = PROC + pid_str + STATUS;
 
-    if (status_pid == 0)
+    FS.SaveBuffer(status, status_buf);
+    FS.SaveBuffer(maps, maps_buf);
+
+    if (maps_buf.size() == 0 || status_buf.size() == 0)
     {
-        CLEAR_STRING(maps_buf);
-        CLEAR_STRING(status_buf);
-
-        OPEN_FILE(MAPS_FS, maps);
-        OPEN_FILE(STATUS_FS, status);
-
-        SAVE_BUF_FILE(MAPS_FS, maps_buf);
-        SAVE_BUF_FILE(STATUS_FS, status_buf);
-
-        if (maps_buf.size() == 0 || status_buf.size() == 0)
-        {
-            throw std::runtime_error("Not possible len infos to process");
-            status_pid = PID_NOT_READ;
-        }
+        throw std::runtime_error("Not possible len infos to process");
+        status_pid = PID_NOT_READ;
     }
-    
+
     return status_pid;
 }
 
@@ -195,7 +236,7 @@ int mapper_memory::map_pid(pid_t __pid)
  * if the memory is not being used by the process, it will map right away
  * that the memory is being used
  */
-bool mapper_memory::map_mem(std::string __mem)
+bool Pmap::map_mem(std::string __mem)
 {
     bool status_exit = true;
 
@@ -219,9 +260,9 @@ bool mapper_memory::map_mem(std::string __mem)
  *  @param __val pass value for modify
  *  @return bool
  */
-bool mapper_memory::map_write()
+bool Pmap::map_write()
 {
-  return true;
+    return true;
 }
 
 /**
@@ -230,9 +271,9 @@ bool mapper_memory::map_write()
  *  @param __off for end address mapped
  *  @return void
  */
-bool mapper_memory::map_read()
+bool Pmap::map_read()
 {
-  return true;
+    return true;
 }
 
 /**
@@ -241,7 +282,7 @@ bool mapper_memory::map_read()
  *
  * in address start for mem process
  */
-off_t mapper_memory::get_addrOn() const
+off_t Pmap::get_addrOn() const
 {
     return ADDR_INFO.addr_on;
 }
@@ -252,7 +293,7 @@ off_t mapper_memory::get_addrOn() const
  *
  * in address stop for mem process
  */
-off_t mapper_memory::get_addrOff() const
+off_t Pmap::get_addrOff() const
 {
     return ADDR_INFO.addr_off;
 }
@@ -261,7 +302,7 @@ off_t mapper_memory::get_addrOff() const
  * @brief get address size mapped
  * @return size_t
  */
-size_t mapper_memory::get_sizeAddress()
+size_t Pmap::get_sizeAddress()
 {
     off_t address_size = ADDR_INFO.addr_off - ADDR_INFO.addr_on;
     return address_size;
