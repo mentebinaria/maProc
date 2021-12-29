@@ -13,7 +13,7 @@ enum ERROR_PID
 /**
  * @brief 
  */
-enum ERROS_SUCESS_MEM
+enum ERROS_FILES
 {
     OPEN_SUCCESS,
     OPEN_FAIL,
