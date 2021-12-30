@@ -148,6 +148,30 @@
           </property>
          </spacer>
         </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="0">
+           <widget class="QPushButton" name="pidButton">
+            <property name="text">
+             <string>PID</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="Mapping">
@@ -258,20 +282,54 @@
             </item>
            </layout>
           </item>
-          <item row="0" column="3">
-           <widget class="QPushButton" name="pidButton">
-            <property name="maximumSize">
+          <item row="4" column="1">
+           <widget class="QTableWidget" name="viewAddress">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>100</horstretch>
+              <verstretch>100</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
              <size>
-              <width>60</width>
-              <height>40</height>
+              <width>500</width>
+              <height>300</height>
              </size>
             </property>
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
+            <property name="maximumSize">
+             <size>
+              <width>1300</width>
+              <height>1300</height>
+             </size>
             </property>
-            <property name="text">
-             <string>PID</string>
+            <property name="sizeIncrement">
+             <size>
+              <width>500</width>
+              <height>100</height>
+             </size>
             </property>
+            <property name="cursor" stdset="0">
+             <cursorShape>ArrowCursor</cursorShape>
+            </property>
+            <property name="showGrid">
+             <bool>true</bool>
+            </property>
+            <property name="gridStyle">
+             <enum>Qt::DashLine</enum>
+            </property>
+            <column>
+             <property name="text">
+              <string>Address</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Value</string>
+             </property>
+            </column>
            </widget>
           </item>
           <item row="0" column="1">
@@ -329,56 +387,6 @@
             <column>
              <property name="text">
               <string>Size_mapped</string>
-             </property>
-            </column>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QTableWidget" name="viewAddress">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>100</horstretch>
-              <verstretch>100</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>500</width>
-              <height>300</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>1300</width>
-              <height>1300</height>
-             </size>
-            </property>
-            <property name="sizeIncrement">
-             <size>
-              <width>500</width>
-              <height>100</height>
-             </size>
-            </property>
-            <property name="cursor" stdset="0">
-             <cursorShape>ArrowCursor</cursorShape>
-            </property>
-            <property name="showGrid">
-             <bool>true</bool>
-            </property>
-            <property name="gridStyle">
-             <enum>Qt::DashLine</enum>
-            </property>
-            <column>
-             <property name="text">
-              <string>Address</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Value</string>
              </property>
             </column>
            </widget>
