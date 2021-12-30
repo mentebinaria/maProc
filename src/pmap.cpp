@@ -61,7 +61,6 @@ void FileDescriptor::SaveBuffer(std::string __name, std::string &__buffer)
 
     __buffer = str.str();
 
-
     close(FS);
 }
 
@@ -75,7 +74,7 @@ void FileDescriptor::SaveBuffer(std::string __name, std::string &__buffer)
  */
 static int verify_pid(pid_t __pid, pid_t __max)
 {
-    int status_exit = 0;
+    int status_exit = PID_SUCCESS;
 
     if (__pid <= 0 || __pid > __max)
     {
@@ -91,8 +90,8 @@ static int verify_pid(pid_t __pid, pid_t __max)
         status_exit = PID_NOT_FOUND;
         throw std::runtime_error("Pid not found, verify to pid and pass pid valid");
     }
-
     closedir(dir);
+
     return status_exit;
 }
 
@@ -138,7 +137,7 @@ void Pmap::split_mem_address(std::string __line)
     std::string addr_on;
     std::string addr_off;
 
-    if (addr_on.size() == 0 && addr_off.size() == 0)
+    if (addr_on.size() != 0 && addr_off.size() != 0)
     {
         CLEAR_STRING(addr_on)
         CLEAR_STRING(addr_off)
@@ -201,14 +200,14 @@ Pmap::~Pmap()
  *  @return int
  *
  *  pid not found return PID_NOT_FOUND
- *  if the pid exists ira return 0
+ *  if the pid exists ira return PID_SUCCESS
  *
  */
 int Pmap::map_pid(pid_t __pid)
 {
     pid = __pid;
 
-    int status_pid = verify_pid(pid, pid_max);
+    int status_exit = verify_pid(pid, pid_max);
     RemoteProcess::openProcess(pid);
 
     std::string pid_str = std::to_string(pid);
@@ -220,11 +219,11 @@ int Pmap::map_pid(pid_t __pid)
 
     if (maps_buf.size() == 0 || status_buf.size() == 0)
     {
+        status_exit = PID_NOT_READ;
         throw std::runtime_error("Not possible len infos to process");
-        status_pid = PID_NOT_READ;
     }
 
-    return status_pid;
+    return status_exit;
 }
 
 /**
@@ -304,6 +303,5 @@ off_t Pmap::get_addrOff() const
  */
 size_t Pmap::get_sizeAddress()
 {
-    off_t address_size = ADDR_INFO.addr_off - ADDR_INFO.addr_on;
-    return address_size;
+    return ADDR_INFO.addr_off - ADDR_INFO.addr_on;
 }
