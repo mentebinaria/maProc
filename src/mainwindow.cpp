@@ -1,10 +1,9 @@
 #include "include/mainwindow.hpp"
-#include "include/structs/win_utils.hpp"
+#include "include/datastructs/win_utils.hpp"
 #include "include/dirwindow.hpp"
-
 #include "ui_mainwindow.h"
-#include <string>
 
+#include <string>
 #include <QMessageBox>
 
 #define column_clean(__column, __delete)                                            \
@@ -72,10 +71,8 @@ void MainWindow::conf_button_close()
     ui->closeButton->setIcon(QIcon(ICON_CLOSE));
 }
 
-void MainWindow::Button_clicked(pid_t __pid)
+void MainWindow::Button_clicked()
 {
-    pid = __pid;
-
     column_clean(ui->viewAddress, true);
     column_clean(ui->viewAddress, true);
     column_clean(ui->infos_addr, false);
@@ -101,10 +98,10 @@ void MainWindow::on_pidButton_clicked()
     DirWindow dir;
     dir.exec();
 
-    if (dir.close() && pid != 0)
+    if (dir.close())
     {
         pid = dir.getPid();
-        Button_clicked(pid);
+        Button_clicked();
     }
 }
 
@@ -168,23 +165,13 @@ void MainWindow::set_values_column_heap()
     ui->infos_addr->setShowGrid(false);
     ui->infos_addr->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    // config itens
-    QTableWidgetItem *on_item = new QTableWidgetItem(on);
-    on_item->setTextAlignment(100);
-
-    QTableWidgetItem *off_item = new QTableWidgetItem(off);
-    off_item->setTextAlignment(100);
-
-    QTableWidgetItem *sizeMap_item = new QTableWidgetItem(QString::number(mapper.get_sizeAddress()));
-    sizeMap_item->setTextAlignment(100);
-
     // QTableWidgetItem *Address_mapped = new QTableWidgetItem("done");
     // Address_mapped->setTextAlignment(100);
 
     // set itens
-    ui->infos_addr->setItem(0, Address_on, on_item);
-    ui->infos_addr->setItem(0, Address_off, off_item);
-    ui->infos_addr->setItem(0, Size_map, sizeMap_item);
+    ui->infos_addr->setItem(0, Address_on, new QTableWidgetItem(on));
+    ui->infos_addr->setItem(0, Address_off, new QTableWidgetItem(off));
+    ui->infos_addr->setItem(0, Size_map, new QTableWidgetItem(QString::number(mapper.get_sizeAddress())));
 
     // ui->viewAddress->setItem(rowCount_heap - 1, Address, Address_mapped);
 }
@@ -202,20 +189,10 @@ void MainWindow::set_values_column_stack()
     QString on = QString::number(mapper.get_addrOn(), 16);
     QString off = QString::number(mapper.get_addrOff(), 16);
 
-    // config itens
-    QTableWidgetItem *on_item = new QTableWidgetItem(on);
-    on_item->setTextAlignment(100);
-
-    QTableWidgetItem *off_item = new QTableWidgetItem(off);
-    off_item->setTextAlignment(100);
-
-    QTableWidgetItem *sizeMap_item = new QTableWidgetItem(QString::number(mapper.get_sizeAddress()));
-    sizeMap_item->setTextAlignment(100);
-
     // set itens
-    ui->infos_addr->setItem(1, Address_on, on_item);
-    ui->infos_addr->setItem(1, Address_off, off_item);
-    ui->infos_addr->setItem(1, Size_map, sizeMap_item);
+    ui->infos_addr->setItem(1, Address_on, new QTableWidgetItem(on));
+    ui->infos_addr->setItem(1, Address_off, new QTableWidgetItem(off));
+    ui->infos_addr->setItem(1, Size_map, new QTableWidgetItem(QString::number(mapper.get_sizeAddress())));
 }
 
 bool MainWindow::mapper_heap()
