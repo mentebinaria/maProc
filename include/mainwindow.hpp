@@ -18,7 +18,7 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void Button_clicked(pid_t __pid);
+    void Button_clicked();
 
 private slots:
     void conf_button_clean();
@@ -42,6 +42,6 @@ private slots:
 private:
     pid_t pid;
 
-    mapper_memory mapper;
+    Pmap mapper;
     Ui::MainWindow *ui;
 };
