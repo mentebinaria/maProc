@@ -28,34 +28,36 @@ Ps::~Ps()
  *
  * @return OPEN_FAIL is /proc not opened else return OPEN_SUCCESS
  */
-int Ps::Reading_DirProcess(std::vector<std::string> &NameProcess,
-                           std::vector<std::string> &PidProcess)
+int Ps::Reading_DirProcess(std::vector<std::string> &__NameProcess,
+                           std::vector<std::string> &__PidProcess)
 {
+    __NameProcess.clear();
+    __PidProcess.clear();
+
     int status_exit = OPEN_SUCCESS;
     DIR *dir = opendir(PROC);
     struct dirent *dir_read;
 
     if (dir == NULL)
     {
-        throw std::runtime_error("Error not open dir /proc");
         status_exit = OPEN_FAIL;
+        throw std::runtime_error("Error not open dir /proc");
     }
 
     while ((dir_read = readdir(dir)) != NULL)
     {
-        std::string verify = PROC + std::string(dir_read->d_name) + CMDLINE;
+        std::string cmdline = PROC + std::string(dir_read->d_name) + CMDLINE;
 
-        FSCMDLINE.open(verify);
+        FSCMDLINE.open(cmdline);
         if (FSCMDLINE.is_open())
         {
-            std::string cmdline;
-            PidProcess.push_back(dir_read->d_name);
             getline(FSCMDLINE, cmdline);
-            if (cmdline.size() == 0)
-                cmdline = "name not found";
-            NameProcess.push_back(cmdline);
+            (cmdline.size() == 0) ? cmdline = "Name not found" : cmdline;
+
+            __PidProcess.push_back(dir_read->d_name);
+            __NameProcess.push_back(cmdline);
+
             FSCMDLINE.close();
-            cmdline.clear();
         }
     }
 
