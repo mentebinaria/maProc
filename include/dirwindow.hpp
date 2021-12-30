@@ -16,10 +16,9 @@ class DirWindow : public QDialog
 
 public:
     explicit DirWindow(QWidget *parent = nullptr);
-    ~DirWindow();
+    virtual ~DirWindow();
 
     unsigned int getPid();
-
 private:
     pid_t pid;
     Ui::DirWindow *ui;
