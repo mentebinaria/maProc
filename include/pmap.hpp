@@ -16,6 +16,7 @@
 #define key_t uint32_t;
 #endif
 
+
 class FileDescriptor
 {
 
@@ -24,6 +25,7 @@ public:
     ~FileDescriptor();
     void SaveBuffer(std::string __name, std::string &__buffer);
 };
+
 
 class Pmap : protected RemoteProcess
 {
