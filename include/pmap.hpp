@@ -23,7 +23,7 @@ class FileDescriptor
 public:
     FileDescriptor();
     ~FileDescriptor();
-    void SaveBuffer(std::string __name, std::string &__buffer, off_t __nblock);
+    void SaveBuffer(std::string __name, std::string &__buffer, off_t __nblock,  bool __blockn2);
 };
 
 

@@ -32,34 +32,36 @@ FileDescriptor::~FileDescriptor()
  * @param __name
  * @param __buffer
  */
-void FileDescriptor::SaveBuffer(std::string __name, std::string &__buffer, off_t __nblock=256)
+void FileDescriptor::SaveBuffer(std::string __name, std::string &__buffer,
+                                off_t __nblock = 256, bool __blockn2 = true)
 {
-    std::stringstream str;
+    std::size_t nblock = __nblock;
 
     CLEAR_STRING(__buffer)
-    CLEAR_STRING(str);
 
     const char *name = __name.data();
     int FS = open(name, O_RDONLY);
+
     if (FS < 0)
         throw std::runtime_error("Error open file" + __name);
-
-    char buffer[__nblock];
-
-    if (FS != -1)
+    else
     {
         do
         {
-            memset(buffer, 0, sizeof(buffer));
+            char buffer[nblock];
+            memset(buffer, 0, sizeof(buffer)); // clean buffer array
+
             if (read(FS, buffer, sizeof(buffer)) == 0)
                 break;
 
-            str << buffer;
+            __buffer += buffer; // save block in variable __buffer
+
+            // increase the bytes of the block thus decreasing the read cycles
+            // it could possibly end up exceeding the file buffer limit by allocating more than necessary
+            (__blockn2) ? nblock += __nblock : nblock;
 
         } while (FS != EOF);
     }
-
-    __buffer = str.str();
 
     close(FS);
 }
@@ -184,8 +186,10 @@ void Pmap::split_status_process()
 /**
  *  @brief Constructor
  */
-Pmap::Pmap() throw(){
-    PID_MAX}
+Pmap::Pmap() throw()
+{
+    PID_MAX
+}
 
 /**
  *  @brief Destructor
@@ -214,10 +218,10 @@ int Pmap::map_pid(pid_t __pid)
     std::string maps = PROC + pid_str + MAPS;
     std::string status = PROC + pid_str + STATUS;
 
-    FS.SaveBuffer(status, status_buf, 1024);
+    // FS.SaveBuffer(status, status_buf, 1024);
     FS.SaveBuffer(maps, maps_buf, 1024);
 
-    if (maps_buf.size() == 0 || status_buf.size() == 0)
+    if (maps_buf.size() == 0) //|| status_buf.size() == 0)
     {
         status_exit = PID_NOT_READ;
         throw std::runtime_error("Not possible len infos to process");
