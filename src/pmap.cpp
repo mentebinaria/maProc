@@ -27,14 +27,20 @@ FileDescriptor::~FileDescriptor()
 }
 
 /**
- * @brief
+ * @brief this method will read the entire past file
  *
- * @param __name
- * @param __buffer
+ * @param __name name for read file
+ * @param __buffer in which variable will you store
+ * @param __nblock block size for reading
+ * @param __blockn2 if this option is turned on the block size will multiply by 2 per __nblock 
+ * 
+ * @return if reading file success return READ_SUCCESS else if not open file return OPEN_FAIL
  */
-void FileDescriptor::SaveBuffer(std::string __name, std::string &__buffer,
+int FileDescriptor::SaveBuffer(std::string __name, std::string &__buffer,
                                 off_t __nblock = 256, bool __blockn2 = true)
 {
+    int status_exit = READ_SUCCESS;
+
     std::size_t nblock = __nblock;
 
     CLEAR_STRING(__buffer)
@@ -43,7 +49,10 @@ void FileDescriptor::SaveBuffer(std::string __name, std::string &__buffer,
     int FS = open(name, O_RDONLY);
 
     if (FS < 0)
+    {
+        status_exit = OPEN_FAIL;
         throw std::runtime_error("Error open file" + __name);
+    }
     else
     {
         do
@@ -63,6 +72,7 @@ void FileDescriptor::SaveBuffer(std::string __name, std::string &__buffer,
         } while (FS != EOF);
     }
 
+    return status_exit;
     close(FS);
 }
 
@@ -215,16 +225,16 @@ int Pmap::map_pid(pid_t __pid)
     RemoteProcess::openProcess(pid);
 
     std::string pid_str = std::to_string(pid);
-    std::string maps = PROC + pid_str + MAPS;
-    std::string status = PROC + pid_str + STATUS;
+    std::string fmaps = PROC + pid_str + MAPS;
+    std::string fstatus = PROC + pid_str + STATUS;
 
-    // FS.SaveBuffer(status, status_buf, 1024);
-    FS.SaveBuffer(maps, maps_buf, 1024);
+    // FS.SaveBuffer(fstatus, status_buf, 1024);
+    FS.SaveBuffer(fmaps, maps_buf, 1024);
 
-    if (maps_buf.size() == 0) //|| status_buf.size() == 0)
+    if (maps_buf.size() == 0)
     {
         status_exit = PID_NOT_READ;
-        throw std::runtime_error("Not possible len infos to process");
+        throw std::runtime_error("Looks like / maps is empty, I do a check in the past process");
     }
 
     return status_exit;
