@@ -32,7 +32,7 @@ FileDescriptor::~FileDescriptor()
  * @param __name
  * @param __buffer
  */
-void FileDescriptor::SaveBuffer(std::string __name, std::string &__buffer)
+void FileDescriptor::SaveBuffer(std::string __name, std::string &__buffer, off_t __nblock=256)
 {
     std::stringstream str;
 
@@ -44,7 +44,7 @@ void FileDescriptor::SaveBuffer(std::string __name, std::string &__buffer)
     if (FS < 0)
         throw std::runtime_error("Error open file" + __name);
 
-    char buffer[1024];
+    char buffer[__nblock];
 
     if (FS != -1)
     {
@@ -214,8 +214,8 @@ int Pmap::map_pid(pid_t __pid)
     std::string maps = PROC + pid_str + MAPS;
     std::string status = PROC + pid_str + STATUS;
 
-    FS.SaveBuffer(status, status_buf);
-    FS.SaveBuffer(maps, maps_buf);
+    FS.SaveBuffer(status, status_buf, 1024);
+    FS.SaveBuffer(maps, maps_buf, 1024);
 
     if (maps_buf.size() == 0 || status_buf.size() == 0)
     {
