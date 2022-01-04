@@ -8,7 +8,7 @@
 #define ICON_SEARCH   "../src/assets/search.png"
 #define ICON_CLOSE    "../src/assets/close.png"
 #define ICON_EDIT     "../src/assets/edit.png"
-#define CLEAN_ROW     " "
+#define CLEAN_ROW     "  "
 
 /**
  * @brief heap and stack table enumeration
