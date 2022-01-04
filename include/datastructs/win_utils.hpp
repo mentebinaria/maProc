@@ -7,6 +7,7 @@
 #define ICON_CLEAN    "../src/assets/clean.png"
 #define ICON_SEARCH   "../src/assets/search.png"
 #define ICON_CLOSE    "../src/assets/close.png"
+#define ICON_EDIT     "../src/assets/edit.png"
 #define CLEAN_ROW     " "
 
 /**
