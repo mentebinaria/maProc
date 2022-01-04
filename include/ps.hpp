@@ -6,7 +6,7 @@
 #include "include/datastructs/erros.hpp"
 
 #define PROC "/proc/"
-#define CMDLINE "/cmdline"
+#define COMM "/comm"
 
 class Ps
 {
@@ -17,6 +17,7 @@ public:
     Ps();
     virtual ~Ps();
 
+    std::string Get_NamePid(pid_t __pid);
     int Reading_DirProcess(std::vector<std::string> &__NameProcess,
                            std::vector<std::string> &__PidProcess);
 };
