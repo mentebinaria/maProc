@@ -1,7 +1,7 @@
 #include "include/mainwindow.hpp"
 #include "include/datastructs/win_utils.hpp"
 #include "include/dirwindow.hpp"
-#include "ui_mainwindow.h"
+#include "gui/ui_mainwindow.h"
 
 #include <string>
 #include <QMessageBox>

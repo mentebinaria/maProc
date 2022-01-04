@@ -1,6 +1,6 @@
 #include "include/dirwindow.hpp"
 #include "include/datastructs/dir_utils.hpp"
-#include "ui_dirwindow.h"
+#include "gui/ui_dirwindow.h"
 
 #include <vector>
 #include <iostream>

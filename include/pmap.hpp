@@ -22,7 +22,7 @@ class FileDescriptor
 public:
     FileDescriptor();
     ~FileDescriptor();
-    int SaveBuffer(std::string __name, std::string &__buffer,
+    int readFS(std::string __name, std::string &__buffer,
                     off_t __nblock, bool __blockn2);
 };
 
@@ -37,12 +37,12 @@ private:
     Address_info ADDR_INFO;
     Status_info STATS_INFO;
 
-    void split_mem_address(std::string);
-    void split_status_process();
+    void split_mem_address(std::string __foo);
+    void split_status_process(std::string __foo);
 
 public:
     Pmap() throw();
-    virtual ~Pmap();
+    ~Pmap();
 
     int map_pid(pid_t __pid);
     bool map_mem(std::string __mem);

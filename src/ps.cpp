@@ -52,13 +52,14 @@ int Ps::Reading_DirProcess(std::vector<std::string> &__NameProcess,
         if (FSCMDLINE.is_open())
         {
             getline(FSCMDLINE, cmdline);
-            (cmdline.size() == 0) ? cmdline = "Name not found" : cmdline;
+            (cmdline.size() == 0) ? cmdline = "not found" : cmdline;
 
             __PidProcess.push_back(dir_read->d_name);
             __NameProcess.push_back(cmdline);
 
             FSCMDLINE.close();
-        }
+        }else
+            continue;
     }
 
     closedir(dir);

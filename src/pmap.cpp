@@ -1,14 +1,14 @@
 #include <dirent.h>
 #include <sys/ptrace.h>
 #include <sstream>
-
-#include "include/pmap.hpp"
-#include "include/datastructs/utils.hpp"
-#include "include/datastructs/erros.hpp"
 #include <unistd.h>
 #include <sys/types.h>
 #include <fcntl.h>
 #include <string.h>
+
+#include "include/pmap.hpp"
+#include "include/datastructs/utils.hpp"
+#include "include/datastructs/erros.hpp"
 
 /**
  * @brief Construct a new File Descriptor:: File Descriptor object
@@ -32,22 +32,21 @@ FileDescriptor::~FileDescriptor()
  * @param __name name for read file
  * @param __buffer in which variable will you store
  * @param __nblock block size for reading
- * @param __blockn2 if this option is turned on the block size will multiply by 2 per __nblock 
- * 
+ * @param __blockn2 if this option is turned on the block size will multiply by 2 per __nblock
+ *
  * @return if reading file success return READ_SUCCESS else if not open file return OPEN_FAIL
  */
-int FileDescriptor::SaveBuffer(std::string __name, std::string &__buffer,
-                                off_t __nblock = 256, bool __blockn2 = true)
+int FileDescriptor::readFS(std::string __name, std::string &__buffer,
+                           off_t __nblock = 256, bool __blockn2 = true)
 {
+    CLEAR_STRING(__buffer)
+
     int status_exit = READ_SUCCESS;
 
     std::size_t nblock = __nblock;
-
-    CLEAR_STRING(__buffer)
-
     const char *name = __name.data();
-    int FS = open(name, O_RDONLY);
 
+    int FS = open(name, O_RDONLY);
     if (FS < 0)
     {
         status_exit = OPEN_FAIL;
@@ -102,25 +101,22 @@ static int verify_pid(pid_t __pid, pid_t __max)
         status_exit = PID_NOT_FOUND;
         throw std::runtime_error("Pid not found, verify to pid and pass pid valid");
     }
-    closedir(dir);
+    else
+        closedir(dir);
 
     return status_exit;
 }
 
 /**
- *  @brief Function static for search to passing
+ *  @brief Function static for search will get the line completely by
+ *  traversing the string backwards, will clear the string to be loaded the line
  *  @param __find which string to search
  *  @param &__load lading search buffer
  *  @param &__buffer string to searching
  *  @return void
- *
- *  @note this function will get the line completely by
- *  traversing the string backwards, will clear the string to be loaded the line
  */
 static void search_line(std::string __find, std::string &__load, std::string &__buffer)
 {
-    CLEAR_STRING(__load)
-
     std::size_t find_pos = __buffer.find(__find);
 
     if (find_pos != std::string::npos)
@@ -144,30 +140,23 @@ static void search_line(std::string __find, std::string &__load, std::string &__
 
  * @return void
  */
-void Pmap::split_mem_address(std::string __line)
+void Pmap::split_mem_address(std::string __foo)
 {
-    std::string addr_on;
-    std::string addr_off;
-
-    if (addr_on.size() != 0 && addr_off.size() != 0)
-    {
-        CLEAR_STRING(addr_on)
-        CLEAR_STRING(addr_off)
-    }
-
     // get address start
-    for (std::size_t i = 1; i <= __line.size(); i++)
+    std::string addr_on;
+    for (std::size_t i = 1; i <= __foo.size(); i++)
     {
-        if (__line[i] == '-')
+        if (__foo[i] == '-')
             break;
-        addr_on += __line[i];
+        addr_on += __foo[i];
     }
 
     // get address end
-    for (std::size_t i = addr_on.size() + 2; i <= __line.size(); i++)
+    std::string addr_off;
+    for (std::size_t i = addr_on.size() + 2; i <= __foo.size(); i++)
     {
-        addr_off += __line[i];
-        if (__line[i] == ' ')
+        addr_off += __foo[i];
+        if (__foo[i] == ' ')
             break;
     }
 
@@ -183,14 +172,15 @@ void Pmap::split_mem_address(std::string __line)
         ADDR_INFO.addr_off = addr_off_long;
     }
 
-    CLEAR_STRING(__line)
+    CLEAR_STRING(__foo)
 }
 
 /**
  * @brief get status process
  */
-void Pmap::split_status_process()
+void Pmap::split_status_process(std::string __foo)
 {
+    std::cout << __foo;   
 }
 
 /**
@@ -215,7 +205,6 @@ Pmap::~Pmap()
  *
  *  pid not found return PID_NOT_FOUND
  *  if the pid exists ira return PID_SUCCESS
- *
  */
 int Pmap::map_pid(pid_t __pid)
 {
@@ -228,14 +217,16 @@ int Pmap::map_pid(pid_t __pid)
     std::string fmaps = PROC + pid_str + MAPS;
     std::string fstatus = PROC + pid_str + STATUS;
 
-    // FS.SaveBuffer(fstatus, status_buf, 1024);
-    FS.SaveBuffer(fmaps, maps_buf, 1024);
+    FS.readFS(fstatus, status_buf, 1024);
+    FS.readFS(fmaps, maps_buf, 1024);
 
     if (maps_buf.size() == 0)
     {
         status_exit = PID_NOT_READ;
-        throw std::runtime_error("Looks like / maps is empty, I do a check in the past process");
+        throw std::runtime_error("Looks like proc/" + std::to_string(pid) + "/maps is empty, I do a check in the past process");
     }
+
+    split_status_process(status_buf);
 
     return status_exit;
 }
@@ -286,6 +277,8 @@ bool Pmap::map_write()
  */
 bool Pmap::map_read()
 {
+    // Data data(10);
+    // RemoteProcess::readMem(ADDR_INFO.addr_on, &data);
     return true;
 }
 
