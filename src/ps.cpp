@@ -19,6 +19,30 @@ Ps::~Ps()
 {
 }
 
+std::string Ps::Get_NamePid(pid_t __pid)
+{
+    DIR *dir = opendir(PROC);
+    struct dirent *dir_read;
+
+    if (dir == NULL)
+        throw std::runtime_error("Error not open dir /proc");
+
+    dir_read = readdir(dir);
+    std::string comm = PROC + std::string(dir_read->d_name) + COMM;
+
+    FSCMDLINE.open(comm);
+    if (FSCMDLINE.is_open())
+    {
+        getline(FSCMDLINE, comm);
+        (comm.size() == 0) ? comm = "not found" : comm;
+
+        FSCMDLINE.close();
+        closedir(dir);
+    }
+
+    return comm; 
+}
+
 /**
  * @brief will get all processes from the magic folder / proc
  * will store in the parameters the name and pid equivalent to the process
@@ -46,7 +70,7 @@ int Ps::Reading_DirProcess(std::vector<std::string> &__NameProcess,
 
     while ((dir_read = readdir(dir)) != NULL)
     {
-        std::string cmdline = PROC + std::string(dir_read->d_name) + CMDLINE;
+        std::string cmdline = PROC + std::string(dir_read->d_name) + COMM;
 
         FSCMDLINE.open(cmdline);
         if (FSCMDLINE.is_open())
@@ -58,7 +82,8 @@ int Ps::Reading_DirProcess(std::vector<std::string> &__NameProcess,
             __NameProcess.push_back(cmdline);
 
             FSCMDLINE.close();
-        }else
+        }
+        else
             continue;
     }
 
