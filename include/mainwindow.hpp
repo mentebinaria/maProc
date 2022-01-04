@@ -25,6 +25,7 @@ private slots:
     void conf_button_pass_pid();
     void conf_button_search();
     void conf_button_close();
+    void conf_button_edit();
 
     void on_pidButton_clicked();
     void on_cleanButton_clicked();
