@@ -1,5 +1,4 @@
-#ifndef WIN_UTILS
-#define WIN_UTILS
+#pragma once
 
 #define TITLE_WINDOW "maProc v1.0"
 #define ICON_WINDOW  "../src/assets/maProc.png"
@@ -28,5 +27,3 @@ enum Infos
     Address_off,
     Size_map
 };
-
-#endif // !WIN_UTILS

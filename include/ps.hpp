@@ -1,10 +1,11 @@
-#ifndef PS_H
-#define PS_H
+#pragma once
 
 #include <vector>
 #include <fstream>
 
-#define PROC    "/proc/"
+#include "include/datastructs/erros.hpp"
+
+#define PROC "/proc/"
 #define CMDLINE "/cmdline"
 
 class Ps
@@ -14,10 +15,8 @@ private:
 
 public:
     Ps();
-    ~Ps();
-    
-    void Reading_DirProcess(std::vector<std::string> &NameProcess,
-                            std::vector<std::string> &PidProcess);
-};
+    virtual ~Ps();
 
-#endif // PS_H
+    int Reading_DirProcess(std::vector<std::string> &__NameProcess,
+                           std::vector<std::string> &__PidProcess);
+};

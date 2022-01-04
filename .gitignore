@@ -5,3 +5,4 @@ build-ma?roc-Desktop-Debug/
 bin/
 *.user
 .vscode
+.gitignore

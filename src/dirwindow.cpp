@@ -1,6 +1,6 @@
 #include "include/dirwindow.hpp"
-#include "include/structs/dir_utils.hpp"
-#include "ui_dirwindow.h"
+#include "include/datastructs/dir_utils.hpp"
+#include "gui/ui_dirwindow.h"
 
 #include <vector>
 #include <iostream>
@@ -42,31 +42,33 @@ void DirWindow::Set_pidTable(void)
     std::vector<std::string> NameProcess;
     std::vector<std::string> PidProcess;
 
-    ps.Reading_DirProcess(NameProcess, PidProcess);
+    int dir_read = ps.Reading_DirProcess(NameProcess, PidProcess);
 
-    for (auto it : NameProcess)
+    if (dir_read == OPEN_SUCCESS)
     {
-        int rowCount = ui->pidTable->rowCount();
-        ui->pidTable->insertRow(rowCount);
+        for (auto it : NameProcess)
+        {
+            int rowCount = ui->pidTable->rowCount();
+            ui->pidTable->insertRow(rowCount);
 
-        ui->pidTable->setItem(rowCount - 1, Pid, new QTableWidgetItem(QString(QString::fromStdString(PidProcess.back()))));
-        ui->pidTable->setItem(rowCount - 1, Name, new QTableWidgetItem(QString(QString::fromStdString(NameProcess.back()))));
+            ui->pidTable->setItem(rowCount - 1, Pid, new QTableWidgetItem(QString(QString::fromStdString(PidProcess.back()))));
+            ui->pidTable->setItem(rowCount - 1, Name, new QTableWidgetItem(QString(QString::fromStdString(NameProcess.back()))));
 
-        PidProcess.pop_back();
-        NameProcess.pop_back();
+            PidProcess.pop_back();
+            NameProcess.pop_back();
+        }
     }
 }
 
 /**
  * @brief
  *
- * @param index 
+ * @param index
  */
 void DirWindow::on_pidTable_doubleClicked(const QModelIndex &index)
 {
     pid = std::stoi(index.model()->data(index).toString().toStdString());
-    if (pid != 0)
-        this->close();
+    this->close();
 }
 /**
  * @brief get pid clicked in pid table

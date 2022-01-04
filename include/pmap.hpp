@@ -4,11 +4,10 @@
 #include <fstream>
 #include <unordered_map>
 
-#include "structs/status.hpp"
-#include "structs/addr.hpp"
+#include "datastructs/status.hpp"
+#include "datastructs/addr.hpp"
 #include "proclib.hpp"
 
-#define off_t long
 #define PROC "/proc/"
 
 #if __x86_64__
@@ -17,28 +16,36 @@
 #define key_t uint32_t;
 #endif
 
-class mapper_memory : protected RemoteProcess
+class FileDescriptor
 {
 
-private: 
-    std::string  maps_buf, status_buf;
+public:
+    FileDescriptor();
+    ~FileDescriptor();
+    int readFS(std::string __name, std::string &__buffer,
+                    off_t __nblock, bool __blockn2);
+};
+
+class Pmap : protected RemoteProcess
+{
+private:
+    std::string maps_buf, status_buf;
     pid_t pid, pid_max;
 
-    std::fstream MAPS_FS;
-    std::fstream STATUS_FS;
+    FileDescriptor FS;
 
     Address_info ADDR_INFO;
     Status_info STATS_INFO;
-    
-    void split_mem_address(std::string);
-    void split_status_process();
+
+    void split_mem_address(std::string __foo);
+    void split_status_process(std::string __foo);
 
 public:
-    mapper_memory() throw();
-    ~mapper_memory();
+    Pmap() throw();
+    ~Pmap();
 
     int map_pid(pid_t __pid);
-    bool map_mem(std::string __mem); 
+    bool map_mem(std::string __mem);
 
     bool map_write();
     bool map_read();

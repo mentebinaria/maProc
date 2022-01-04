@@ -1,11 +1,8 @@
-#ifndef STATUS_H
-#define STATUS_H 
+#pragma once
 
 #include <string>
 
 #define STATUS "/status"
-
-#define off_t long
 
 struct Status_info
 {
@@ -66,5 +63,3 @@ struct Status_info
     unsigned int voluntary_ctxt_switches;
     unsigned int nonvoluntary_ctxt_switches;
 };
-
-#endif // !STATUS_H 

@@ -7,13 +7,14 @@ enum ERROR_PID
 {
     PID_OVERDRIVE = -3,
     PID_NOT_READ,
-    PID_NOT_FOUND
+    PID_NOT_FOUND,
+    PID_SUCCESS
 };
 
 /**
  * @brief 
  */
-enum ERROS_SUCESS_MEM
+enum ERROS_FILES
 {
     OPEN_SUCCESS,
     OPEN_FAIL,

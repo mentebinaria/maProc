@@ -1,6 +1,4 @@
-#ifndef DIR_UTILS
-#define DIR_UTILS
-
+#pragma once
 
 /**
  * @brief pid table enumeration
@@ -10,5 +8,3 @@ enum Column
     Pid,
     Name
 };
-
-#endif // !DIR_UTILS
