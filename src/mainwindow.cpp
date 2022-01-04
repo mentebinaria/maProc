@@ -39,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     conf_button_clean();
     conf_button_search();
     conf_button_close();
+    conf_button_edit();
 
     // tables conf
     column_config_all();
@@ -69,6 +70,11 @@ void MainWindow::conf_button_close()
 {
     ui->statusBar->addPermanentWidget(ui->closeButton);
     ui->closeButton->setIcon(QIcon(ICON_CLOSE));
+}
+
+void MainWindow::conf_button_edit()
+{
+    ui->editButton->setIcon(QIcon(ICON_EDIT));
 }
 
 void MainWindow::Button_clicked()
@@ -138,15 +144,22 @@ void MainWindow::column_config_all()
                  << "Address_off"
                  << "Size_map";
 
-    ui->infosView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    // ui->infosView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     // view address
     ui->viewAddress->setColumnCount(3);
     ui->viewAddress->setHorizontalHeaderLabels(column);
     ui->viewAddress->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->viewAddress->setShowGrid(false);
+    ui->viewAddress->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
+    // infos addr heap and stack
     ui->infos_addr->setColumnCount(3);
+    ui->infos_addr->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->infos_addr->setHorizontalHeaderLabels(column_infos);
+    ui->infos_addr->setShowGrid(false);
+    ui->infos_addr->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
 }
 
 void MainWindow::set_values_column_heap()
@@ -181,8 +194,6 @@ void MainWindow::set_values_column_stack()
     // viewAddress config
     // int rowCount_stack = ui->viewAddress->rowCount() - 1;
 
-    ui->viewAddress->setShowGrid(false);
-    ui->viewAddress->setEditTriggers(QAbstractItemView::NoEditTriggers);
     // ui->viewAddress->insertRow(rowCount_heap);
 
     // infos_addr
@@ -197,18 +208,10 @@ void MainWindow::set_values_column_stack()
 
 bool MainWindow::mapper_heap()
 {
-    bool status_exit = true;
-    if (mapper.map_mem("[heap]") != true)
-        status_exit = false;
-
-    return status_exit;
+    return  mapper.map_mem("[heap]");
 }
 
 bool MainWindow::mapper_stack()
 {
-    bool status_exit = true;
-    if (mapper.map_mem("[stack]") != true)
-        status_exit = false;
-
-    return status_exit;
+    return mapper.map_mem("[stack]");
 }
