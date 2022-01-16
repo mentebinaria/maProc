@@ -6,6 +6,7 @@
 #include <iostream>
 #include <QMessageBox>
 
+
 DirWindow::DirWindow(QWidget *parent) : QDialog(parent),
                                         ui(new Ui::DirWindow)
 {
@@ -68,14 +69,16 @@ void DirWindow::Set_pidTable(void)
 void DirWindow::on_pidTable_doubleClicked(const QModelIndex &index)
 {
     pid = std::stoi(index.model()->data(index).toString().toStdString());
+
     this->close();
 }
+
 /**
  * @brief get pid clicked in pid table
  *
  * @return pid_t pid
  */
-unsigned int DirWindow::getPid()
+pid_t DirWindow::getPid()
 {
     return pid;
 }

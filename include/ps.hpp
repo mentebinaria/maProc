@@ -11,13 +11,13 @@
 class Ps
 {
 private:
-    std::fstream FSCMDLINE;
+    std::fstream FS;
 
 public:
     Ps();
     virtual ~Ps();
 
-    std::string Get_NamePid(pid_t __pid);
+    std::string Get_UtilsPid(pid_t __pid, std::string __utils);
     int Reading_DirProcess(std::vector<std::string> &__NameProcess,
                            std::vector<std::string> &__PidProcess);
 };

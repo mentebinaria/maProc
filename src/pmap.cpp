@@ -43,16 +43,11 @@ int FileDescriptor::readFS(std::string __name, std::string &__buffer,
 
     int status_exit = READ_SUCCESS;
 
-    std::size_t nblock = __nblock;
+    off_t nblock = __nblock;
     const char *name = __name.data();
 
     int FS = open(name, O_RDONLY);
-    if (FS < 0)
-    {
-        status_exit = OPEN_FAIL;
-        throw std::runtime_error("Error open file" + __name);
-    }
-    else
+    if (FS > 0)
     {
         do
         {
@@ -69,10 +64,16 @@ int FileDescriptor::readFS(std::string __name, std::string &__buffer,
             (__blockn2) ? nblock += __nblock : nblock;
 
         } while (FS != EOF);
+        
+        close(FS);
+    }
+    else
+    {
+        status_exit = OPEN_FAIL;
+        throw std::runtime_error("Error open file" + __name);
     }
 
     return status_exit;
-    close(FS);
 }
 
 /**
@@ -96,7 +97,7 @@ static int verify_pid(pid_t __pid, pid_t __max)
     std::string proc = PROC + std::to_string(__pid);
     DIR *dir = opendir(proc.c_str());
 
-    if (dir == NULL)
+    if (dir == nullptr)
     {
         status_exit = PID_NOT_FOUND;
         throw std::runtime_error("Pid not found, verify to pid and pass pid valid");
@@ -161,8 +162,8 @@ void Pmap::split_mem_address(std::string __foo)
     }
 
     // convert to string for off_t
-    off_t addr_on_long = std::stoul(addr_on, nullptr, 16);
-    off_t addr_off_long = std::stoul(addr_off, nullptr, 16);
+    unsigned int addr_off_long = std::stoul(addr_off, nullptr, 16);
+    unsigned int addr_on_long = std::stoul(addr_on, nullptr, 16);
 
     if (addr_on.size() == 0 || addr_on.size() == 0)
         std::runtime_error("Error not split address_on and address_off");
@@ -180,13 +181,13 @@ void Pmap::split_mem_address(std::string __foo)
  */
 void Pmap::split_status_process(std::string __foo)
 {
-    std::cout << __foo;   
+    
 }
 
 /**
  *  @brief Constructor
  */
-Pmap::Pmap() throw()
+Pmap::Pmap()
 {
     PID_MAX
 }
@@ -308,7 +309,7 @@ off_t Pmap::get_addrOff() const
  * @brief get address size mapped
  * @return size_t
  */
-size_t Pmap::get_sizeAddress()
+off_t Pmap::get_sizeAddress()
 {
     return ADDR_INFO.addr_off - ADDR_INFO.addr_on;
 }

@@ -18,7 +18,7 @@ public:
     explicit DirWindow(QWidget *parent = nullptr);
     virtual ~DirWindow();
 
-    unsigned int getPid();
+    pid_t getPid();
 private:
     pid_t pid;
     Ui::DirWindow *ui;

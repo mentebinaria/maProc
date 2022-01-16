@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <dirent.h>
+#include <iostream>
 
 /**
  * @brief Construct a new Ps:: Ps object
@@ -19,28 +20,29 @@ Ps::~Ps()
 {
 }
 
-std::string Ps::Get_NamePid(pid_t __pid)
+/**
+ * @brief metod for get utils pid, example `/comm` get name pid, 
+ * `cmdline` get command usage for execute process
+ * 
+ * @param __pid process pid
+ * @param __utils file pid for len
+ * @return std::string file content, else not possible getm return "NF"
+ */
+std::string Ps::Get_UtilsPid(pid_t __pid, std::string __utils)
 {
-    DIR *dir = opendir(PROC);
-    struct dirent *dir_read;
+    std::string utils = PROC + std::to_string(__pid) + "/" + __utils;
 
-    if (dir == NULL)
-        throw std::runtime_error("Error not open dir /proc");
-
-    dir_read = readdir(dir);
-    std::string comm = PROC + std::string(dir_read->d_name) + COMM;
-
-    FSCMDLINE.open(comm);
-    if (FSCMDLINE.is_open())
+    FS.open(utils);
+    if (FS.is_open())
     {
-        getline(FSCMDLINE, comm);
-        (comm.size() == 0) ? comm = "not found" : comm;
+        getline(FS, utils);
+        (utils.size() == 0) ? utils = "NF" : utils;
 
-        FSCMDLINE.close();
-        closedir(dir);
-    }
+        FS.close();
+    }else
+        utils = "NF";
 
-    return comm; 
+    return utils; 
 }
 
 /**
@@ -62,29 +64,27 @@ int Ps::Reading_DirProcess(std::vector<std::string> &__NameProcess,
     DIR *dir = opendir(PROC);
     struct dirent *dir_read;
 
-    if (dir == NULL)
+    if (dir == nullptr)
     {
         status_exit = OPEN_FAIL;
         throw std::runtime_error("Error not open dir /proc");
     }
 
-    while ((dir_read = readdir(dir)) != NULL)
+    while ((dir_read = readdir(dir)) != nullptr)
     {
-        std::string cmdline = PROC + std::string(dir_read->d_name) + COMM;
+        std::string str = PROC + std::string(dir_read->d_name) + COMM;
 
-        FSCMDLINE.open(cmdline);
-        if (FSCMDLINE.is_open())
+        FS.open(str);
+        if (FS.is_open())
         {
-            getline(FSCMDLINE, cmdline);
-            (cmdline.size() == 0) ? cmdline = "not found" : cmdline;
+            getline(FS, str);
+            (str.size() == 0) ? str = "NF" : str;
 
             __PidProcess.push_back(dir_read->d_name);
-            __NameProcess.push_back(cmdline);
+            __NameProcess.push_back(str);
 
-            FSCMDLINE.close();
+            FS.close();
         }
-        else
-            continue;
     }
 
     closedir(dir);

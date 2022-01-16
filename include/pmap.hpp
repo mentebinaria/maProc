@@ -41,7 +41,7 @@ private:
     void split_status_process(std::string __foo);
 
 public:
-    Pmap() throw();
+    Pmap();
     ~Pmap();
 
     int map_pid(pid_t __pid);
@@ -53,5 +53,5 @@ public:
     off_t get_addrOn() const;
     off_t get_addrOff() const;
 
-    size_t get_sizeAddress();
+    off_t get_sizeAddress();
 };
