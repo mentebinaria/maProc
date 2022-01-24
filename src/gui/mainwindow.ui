@@ -33,7 +33,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideRight</enum>
@@ -252,6 +252,12 @@
          <layout class="QGridLayout" name="grid_Mapping">
           <item row="4" column="2">
            <widget class="QToolBox" name="tools">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>40</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
               <width>150</width>
@@ -347,7 +353,7 @@
                 <property name="maximumSize">
                  <size>
                   <width>100</width>
-                  <height>30</height>
+                  <height>40</height>
                  </size>
                 </property>
                 <property name="cursor">
@@ -490,7 +496,7 @@
            </widget>
           </item>
           <item row="4" column="1">
-           <widget class="QTableWidget" name="viewAddress">
+           <widget class="QTableWidget" name="view_address">
             <property name="enabled">
              <bool>true</bool>
             </property>

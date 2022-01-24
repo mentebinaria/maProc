@@ -12,7 +12,7 @@ enum ERROR_PID
 };
 
 /**
- * @brief 
+ * @brief  erros files 
  */
 enum ERROS_FILES
 {

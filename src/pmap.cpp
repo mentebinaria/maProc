@@ -166,7 +166,7 @@ void Pmap::split_mem_address(std::string __foo)
     unsigned int addr_on_long = std::stoul(addr_on, nullptr, 16);
 
     if (addr_on.size() == 0 || addr_on.size() == 0)
-        std::runtime_error("Error not split address_on and address_off");
+        throw std::runtime_error("Error not split address_on and address_off");
     else
     {
         ADDR_INFO.addr_on = addr_on_long;

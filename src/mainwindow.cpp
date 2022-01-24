@@ -84,13 +84,14 @@ void MainWindow::conf_button_new()
 
 void MainWindow::Button_clicked()
 {
-    column_delete(ui->viewAddress);
+    column_delete(ui->view_address);
     column_clean_all();
 
     try
     {
         verify_pid();
-
+        set_values_column_utils();
+        
         if (mapper_stack())
             set_values_column_stack();
 
@@ -125,34 +126,33 @@ void MainWindow::verify_pid()
 
 void MainWindow::column_config_all()
 {
-    QStringList column_addr;
-    column_addr << "Address"
-           << "Value"
-           << "Memory";
+    QStringList view_address;
+    view_address << "Address"
+                << "Value"
+                << "Memory";
 
-    QStringList column_infos;
-    column_infos << "Address_on"
+    QStringList infos_addr;
+    infos_addr << "Address_on"
                  << "Address_off"
                  << "Size_map";
 
     QStringList infos_pid;
     infos_pid << "InfosPid";
 
-
     // ui->infosView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     // view address
-    ui->viewAddress->setColumnCount(3);
-    ui->viewAddress->setHorizontalHeaderLabels(column_addr);
-    ui->viewAddress->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->viewAddress->setShowGrid(false);
-    ui->viewAddress->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->view_address->setColumnCount(3);
+    ui->view_address->setHorizontalHeaderLabels(view_address);
+    ui->view_address->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->view_address->setShowGrid(false);
+    ui->view_address->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     // infos addr heap and stack
     ui->infos_addr->setColumnCount(3);
     ui->infos_addr->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->infos_addr->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->infos_addr->setHorizontalHeaderLabels(column_infos);
+    ui->infos_addr->setHorizontalHeaderLabels(infos_addr);
     ui->infos_addr->setShowGrid(false);
 
     // infos pid config
@@ -167,13 +167,24 @@ void MainWindow::column_config_all()
     ui->infos_file->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
+void MainWindow::set_values_column_utils()
+{
+    // table files infos
+    ui->infos_file->setItem(0, 0, new QTableWidgetItem("/proc/" + QString::fromStdString(std::to_string(pid)) + "/exe"));
+
+    // table pid infos
+    ui->infos_pid->setItem(0, 0, new QTableWidgetItem(QString::fromStdString(ps.Get_UtilsPid(pid, "comm"))));
+    ui->infos_pid->setItem(1, 0, new QTableWidgetItem(QString::fromStdString(std::to_string(pid))));
+    ui->infos_pid->setItem(4, 0, new QTableWidgetItem(QString::fromStdString(ps.Get_UtilsPid(pid, "cmdline"))));
+}
+
 void MainWindow::set_values_column_heap()
 {
     // heaView config
     // int rowCount_heap = ui->viewAddress->rowCount();
 
-    ui->viewAddress->setShowGrid(false);
-    ui->viewAddress->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->view_address->setShowGrid(false);
+    ui->view_address->setEditTriggers(QAbstractItemView::NoEditTriggers);
     // ui->viewAddress->insertRow(rowCount_heap);
 
     // infos_addr
@@ -196,23 +207,10 @@ void MainWindow::set_values_column_heap()
 
 void MainWindow::set_values_column_stack()
 {
-    // viewAddress config
-    // int rowCount_stack = ui->viewAddress->rowCount() - 1;
-
-    // ui->viewAddress->insertRow(rowCount_heap);
-
-    // infos_addr
-    QString on = QString::number(mapper.get_addrOn(), 16);
-    QString off = QString::number(mapper.get_addrOff(), 16);
-
-    // set itens
-    ui->infos_addr->setItem(1, Address_on, new QTableWidgetItem(on));
-    ui->infos_addr->setItem(1, Address_off, new QTableWidgetItem(off));
+    // table addr infos
+    ui->infos_addr->setItem(1, Address_on, new QTableWidgetItem(QString::number(mapper.get_addrOn(), 16)));
+    ui->infos_addr->setItem(1, Address_off, new QTableWidgetItem(QString::number(mapper.get_addrOff(), 16)));
     ui->infos_addr->setItem(1, Size_map, new QTableWidgetItem(QString::number(mapper.get_sizeAddress())));
-
-    ui->infos_pid->setItem(0, 0, new QTableWidgetItem(QString::fromStdString(ps.Get_UtilsPid(pid, "comm"))));
-    ui->infos_pid->setItem(1, 0, new QTableWidgetItem(QString::fromStdString(std::to_string(pid))));
-    ui->infos_pid->setItem(4, 0, new QTableWidgetItem(QString::fromStdString(ps.Get_UtilsPid(pid, "cmdline"))));
 }
 
 bool MainWindow::mapper_heap()
@@ -235,7 +233,7 @@ void MainWindow::on_closeButton_triggered()
 void MainWindow::on_cleanButton_triggered()
 {
     column_clean_all();
-    column_delete(ui->viewAddress);
+    column_delete(ui->view_address);
 }
 
 void MainWindow::on_pidButton_2_triggered()
@@ -245,7 +243,7 @@ void MainWindow::on_pidButton_2_triggered()
 
 void MainWindow::on_newButton_triggered()
 {
-   auto mm = new MainWindow();
-   mm->setAttribute(Qt::WA_DeleteOnClose);
-   mm->show();
+    auto mm = new MainWindow();
+    mm->setAttribute(Qt::WA_DeleteOnClose);
+    mm->show();
 }

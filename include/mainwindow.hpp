@@ -36,6 +36,7 @@ private slots:
     void verify_pid();
 
     void column_config_all();
+    void set_values_column_utils();
     void set_values_column_heap();
     void set_values_column_stack();
 

@@ -20,8 +20,8 @@ public:
 
     pid_t getPid();
 private:
-    pid_t pid;
     Ui::DirWindow *ui;
+    pid_t pid;
     Ps ps;
 
     void Conf_pidTable(void);
