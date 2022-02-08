@@ -1,6 +1,6 @@
 #pragma once
 
-#define TITLE_WINDOW "maProc v1.0"
+#define TITLE_WINDOW  "maProc"
 #define ICON_WINDOW   "../src/assets/maProc.png"
 #define ICON_PASS_PID "../src/assets/pid_proc.png"
 #define ICON_CLEAN    "../src/assets/clean.png"
@@ -8,6 +8,7 @@
 #define ICON_CLOSE    "../src/assets/close.png"
 #define ICON_EDIT     "../src/assets/edit.png"
 #define ICON_NEW      "../src/assets/new.png"
+#define ICON_ABOUT    "../src/assets/about.png"
 
 #define CLEAN_ROW     " "
 
@@ -28,4 +29,16 @@ enum Infos
     Address_on,
     Address_off,
     Size_map
+};
+
+enum Types
+{
+    CHAR,
+    INT,
+    INT8,
+    INT16,
+    UINT32,
+    UINT64,
+    FLOAT,
+    STRING
 };

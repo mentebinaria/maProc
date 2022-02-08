@@ -4,41 +4,37 @@
 #include <fstream>
 #include <unordered_map>
 
-#include "datastructs/status.hpp"
-#include "datastructs/addr.hpp"
 #include "proclib.hpp"
+#include "include/datastructs/utils.hpp"
 
 #define PROC "/proc/"
+#define MAPS "/maps"
 
-#if __x86_64__
-#define key_t uint64_t;
-#else
-#define key_t uint32_t;
-#endif
 
 class FileDescriptor
 {
-
 public:
     FileDescriptor();
     ~FileDescriptor();
     int readFS(std::string __name, std::string &__buffer,
-                    off_t __nblock, bool __blockn2);
+               long __nblock, bool __blockn2);
 };
 
 class Pmap : protected RemoteProcess
 {
 private:
-    std::string maps_buf, status_buf;
-    pid_t pid, pid_max;
-
     FileDescriptor FS;
-
-    Address_info ADDR_INFO;
-    Status_info STATS_INFO;
+    std::string maps_buf;
 
     void split_mem_address(std::string __foo);
-    void split_status_process(std::string __foo);
+    struct Infos
+    {
+        off_t addr_on;
+        off_t addr_off;
+        pid_t pid;
+        pid_t pid_max;
+
+    } infos;
 
 public:
     Pmap();
@@ -47,11 +43,12 @@ public:
     int map_pid(pid_t __pid);
     bool map_mem(std::string __mem);
 
-    bool map_write();
-    bool map_read();
+    bool map_write(off_t __addr, unsigned int __type);
+    bool map_read(off_t __addr, unsigned int __type);
+    int map_find();
 
     off_t get_addrOn() const;
     off_t get_addrOff() const;
-
     off_t get_sizeAddress();
+    std::string get_utilsPid(int __utils);
 };

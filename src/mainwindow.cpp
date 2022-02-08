@@ -3,6 +3,7 @@
 #include "include/dirwindow.hpp"
 #include "gui/ui_mainwindow.h"
 
+#include <iostream>
 #include <string>
 #include <QMessageBox>
 
@@ -16,11 +17,12 @@ void MainWindow::column_clean_all()
 {
     for (int i = 5; i >= 0; i--)
     {
-        ui->infos_addr->setItem(i, Address_on, new QTableWidgetItem(CLEAN_ROW));
-        ui->infos_addr->setItem(i, Address_off, new QTableWidgetItem(CLEAN_ROW));
-        ui->infos_addr->setItem(i, Size_map, new QTableWidgetItem(CLEAN_ROW));
+        ui->infos_addr->setItem(i, Address_on, new QTableWidgetItem("null"));
+        ui->infos_addr->setItem(i, Address_off, new QTableWidgetItem("null"));
+        ui->infos_addr->setItem(i, Size_map, new QTableWidgetItem("0"));
 
         ui->infos_pid->setItem(i, 0, new QTableWidgetItem(CLEAN_ROW));
+        ui->infos_file->setItem(i, 0, new QTableWidgetItem(CLEAN_ROW));
     }
 }
 
@@ -32,7 +34,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     setWindowIcon(QIcon(ICON_WINDOW));
 
     // status bar conf default
-    ui->statusBar->showMessage("No process is being mapped at this time !!");
+    ui->statusBar->showMessage("No process is being mapped at this time");
+    // get value type combo button
+    type = ui->type->currentIndex();
 
     // buttons conf
     conf_button_pass_pid();
@@ -41,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     conf_button_close();
     conf_button_edit();
     conf_button_new();
+    conf_button_about();
 
     // tables conf
     column_config_all();
@@ -57,9 +62,16 @@ void MainWindow::conf_button_pass_pid()
     ui->pidButton_2->setIcon(QIcon(ICON_PASS_PID));
 }
 
+void MainWindow::conf_button_about()
+{
+    ui->aboutButton->setIcon(QIcon(ICON_ABOUT));
+}
+
+
 void MainWindow::conf_button_clean()
 {
     ui->cleanButton->setIcon(QIcon(ICON_CLEAN));
+    ui->cleanButton2->setIcon(QIcon(ICON_CLEAN));
 }
 
 void MainWindow::conf_button_search()
@@ -91,7 +103,7 @@ void MainWindow::Button_clicked()
     {
         verify_pid();
         set_values_column_utils();
-        
+
         if (mapper_stack())
             set_values_column_stack();
 
@@ -121,20 +133,28 @@ void MainWindow::verify_pid()
     int status_pid = mapper.map_pid(pid);
 
     if (status_pid == 0)
-        ui->statusBar->showMessage("PID: " + QString::fromStdString(std::to_string(pid)) + " Name: " + QString::fromStdString(ps.Get_UtilsPid(pid, "comm"))); // tell the status bar which pid is being mapped
+    {
+        pid_name = QString::fromStdString(mapper.get_utilsPid(NAME));
+        pid_cmdline = QString::fromStdString(mapper.get_utilsPid(CMDLINE));
+        pid_loginuid = QString::fromStdString(mapper.get_utilsPid(LOGINUID));
+        pid_sizebin = QString::fromStdString(mapper.get_utilsPid(SIZEBIN));
+        pid_wchan = QString::fromStdString(mapper.get_utilsPid(WCHAN));
+        // tell the status bar which pid is being mapped
+        ui->statusBar->showMessage("PID: " + QString::fromStdString(std::to_string(pid)) + " Name: " + pid_name);
+    }
 }
 
 void MainWindow::column_config_all()
 {
     QStringList view_address;
     view_address << "Address"
-                << "Value"
-                << "Memory";
+                 << "Value"
+                 << "Memory";
 
     QStringList infos_addr;
     infos_addr << "Address_on"
-                 << "Address_off"
-                 << "Size_map";
+               << "Address_off"
+               << "Size_map";
 
     QStringList infos_pid;
     infos_pid << "InfosPid";
@@ -171,21 +191,20 @@ void MainWindow::set_values_column_utils()
 {
     // table files infos
     ui->infos_file->setItem(0, 0, new QTableWidgetItem("/proc/" + QString::fromStdString(std::to_string(pid)) + "/exe"));
+    ui->infos_file->setItem(0, 1, new QTableWidgetItem(pid_sizebin));
 
     // table pid infos
-    ui->infos_pid->setItem(0, 0, new QTableWidgetItem(QString::fromStdString(ps.Get_UtilsPid(pid, "comm"))));
     ui->infos_pid->setItem(1, 0, new QTableWidgetItem(QString::fromStdString(std::to_string(pid))));
-    ui->infos_pid->setItem(4, 0, new QTableWidgetItem(QString::fromStdString(ps.Get_UtilsPid(pid, "cmdline"))));
+    ui->infos_pid->setItem(0, 0, new QTableWidgetItem(pid_name));
+    ui->infos_pid->setItem(4, 0, new QTableWidgetItem(pid_cmdline));
+    ui->infos_pid->setItem(2, 0, new QTableWidgetItem(pid_loginuid));
+    ui->infos_pid->setItem(3, 0, new QTableWidgetItem(pid_wchan));
 }
 
 void MainWindow::set_values_column_heap()
 {
-    // heaView config
-    // int rowCount_heap = ui->viewAddress->rowCount();
-
     ui->view_address->setShowGrid(false);
     ui->view_address->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    // ui->viewAddress->insertRow(rowCount_heap);
 
     // infos_addr
     QString on = QString::number(mapper.get_addrOn(), 16);
@@ -194,15 +213,10 @@ void MainWindow::set_values_column_heap()
     ui->infos_addr->setShowGrid(false);
     ui->infos_addr->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    // QTableWidgetItem *Address_mapped = new QTableWidgetItem("done");
-    // Address_mapped->setTextAlignment(100);
-
     // set itens
     ui->infos_addr->setItem(0, Address_on, new QTableWidgetItem(on));
     ui->infos_addr->setItem(0, Address_off, new QTableWidgetItem(off));
     ui->infos_addr->setItem(0, Size_map, new QTableWidgetItem(QString::number(mapper.get_sizeAddress())));
-
-    // ui->viewAddress->setItem(rowCount_heap - 1, Address, Address_mapped);
 }
 
 void MainWindow::set_values_column_stack()
@@ -236,14 +250,116 @@ void MainWindow::on_cleanButton_triggered()
     column_delete(ui->view_address);
 }
 
+void MainWindow::on_cleanButton2_clicked()
+{
+    on_cleanButton_triggered();
+}
+
 void MainWindow::on_pidButton_2_triggered()
 {
     on_pidButton_clicked();
 }
 
+/**
+ * @brief new window
+ *
+ */
 void MainWindow::on_newButton_triggered()
 {
     auto mm = new MainWindow();
     mm->setAttribute(Qt::WA_DeleteOnClose);
     mm->show();
+}
+
+/**
+ * @brief search value in  fetch value from an address
+ * on the stack or heap, will get the type using the combo box
+ *
+ */
+void MainWindow::on_searchButton_clicked()
+{
+    type = ui->type->currentIndex();
+
+    switch (type)
+    {
+    case CHAR:
+        mapper.map_read(0, sizeof(char));
+        break;
+    case INT:
+        mapper.map_read(0, sizeof(int));
+        break;
+    case INT8:
+        mapper.map_read(0, sizeof(int8_t));
+        break;
+    case INT16:
+        mapper.map_read(0, sizeof(int16_t));
+        break;
+    case UINT32:
+        mapper.map_read(0, sizeof(int32_t));
+        break;
+    case UINT64:
+        mapper.map_read(0, sizeof(int64_t));
+        break;
+    case FLOAT:
+        mapper.map_read(0, sizeof(float));
+        break;
+    case STRING:
+        mapper.map_read(0, sizeof(char *));
+        break;
+    default:
+        throw std::runtime_error("Type not found");
+    }
+}
+
+void MainWindow::on_editButton_clicked()
+{
+    switch (type)
+    {
+    case CHAR:
+        mapper.map_write(0, sizeof(char));
+        break;
+    case INT:
+        mapper.map_write(0, sizeof(int));
+        break;
+    case INT8:
+        mapper.map_write(0, sizeof(int8_t));
+        break;
+    case INT16:
+        mapper.map_write(0, sizeof(int16_t));
+        break;
+    case UINT32:
+        mapper.map_write(0, sizeof(int32_t));
+        break;
+    case UINT64:
+        mapper.map_write(0, sizeof(int64_t));
+        break;
+    case FLOAT:
+        mapper.map_write(0, sizeof(float));
+        break;
+    case STRING:
+        mapper.map_write(0, sizeof(const char *));
+        break;
+    default:
+        throw std::runtime_error("Type not found");
+    }
+}
+
+/**
+ * @brief set value in label for edit value in address
+ * 
+ * @param row 
+ * @param column 
+ */
+void MainWindow::on_view_address_cellDoubleClicked(int row, int column)
+{
+
+}
+
+/**
+ * @brief about button for infos copyright and project information
+ * 
+ */
+void MainWindow::on_aboutButton_triggered()
+{
+    
 }

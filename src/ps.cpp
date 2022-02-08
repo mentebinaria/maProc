@@ -21,31 +21,6 @@ Ps::~Ps()
 }
 
 /**
- * @brief metod for get utils pid, example `/comm` get name pid, 
- * `cmdline` get command usage for execute process
- * 
- * @param __pid process pid
- * @param __utils file pid for len
- * @return std::string file content, else not possible getm return "NF"
- */
-std::string Ps::Get_UtilsPid(pid_t __pid, std::string __utils)
-{
-    std::string utils = PROC + std::to_string(__pid) + "/" + __utils;
-
-    FS.open(utils);
-    if (FS.is_open())
-    {
-        getline(FS, utils);
-        (utils.size() == 0) ? utils = "NF" : utils;
-
-        FS.close();
-    }else
-        utils = "NF";
-
-    return utils; 
-}
-
-/**
  * @brief will get all processes from the magic folder / proc
  * will store in the parameters the name and pid equivalent to the process
  *

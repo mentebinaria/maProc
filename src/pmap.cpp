@@ -5,9 +5,10 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <string.h>
+#include <stdexcept>
+#include <sys/mman.h>
 
 #include "include/pmap.hpp"
-#include "include/datastructs/utils.hpp"
 #include "include/datastructs/erros.hpp"
 
 /**
@@ -34,18 +35,19 @@ FileDescriptor::~FileDescriptor()
  * @param __nblock block size for reading
  * @param __blockn2 if this option is turned on the block size will multiply by 2 per __nblock
  *
- * @return if reading file success return READ_SUCCESS else if not open file return OPEN_FAIL
+ * @return if reading file success return size else if not len READ_FAIL not open file return OPEN_FAIL
  */
 int FileDescriptor::readFS(std::string __name, std::string &__buffer,
-                           off_t __nblock = 256, bool __blockn2 = true)
+                           long __nblock = 256, bool __blockn2 = true)
 {
     CLEAR_STRING(__buffer)
 
-    int status_exit = READ_SUCCESS;
+    int status_exit = 0;
 
     off_t nblock = __nblock;
     const char *name = __name.data();
 
+    __buffer.reserve(__nblock);
     int FS = open(name, O_RDONLY);
     if (FS > 0)
     {
@@ -63,8 +65,15 @@ int FileDescriptor::readFS(std::string __name, std::string &__buffer,
             // it could possibly end up exceeding the file buffer limit by allocating more than necessary
             (__blockn2) ? nblock += __nblock : nblock;
 
+            status_exit = __buffer.size();
         } while (FS != EOF);
-        
+
+        if (__buffer.size() == 0)
+        {
+            status_exit = READ_FAIL;
+            throw std::runtime_error("Not possible read file, check permission " + __name);
+        }
+
         close(FS);
     }
     else
@@ -93,17 +102,19 @@ static int verify_pid(pid_t __pid, pid_t __max)
         status_exit = PID_OVERDRIVE;
         throw std::runtime_error("Pid " + std::to_string(__pid) + " passed is not valid, valid pid not less 0 or larger " + std::to_string(__max));
     }
-
-    std::string proc = PROC + std::to_string(__pid);
-    DIR *dir = opendir(proc.c_str());
-
-    if (dir == nullptr)
-    {
-        status_exit = PID_NOT_FOUND;
-        throw std::runtime_error("Pid not found, verify to pid and pass pid valid");
-    }
     else
-        closedir(dir);
+    {
+        std::string proc = PROC + std::to_string(__pid);
+        DIR *dir = opendir(proc.c_str());
+
+        if (dir == nullptr)
+        {
+            status_exit = PID_NOT_FOUND;
+            throw std::runtime_error("Pid not found, verify to pid and pass pid valid");
+        }
+        else
+            closedir(dir);
+    }
 
     return status_exit;
 }
@@ -161,27 +172,21 @@ void Pmap::split_mem_address(std::string __foo)
             break;
     }
 
-    // convert to string for off_t
-    unsigned int addr_off_long = std::stoul(addr_off, nullptr, 16);
-    unsigned int addr_on_long = std::stoul(addr_on, nullptr, 16);
+    // convert string to off_t
+    off_t addr_off_long = static_cast<off_t>(std::stoul(addr_off, nullptr, 16));
+    off_t addr_on_long = static_cast<off_t>(std::stoul(addr_on, nullptr, 16));
 
     if (addr_on.size() == 0 || addr_on.size() == 0)
+    {
         throw std::runtime_error("Error not split address_on and address_off");
+        return;
+    }
     else
     {
-        ADDR_INFO.addr_on = addr_on_long;
-        ADDR_INFO.addr_off = addr_off_long;
+        infos.addr_on = addr_on_long;
+        infos.addr_off = addr_off_long;
     }
-
     CLEAR_STRING(__foo)
-}
-
-/**
- * @brief get status process
- */
-void Pmap::split_status_process(std::string __foo)
-{
-    
 }
 
 /**
@@ -189,6 +194,10 @@ void Pmap::split_status_process(std::string __foo)
  */
 Pmap::Pmap()
 {
+    infos.pid_max = 0;
+    infos.pid = 0;
+    infos.addr_on = 0;
+    infos.addr_off = 0;
     PID_MAX
 }
 
@@ -209,25 +218,21 @@ Pmap::~Pmap()
  */
 int Pmap::map_pid(pid_t __pid)
 {
-    pid = __pid;
+    infos.pid = __pid;
 
-    int status_exit = verify_pid(pid, pid_max);
-    RemoteProcess::openProcess(pid);
+    int status_exit = verify_pid(infos.pid, infos.pid_max);
+    RemoteProcess::openProcess(infos.pid);
 
-    std::string pid_str = std::to_string(pid);
+    std::string pid_str = std::to_string(infos.pid);
     std::string fmaps = PROC + pid_str + MAPS;
-    std::string fstatus = PROC + pid_str + STATUS;
 
-    FS.readFS(fstatus, status_buf, 1024);
     FS.readFS(fmaps, maps_buf, 1024);
 
     if (maps_buf.size() == 0)
     {
         status_exit = PID_NOT_READ;
-        throw std::runtime_error("Looks like proc/" + std::to_string(pid) + "/maps is empty, I do a check in the past process");
+        throw std::runtime_error("Looks like proc/" + std::to_string(infos.pid) + "/maps is empty, I do a check in the past process");
     }
-
-    split_status_process(status_buf);
 
     return status_exit;
 }
@@ -265,8 +270,10 @@ bool Pmap::map_mem(std::string __mem)
  *  @param __val pass value for modify
  *  @return bool
  */
-bool Pmap::map_write()
+bool Pmap::map_write(off_t __addr, unsigned int __type)
 {
+    Data data(__type);
+    RemoteProcess::readMem(__addr, &data);
     return true;
 }
 
@@ -276,12 +283,23 @@ bool Pmap::map_write()
  *  @param __off for end address mapped
  *  @return void
  */
-bool Pmap::map_read()
+bool Pmap::map_read(off_t __addr, unsigned int __type)
 {
-    // Data data(10);
-    // RemoteProcess::readMem(ADDR_INFO.addr_on, &data);
+    Data data(__type);
+    RemoteProcess::readMem(__addr, &data);
     return true;
 }
+
+/**
+ * @brief 
+ * 
+ * @return int 
+ */
+int Pmap::map_find()
+{
+    return 1;
+}
+
 
 /**
  * @brief get address on
@@ -291,7 +309,7 @@ bool Pmap::map_read()
  */
 off_t Pmap::get_addrOn() const
 {
-    return ADDR_INFO.addr_on;
+    return infos.addr_on;
 }
 
 /**
@@ -302,7 +320,7 @@ off_t Pmap::get_addrOn() const
  */
 off_t Pmap::get_addrOff() const
 {
-    return ADDR_INFO.addr_off;
+    return infos.addr_off;
 }
 
 /**
@@ -311,5 +329,58 @@ off_t Pmap::get_addrOff() const
  */
 off_t Pmap::get_sizeAddress()
 {
-    return ADDR_INFO.addr_off - ADDR_INFO.addr_on;
+    return infos.addr_off - infos.addr_on;
+}
+
+/**
+ * @brief take the pid utility as an example, the name of the pid,
+ * just pass it as a NAME parameter,
+ * which will return the process name
+ *
+ * @param __utils parameter used to get the pid information
+ * @return std::string
+ */
+std::string Pmap::get_utilsPid(int __utils)
+{
+    std::string buffer = " ";
+    std::string pid_str = std::to_string(infos.pid);
+    std::string name = PROC + pid_str;
+
+    switch (__utils)
+    {
+    case NAME:
+        name += "/comm";
+        FS.readFS(name, buffer, 20);
+        break;
+
+    case WCHAN:
+        name += "/wchan";
+        FS.readFS(name, buffer, 30);
+        break;
+
+    case SESSIONID:
+        name += "/sessionid";
+        FS.readFS(name, buffer, 20);
+        break;
+
+    case CMDLINE:
+        name += "/cmdline";
+        FS.readFS(name, buffer, 20);
+        break;
+
+    case LOGINUID:
+        name += "/loginuid";
+        FS.readFS(name, buffer, 20);
+        break;
+    case SIZEBIN:
+    {
+        name += "/exe";
+        buffer = std::to_string(FS.readFS(name, buffer, 2048));
+        break;
+    }
+    default:
+        throw std::runtime_error("It was not possible to make the get at this value " + __utils);
+    }
+
+    return buffer;
 }

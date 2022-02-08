@@ -89,6 +89,33 @@ int RemoteProcess::writeMem(off_t start, Data *data)
     return WRITE_SUCCESS;
 }
 
+/**
+ * @brief find value in memory if not found return NOT_FOUND, else return FOUND
+ * 
+ * @param start offset to start looking
+ * @param stop offset to top looking
+ * @param data if found, it will be stored in data
+ * @return int 
+ */
+int RemoteProcess::findMem(off_t start, off_t stop, Data *data)
+{
+    if (status != OPEN_SUCCESS)
+        return NOT_FOUND;
+
+    long b;
+    for (uint i = 0; i < data->size; ++i)
+    {
+        b = ptrace(PTRACE_PEEKDATA, proc.pid, start + i, NULL);
+        if (b == -1)
+            return READ_FAIL;
+
+        data->write((uint8_t)b);
+    }
+
+    return READ_SUCCESS;
+}
+
+
 Data::Data(uint __size)
 {
     size = __size;

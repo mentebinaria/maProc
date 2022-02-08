@@ -3,6 +3,6 @@ build/
 main
 build-ma?roc-Desktop-Debug/
 bin/
-*.user
+*.user*
 .vscode
 .gitignore

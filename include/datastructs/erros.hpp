@@ -23,3 +23,13 @@ enum ERROS_FILES
     WRITE_FAIL,
     WRITE_SUCCESS
 };
+
+/**
+ * @brief mem find 
+ * 
+ */
+enum FIND_MEM
+{
+    NOT_FOUND,
+    FOUND
+};

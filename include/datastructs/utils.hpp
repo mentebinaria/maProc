@@ -10,4 +10,18 @@
  * @brief Get pid max your system support
  * @note this len file /proc/sys/kernel/pid_max
  */
-#define PID_MAX std::string buffer; FS.readFS("/proc/sys/kernel/pid_max", buffer, 8); pid_max = std::stoi(buffer); CLEAR_STRING(buffer);
+#define PID_MAX std::string buffer; FS.readFS("/proc/sys/kernel/pid_max", buffer, 10); infos.pid_max = std::stoi(buffer); CLEAR_STRING(buffer);
+
+/**
+ * @brief get utils info pid
+ * 
+ */
+enum UTILS_PID
+{
+    NAME = 1,
+    WCHAN,
+    SESSIONID,
+    CMDLINE,
+    LOGINUID,
+    SIZEBIN
+};
