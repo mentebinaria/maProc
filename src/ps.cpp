@@ -29,11 +29,9 @@ Ps::~Ps()
  *
  * @return OPEN_FAIL is /proc not opened else return OPEN_SUCCESS
  */
-int Ps::Reading_DirProcess(std::vector<std::string> &__NameProcess,
-                           std::vector<std::string> &__PidProcess)
+int Ps::Reading_DirProcess(std::unordered_map<std::string,std::string> &umap)
 {
-    __NameProcess.clear();
-    __PidProcess.clear();
+    umap.clear();
 
     int status_exit = OPEN_SUCCESS;
     DIR *dir = opendir(PROC);
@@ -54,9 +52,8 @@ int Ps::Reading_DirProcess(std::vector<std::string> &__NameProcess,
         {
             getline(FS, str);
             (str.size() == 0) ? str = "NF" : str;
-
-            __PidProcess.push_back(dir_read->d_name);
-            __NameProcess.push_back(str);
+            
+            umap.insert(std::make_pair(str, dir_read->d_name));
 
             FS.close();
         }

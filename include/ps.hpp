@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <fstream>
+#include <unordered_map>
 
 #include "include/datastructs/erros.hpp"
 
@@ -17,6 +17,5 @@ public:
     Ps();
     virtual ~Ps();
 
-    int Reading_DirProcess(std::vector<std::string> &__NameProcess,
-                           std::vector<std::string> &__PidProcess);
+    int Reading_DirProcess(std::unordered_map<std::string, std::string> &umap);
 };

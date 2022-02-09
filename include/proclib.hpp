@@ -40,5 +40,5 @@ protected:
     int openProcess(pid_t __pid);
     int readMem(off_t start, Data *data);
     int writeMem(off_t start, Data *data);
-    int findMem(off_t start, off_t stop, Data *data);
+    int findMem(off_t start, Data *data, std::string find);
 };

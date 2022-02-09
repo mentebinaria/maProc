@@ -10,16 +10,23 @@
 #define PROC "/proc/"
 #define MAPS "/maps"
 
-
+/**
+ * @brief class for len pseudos files /proc
+ * 
+ */
 class FileDescriptor
 {
 public:
     FileDescriptor();
     ~FileDescriptor();
-    int readFS(std::string __name, std::string &__buffer,
+    long readFS(std::string __name, std::string &__buffer,
                long __nblock, bool __blockn2);
 };
 
+/**
+ * @brief manipulation of process 
+ * 
+ */
 class Pmap : protected RemoteProcess
 {
 private:
@@ -27,6 +34,7 @@ private:
     std::string maps_buf;
 
     void split_mem_address(std::string __foo);
+
     struct Infos
     {
         off_t addr_on;
@@ -45,7 +53,7 @@ public:
 
     bool map_write(off_t __addr, unsigned int __type);
     bool map_read(off_t __addr, unsigned int __type);
-    int map_find();
+    int  map_find();
 
     off_t get_addrOn() const;
     off_t get_addrOff() const;

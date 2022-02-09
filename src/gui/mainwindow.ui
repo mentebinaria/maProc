@@ -296,7 +296,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>166</width>
+             <width>132</width>
              <height>248</height>
             </rect>
            </property>
@@ -316,7 +316,7 @@
                </size>
               </property>
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="page">
                <property name="geometry">
@@ -417,7 +417,7 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>150</width>
+                 <width>116</width>
                  <height>172</height>
                 </rect>
                </property>
@@ -513,7 +513,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>558</width>
+               <width>592</width>
                <height>547</height>
               </rect>
              </property>

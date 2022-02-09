@@ -37,12 +37,12 @@ FileDescriptor::~FileDescriptor()
  *
  * @return if reading file success return size else if not len READ_FAIL not open file return OPEN_FAIL
  */
-int FileDescriptor::readFS(std::string __name, std::string &__buffer,
-                           long __nblock = 256, bool __blockn2 = true)
+long FileDescriptor::readFS(std::string __name, std::string &__buffer,
+                            long __nblock = 256, bool __blockn2 = true)
 {
     CLEAR_STRING(__buffer)
 
-    int status_exit = 0;
+    long status_exit = 0;
 
     off_t nblock = __nblock;
     const char *name = __name.data();
@@ -65,8 +65,9 @@ int FileDescriptor::readFS(std::string __name, std::string &__buffer,
             // it could possibly end up exceeding the file buffer limit by allocating more than necessary
             (__blockn2) ? nblock += __nblock : nblock;
 
-            status_exit = __buffer.size();
         } while (FS != EOF);
+
+        status_exit = __buffer.size();
 
         if (__buffer.size() == 0)
         {
@@ -287,19 +288,20 @@ bool Pmap::map_read(off_t __addr, unsigned int __type)
 {
     Data data(__type);
     RemoteProcess::readMem(__addr, &data);
+
+    std::cout << (char)data.read() << std::endl;
     return true;
 }
 
 /**
- * @brief 
- * 
- * @return int 
+ * @brief
+ *
+ * @return int
  */
 int Pmap::map_find()
 {
     return 1;
 }
-
 
 /**
  * @brief get address on
@@ -372,12 +374,12 @@ std::string Pmap::get_utilsPid(int __utils)
         name += "/loginuid";
         FS.readFS(name, buffer, 20);
         break;
+
     case SIZEBIN:
-    {
         name += "/exe";
-        buffer = std::to_string(FS.readFS(name, buffer, 2048));
+        buffer = std::to_string(FS.readFS(name, buffer, 4098));
         break;
-    }
+
     default:
         throw std::runtime_error("It was not possible to make the get at this value " + __utils);
     }

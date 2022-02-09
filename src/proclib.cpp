@@ -14,14 +14,11 @@ int RemoteProcess::openProcess(pid_t __pid)
     proc.pid = __pid;
     status = OPEN_FAIL;
 
-    if (ptrace(PTRACE_ATTACH, proc.pid, NULL, NULL) < 0)
-    {
-        return status;
-        // error is set in errno
-    }
+    long requests = ptrace(PTRACE_ATTACH, proc.pid, NULL, NULL);
+    if (requests < 0)
+        throw std::runtime_error("Not possible attach pid " + std::to_string(proc.pid));
 
     // wait to the attach ends
-
     int wstatus;
     waitpid(proc.pid, &wstatus, 0);
 
@@ -30,7 +27,6 @@ int RemoteProcess::openProcess(pid_t __pid)
         // process has been attached and stopped, continue normally
         ptrace(PTRACE_CONT, proc.pid, NULL, NULL);
         status = OPEN_SUCCESS;
-        return status; // success :)
     }
 
     return status;
@@ -47,7 +43,7 @@ int RemoteProcess::openProcess(pid_t __pid)
  */
 int RemoteProcess::readMem(off_t start, Data *data)
 {
-    if (status != OPEN_SUCCESS)
+    if (status == OPEN_FAIL)
         return READ_FAIL;
 
     long b;
@@ -91,30 +87,19 @@ int RemoteProcess::writeMem(off_t start, Data *data)
 
 /**
  * @brief find value in memory if not found return NOT_FOUND, else return FOUND
- * 
+ *
  * @param start offset to start looking
- * @param stop offset to top looking
  * @param data if found, it will be stored in data
- * @return int 
+ * @return int
  */
-int RemoteProcess::findMem(off_t start, off_t stop, Data *data)
+int RemoteProcess::findMem(off_t start, Data *data, std::string find)
 {
     if (status != OPEN_SUCCESS)
         return NOT_FOUND;
 
-    long b;
-    for (uint i = 0; i < data->size; ++i)
-    {
-        b = ptrace(PTRACE_PEEKDATA, proc.pid, start + i, NULL);
-        if (b == -1)
-            return READ_FAIL;
-
-        data->write((uint8_t)b);
-    }
-
+    
     return READ_SUCCESS;
 }
-
 
 Data::Data(uint __size)
 {

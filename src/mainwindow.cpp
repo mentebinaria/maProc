@@ -67,7 +67,6 @@ void MainWindow::conf_button_about()
     ui->aboutButton->setIcon(QIcon(ICON_ABOUT));
 }
 
-
 void MainWindow::conf_button_clean()
 {
     ui->cleanButton->setIcon(QIcon(ICON_CLEAN));
@@ -121,10 +120,14 @@ void MainWindow::on_pidButton_clicked()
     DirWindow dir;
     dir.exec();
 
-    if (dir.close())
+    pid = 0;
+    while (pid == 0)
     {
         pid = dir.getPid();
-        Button_clicked();
+        if (pid == 0)
+            return;
+        else
+            Button_clicked();
     }
 }
 
@@ -194,11 +197,11 @@ void MainWindow::set_values_column_utils()
     ui->infos_file->setItem(0, 1, new QTableWidgetItem(pid_sizebin));
 
     // table pid infos
-    ui->infos_pid->setItem(1, 0, new QTableWidgetItem(QString::fromStdString(std::to_string(pid))));
     ui->infos_pid->setItem(0, 0, new QTableWidgetItem(pid_name));
-    ui->infos_pid->setItem(4, 0, new QTableWidgetItem(pid_cmdline));
+    ui->infos_pid->setItem(1, 0, new QTableWidgetItem(QString::fromStdString(std::to_string(pid))));
     ui->infos_pid->setItem(2, 0, new QTableWidgetItem(pid_loginuid));
     ui->infos_pid->setItem(3, 0, new QTableWidgetItem(pid_wchan));
+    ui->infos_pid->setItem(4, 0, new QTableWidgetItem(pid_cmdline));
 }
 
 void MainWindow::set_values_column_heap()
@@ -283,28 +286,28 @@ void MainWindow::on_searchButton_clicked()
     switch (type)
     {
     case CHAR:
-        mapper.map_read(0, sizeof(char));
+        mapper.map_find();
         break;
     case INT:
-        mapper.map_read(0, sizeof(int));
+        mapper.map_find();
         break;
     case INT8:
-        mapper.map_read(0, sizeof(int8_t));
+        mapper.map_find();
         break;
     case INT16:
-        mapper.map_read(0, sizeof(int16_t));
+        mapper.map_find();
         break;
     case UINT32:
-        mapper.map_read(0, sizeof(int32_t));
+        mapper.map_find();
         break;
     case UINT64:
-        mapper.map_read(0, sizeof(int64_t));
+        mapper.map_find();
         break;
     case FLOAT:
-        mapper.map_read(0, sizeof(float));
+        mapper.map_find();
         break;
     case STRING:
-        mapper.map_read(0, sizeof(char *));
+        mapper.map_find();
         break;
     default:
         throw std::runtime_error("Type not found");
@@ -346,20 +349,18 @@ void MainWindow::on_editButton_clicked()
 
 /**
  * @brief set value in label for edit value in address
- * 
- * @param row 
- * @param column 
+ *
+ * @param row
+ * @param column
  */
 void MainWindow::on_view_address_cellDoubleClicked(int row, int column)
 {
-
 }
 
 /**
  * @brief about button for infos copyright and project information
- * 
+ *
  */
 void MainWindow::on_aboutButton_triggered()
 {
-    
 }

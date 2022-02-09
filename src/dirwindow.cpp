@@ -5,10 +5,11 @@
 #include <vector>
 #include <iostream>
 #include <QMessageBox>
-
+#include <unordered_map>
 
 DirWindow::DirWindow(QWidget *parent) : QDialog(parent),
-                                        ui(new Ui::DirWindow)
+                                        ui(new Ui::DirWindow),
+                                        pid(0)
 {
     ui->setupUi(this);
     Conf_pidTable();
@@ -40,23 +41,17 @@ void DirWindow::Conf_pidTable(void)
  */
 void DirWindow::Set_pidTable(void)
 {
-    std::vector<std::string> NameProcess;
-    std::vector<std::string> PidProcess;
-
-    int dir_read = ps.Reading_DirProcess(NameProcess, PidProcess);
+    int dir_read = ps.Reading_DirProcess(umap);
 
     if (dir_read == OPEN_SUCCESS)
     {
-        for (auto it : NameProcess)
+        for (auto x : umap)
         {
             int rowCount = ui->pidTable->rowCount();
+            
             ui->pidTable->insertRow(rowCount);
-
-            ui->pidTable->setItem(rowCount - 1, Pid, new QTableWidgetItem(QString(QString::fromStdString(PidProcess.back()))));
-            ui->pidTable->setItem(rowCount - 1, Name, new QTableWidgetItem(QString(QString::fromStdString(NameProcess.back()))));
-
-            PidProcess.pop_back();
-            NameProcess.pop_back();
+            ui->pidTable->setItem(rowCount - 1, Pid, new QTableWidgetItem(QString(QString::fromStdString(x.second))));
+            ui->pidTable->setItem(rowCount - 1, Name, new QTableWidgetItem(QString(QString::fromStdString(x.first))));
         }
     }
 }
@@ -68,9 +63,16 @@ void DirWindow::Set_pidTable(void)
  */
 void DirWindow::on_pidTable_doubleClicked(const QModelIndex &index)
 {
-    pid = std::stoi(index.model()->data(index).toString().toStdString());
+    try
+    {
+        pid = std::stoi(umap[index.model()->data(index).toString().toStdString()]);
+    }
+    catch (std::exception &e)
+    {
+        pid =  std::stoi(index.model()->data(index).toString().toStdString());
+    }
 
-    this->close();
+    this->setVisible(false);
 }
 
 /**

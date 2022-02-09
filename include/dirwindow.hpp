@@ -4,6 +4,7 @@
 
 #include "include/ps.hpp"
 #include "include/mainwindow.hpp"
+#include <unordered_map>
 
 namespace Ui
 {
@@ -20,6 +21,7 @@ public:
 
     pid_t getPid();
 private:
+    std::unordered_map<std::string, std::string> umap;
     Ui::DirWindow *ui;
     pid_t pid;
     Ps ps;
