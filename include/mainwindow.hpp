@@ -2,6 +2,8 @@
 
 #include <QMainWindow>
 #include <QDialog>
+#include <utility>
+#include <unordered_map>
 
 #include "include/ps.hpp"
 #include "pmap.hpp"
@@ -60,6 +62,11 @@ private:
     QString pid_sizebin;
     QString pid_wchan;
 
+
+    // varName: (varSize, maximumValue)
+    
+    std::unordered_map<std::string, std::pair<size_t, size_t>> typeSizes;
+    
     Ui::MainWindow *ui;
     Ps ps;
     Pmap mapper;

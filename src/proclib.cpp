@@ -1,5 +1,12 @@
 #include "include/proclib.hpp"
 
+
+RemoteProcess::RemoteProcess() 
+{
+    struct stat st;
+    hasProcMem = stat("/proc/self/mem", &st) != 0;
+}
+
 /**
  * @brief Attach to a remote process
  * @param pid_t __pid to be attached inside the system
@@ -31,6 +38,23 @@ int RemoteProcess::openProcess(pid_t __pid)
 
     return status;
 }
+
+/**
+ * @brief Attach to a remote process
+ * @param pid_t __pid to be attached inside the system
+ * @return int
+ *
+ * if the current process is unable to attach to the target pid, it returns OPEN_FAIL
+ * if the remote process were attached successfully but it does not received the SIGSTOP signal
+ * it will also returns OPEN_FAIL, otherwise it will return OPEN_SUCCESS
+ */
+RemoteProcess::~RemoteProcess()
+{
+    if (status == OPEN_SUCCESS) {
+        ptrace(PTRACE_DETACH, proc.pid, NULL, NULL);
+    }
+}
+
 
 /**
  * @brief Read the memory of the remote process
@@ -97,6 +121,12 @@ int RemoteProcess::findMem(off_t start, Data *data, std::string find)
     if (status != OPEN_SUCCESS)
         return NOT_FOUND;
 
+
+    if (hasProcMem) {
+        std::cout << "Reading /proc/" << proc.pid << "/mem";
+    } else {
+        std::cout << "Using ptrace, will slow the process...";
+    }
     
     return READ_SUCCESS;
 }
@@ -126,3 +156,4 @@ uint8_t Data::read()
     curr = curr % size; // cyclic reading
     return buff[curr++];
 }
+

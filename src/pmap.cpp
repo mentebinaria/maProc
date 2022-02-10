@@ -298,7 +298,7 @@ bool Pmap::map_read(off_t __addr, unsigned int __type)
  *
  * @return int
  */
-int Pmap::map_find()
+int Pmap::map_find(unsigned int __size)
 {
     return 1;
 }

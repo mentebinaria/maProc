@@ -3,10 +3,12 @@
 #include <sys/types.h>
 #include <sys/ptrace.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <string>
 #include <iostream>
 
 #include "datastructs/erros.hpp"
+
 
 class Data
 {
@@ -32,10 +34,11 @@ private:
     } proc;
     
     int status;
-
+    bool hasProcMem;
+    
 protected:
-    RemoteProcess(){};
-    virtual ~RemoteProcess() {}
+    RemoteProcess();
+    virtual ~RemoteProcess();
 
     int openProcess(pid_t __pid);
     int readMem(off_t start, Data *data);

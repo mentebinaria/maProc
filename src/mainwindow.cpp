@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <QMessageBox>
+#include <limits>
 
 #define column_delete(__column)          \
     {                                    \
@@ -49,6 +50,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     // tables conf
     column_config_all();
+    
+
+    // Initialize var sizes
+
+   
+    typeSizes.insert(std::make_pair<std::string, <size_t, size_t>("char", sizeof(char), INT8_MAX));
+    // typeSizes.insert(std::make_pair<std::string, size_t>("int", sizeof(int)));
+    // typeSizes.insert(std::make_pair<std::string, size_t>("int8", sizeof(int8_t)));
+    // typeSizes.insert(std::make_pair<std::string, size_t>("int16", sizeof(int16_t)));
+    // typeSizes.insert(std::make_pair<std::string, size_t>("uint32", sizeof(uint32_t)));
+    // typeSizes.insert(std::make_pair<std::string, size_t>("uint64", sizeof(uint64_t)));
+    // typeSizes.insert(std::make_pair<std::string, size_t>("float", sizeof(float)));
+    // typeSizes.insert(std::make_pair<std::string, size_t>("string", sizeof(uint8_t)));
 }
 
 MainWindow::~MainWindow()
@@ -281,69 +295,27 @@ void MainWindow::on_newButton_triggered()
  */
 void MainWindow::on_searchButton_clicked()
 {
-    type = ui->type->currentIndex();
+    std::string varType = ui->type->currentText().toStdString();
+    
+    auto it = typeSizes.find(varType);
 
-    switch (type)
-    {
-    case CHAR:
-        mapper.map_find();
-        break;
-    case INT:
-        mapper.map_find();
-        break;
-    case INT8:
-        mapper.map_find();
-        break;
-    case INT16:
-        mapper.map_find();
-        break;
-    case UINT32:
-        mapper.map_find();
-        break;
-    case UINT64:
-        mapper.map_find();
-        break;
-    case FLOAT:
-        mapper.map_find();
-        break;
-    case STRING:
-        mapper.map_find();
-        break;
-    default:
-        throw std::runtime_error("Type not found");
+    if (it != typeSizes.end()) {
+        mapper.map_find(it->second, targetValue);
+    } else {
+         throw std::runtime_error("Type not found");
     }
+
 }
 
 void MainWindow::on_editButton_clicked()
 {
-    switch (type)
-    {
-    case CHAR:
-        mapper.map_write(0, sizeof(char));
-        break;
-    case INT:
-        mapper.map_write(0, sizeof(int));
-        break;
-    case INT8:
-        mapper.map_write(0, sizeof(int8_t));
-        break;
-    case INT16:
-        mapper.map_write(0, sizeof(int16_t));
-        break;
-    case UINT32:
-        mapper.map_write(0, sizeof(int32_t));
-        break;
-    case UINT64:
-        mapper.map_write(0, sizeof(int64_t));
-        break;
-    case FLOAT:
-        mapper.map_write(0, sizeof(float));
-        break;
-    case STRING:
-        mapper.map_write(0, sizeof(const char *));
-        break;
-    default:
-        throw std::runtime_error("Type not found");
+    std::string varType = ui->type->currentText().toStdString();
+    auto it = typeSizes.find(varType);
+
+    if (it != typeSizes.end()) {
+        mapper.map_write(0, it->second);
+    } else {
+         throw std::runtime_error("Type not found");
     }
 }
 
