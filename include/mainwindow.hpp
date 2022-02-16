@@ -48,6 +48,7 @@ private slots:
     void on_editButton_clicked();
     void on_view_address_cellDoubleClicked(int row, int column);
     void on_aboutButton_triggered();
+    
 
 private:
     int type;

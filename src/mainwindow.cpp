@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <QMessageBox>
+#include <limits>
 
 #define column_delete(__column)          \
     {                                    \
@@ -342,17 +343,6 @@ void MainWindow::on_editButton_clicked()
     else if (it == typeSizes.end())
         throw std::runtime_error("[ERROR] Error in code not possible find type\n verify unordered_map[TypeSizes]");
 }
-
-/**
- * @brief set value in label for edit value in address
- *
- * @param row
- * @param column
- */
-void MainWindow::on_view_address_cellDoubleClicked(int row, int column)
-{
-}
-
 /**
  * @brief about button for infos copyright and project information
  *
@@ -376,4 +366,9 @@ off_t MainWindow::valid_address_edit()
         address = static_cast<off_t>(std::stoul(address_edit, nullptr, 16));
 
     return address;
+}
+
+void MainWindow::on_view_address_cellDoubleClicked(int row, int column)
+{
+
 }

@@ -176,7 +176,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideRight</enum>
@@ -399,7 +399,7 @@
                </size>
               </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="page">
                <property name="geometry">
@@ -519,8 +519,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>116</width>
-                 <height>172</height>
+                 <width>118</width>
+                 <height>168</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -783,7 +783,7 @@
      <x>0</x>
      <y>0</y>
      <width>853</width>
-     <height>31</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuclean_2">
