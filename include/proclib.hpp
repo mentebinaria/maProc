@@ -8,6 +8,8 @@
 
 #include "datastructs/erros.hpp"
 
+#define BUFFER_MAX_ANALYTICS 65536
+
 class Data
 {
 public:
@@ -15,10 +17,11 @@ public:
     virtual ~Data();
     void write(uint8_t b);
     uint8_t read();
+    void clear();
     uint size;
+    uint8_t *buff;
 
 private:
-    uint8_t *buff;
     uint curr;
 };
 
@@ -29,6 +32,7 @@ private:
     {
         off_t baseAddr;
         pid_t pid;
+        
     } proc;
     
     int status;

@@ -6,3 +6,4 @@ bin/
 *.user*
 .vscode
 .gitignore
+*auto*

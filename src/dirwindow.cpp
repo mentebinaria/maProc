@@ -72,7 +72,7 @@ void DirWindow::on_pidTable_doubleClicked(const QModelIndex &index)
         pid =  std::stoi(index.model()->data(index).toString().toStdString());
     }
 
-    this->setVisible(false);
+    this->close();
 }
 
 /**

@@ -1,4 +1,24 @@
 #include "include/proclib.hpp"
+#include "include/filedescriptor.hpp"
+
+#include <string.h>
+
+/**
+ * @brief analytics memory
+ *
+ * @param __buffer memory
+ * @param __find search for
+ * @return int return  FOUND if found type, if not found NOT_FOUND
+ */
+int Analytics(char *__buffer, std::string __find)
+{
+    int status_exit = FOUND;
+
+    for (int i = 0; i <= BUFFER_MAX_ANALYTICS; i++)
+        printf("%c", __buffer[i]);
+
+    return status_exit;
+}
 
 /**
  * @brief Attach to a remote process
@@ -97,7 +117,15 @@ int RemoteProcess::findMem(off_t start, Data *data, std::string find)
     if (status != OPEN_SUCCESS)
         return NOT_FOUND;
 
-    
+    FileDescriptor FS;
+
+    // call back for analytics bin
+    int (*ptr)(char *buffer, std::string __find) = &Analytics;
+    std::string name = "/proc/" + std::to_string(proc.pid) + "/mem";
+
+    if (FS.readSeachFS(name, BUFFER_MAX_ANALYTICS, find, ptr, start) == READ_FAIL)
+        return READ_FAIL;
+
     return READ_SUCCESS;
 }
 
@@ -124,5 +152,11 @@ void Data::write(uint8_t b)
 uint8_t Data::read()
 {
     curr = curr % size; // cyclic reading
+    printf("%i", curr);
     return buff[curr++];
+}
+
+void Data::clear()
+{
+    memset(buff, 0, size);
 }

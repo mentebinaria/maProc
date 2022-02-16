@@ -27,28 +27,29 @@ void MainWindow::column_clean_all()
 }
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
-                                          ui(new Ui::MainWindow)
+                                          ui(new Ui::MainWindow),
+                                          pid(0)
 {
     ui->setupUi(this);
     setWindowTitle(TITLE_WINDOW);
     setWindowIcon(QIcon(ICON_WINDOW));
+    setMinimumWidth(500);
+    setMinimumHeight(500);
 
     // status bar conf default
     ui->statusBar->showMessage("No process is being mapped at this time");
+
     // get value type combo button
     type = ui->type->currentIndex();
 
     // buttons conf
-    conf_button_pass_pid();
-    conf_button_clean();
-    conf_button_search();
-    conf_button_close();
-    conf_button_edit();
-    conf_button_new();
-    conf_button_about();
+    conf_button_all();
 
     // tables conf
     column_config_all();
+
+    // set values for edit address and read
+    set_types_edit_read();
 }
 
 MainWindow::~MainWindow()
@@ -56,40 +57,30 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::conf_button_pass_pid()
+void MainWindow::conf_button_all()
 {
+    // buttons for pass pid
     ui->pidButton->setIcon(QIcon(ICON_PASS_PID));
     ui->pidButton_2->setIcon(QIcon(ICON_PASS_PID));
-}
 
-void MainWindow::conf_button_about()
-{
-    ui->aboutButton->setIcon(QIcon(ICON_ABOUT));
-}
-
-void MainWindow::conf_button_clean()
-{
+    // buttons for clean
     ui->cleanButton->setIcon(QIcon(ICON_CLEAN));
     ui->cleanButton2->setIcon(QIcon(ICON_CLEAN));
-}
 
-void MainWindow::conf_button_search()
-{
-    ui->searchButton->setIcon(QIcon(ICON_SEARCH));
-}
-
-void MainWindow::conf_button_close()
-{
+    // buttons for close
     ui->closeButton->setIcon(QIcon(ICON_CLOSE));
-}
+    ui->closeButton_2->setIcon(QIcon(ICON_CLOSE));
 
-void MainWindow::conf_button_edit()
-{
+    // search button
+    ui->searchButton->setIcon(QIcon(ICON_SEARCH));
+
+    // edit button
     ui->editButton->setIcon(QIcon(ICON_EDIT));
-}
 
-void MainWindow::conf_button_new()
-{
+    // about button
+    ui->aboutButton->setIcon(QIcon(ICON_ABOUT));
+
+    // new button
     ui->newButton->setIcon(QIcon(ICON_NEW));
 }
 
@@ -112,6 +103,7 @@ void MainWindow::Button_clicked()
     catch (std::exception &error)
     {
         QMessageBox::about(nullptr, "Warning", error.what());
+        return;
     }
 }
 
@@ -125,9 +117,12 @@ void MainWindow::on_pidButton_clicked()
     {
         pid = dir.getPid();
         if (pid == 0)
-            return;
+            break;
         else
+        {
+            column_clean_all();
             Button_clicked();
+        }
     }
 }
 
@@ -142,6 +137,8 @@ void MainWindow::verify_pid()
         pid_loginuid = QString::fromStdString(mapper.get_utilsPid(LOGINUID));
         pid_sizebin = QString::fromStdString(mapper.get_utilsPid(SIZEBIN));
         pid_wchan = QString::fromStdString(mapper.get_utilsPid(WCHAN));
+        pid_blksize = QString::fromStdString(mapper.get_utilsPid(BLOCKSIZEBIN));
+
         // tell the status bar which pid is being mapped
         ui->statusBar->showMessage("PID: " + QString::fromStdString(std::to_string(pid)) + " Name: " + pid_name);
     }
@@ -194,7 +191,8 @@ void MainWindow::set_values_column_utils()
 {
     // table files infos
     ui->infos_file->setItem(0, 0, new QTableWidgetItem("/proc/" + QString::fromStdString(std::to_string(pid)) + "/exe"));
-    ui->infos_file->setItem(0, 1, new QTableWidgetItem(pid_sizebin));
+    ui->infos_file->setItem(0, 1, new QTableWidgetItem(pid_sizebin + "B"));
+    ui->infos_file->setItem(0, 2, new QTableWidgetItem(pid_blksize + "B"));
 
     // table pid infos
     ui->infos_pid->setItem(0, 0, new QTableWidgetItem(pid_name));
@@ -230,6 +228,18 @@ void MainWindow::set_values_column_stack()
     ui->infos_addr->setItem(1, Size_map, new QTableWidgetItem(QString::number(mapper.get_sizeAddress())));
 }
 
+void MainWindow::set_types_edit_read()
+{
+    typeSizes.insert(std::make_pair<std::string, size_t>("char", sizeof(char)));
+    typeSizes.insert(std::make_pair<std::string, size_t>("int", sizeof(int)));
+    typeSizes.insert(std::make_pair<std::string, size_t>("int8", sizeof(int8_t)));
+    typeSizes.insert(std::make_pair<std::string, size_t>("int16", sizeof(int16_t)));
+    typeSizes.insert(std::make_pair<std::string, size_t>("uint32", sizeof(uint32_t)));
+    typeSizes.insert(std::make_pair<std::string, size_t>("uint64", sizeof(uint64_t)));
+    typeSizes.insert(std::make_pair<std::string, size_t>("float", sizeof(float)));
+    typeSizes.insert(std::make_pair<std::string, size_t>("string", sizeof(uint8_t)));
+}
+
 bool MainWindow::mapper_heap()
 {
     return mapper.map_mem("[heap]");
@@ -240,7 +250,12 @@ bool MainWindow::mapper_stack()
     return mapper.map_mem("[stack]");
 }
 
-void MainWindow::on_closeButton_triggered()
+void MainWindow::on_closeButton_2_triggered()
+{
+    on_closeButton_clicked();
+}
+
+void MainWindow::on_closeButton_clicked()
 {
     QMessageBox::StandardButton close = QMessageBox::question(this, "Close", "Close this Program ?", QMessageBox::Yes | QMessageBox::No);
     if (close == QMessageBox::Yes)
@@ -281,70 +296,51 @@ void MainWindow::on_newButton_triggered()
  */
 void MainWindow::on_searchButton_clicked()
 {
-    type = ui->type->currentIndex();
+    QTableWidgetItem *addr;
+    std::string varType = ui->type->currentText().toStdString();
+    std::string find = ui->find->text().toStdString();
+    std::size_t mem = ui->mem->currentIndex();
+    auto it = typeSizes.find(varType);
 
-    switch (type)
+    if (find.size() != 0 && pid != 0 && it != typeSizes.end())
     {
-    case CHAR:
-        mapper.map_find();
-        break;
-    case INT:
-        mapper.map_find();
-        break;
-    case INT8:
-        mapper.map_find();
-        break;
-    case INT16:
-        mapper.map_find();
-        break;
-    case UINT32:
-        mapper.map_find();
-        break;
-    case UINT64:
-        mapper.map_find();
-        break;
-    case FLOAT:
-        mapper.map_find();
-        break;
-    case STRING:
-        mapper.map_find();
-        break;
-    default:
-        throw std::runtime_error("Type not found");
+        switch (mem)
+        {
+        case 0: // stack
+            addr = ui->infos_addr->item(1, 0);
+            if (mapper.map_find(static_cast<off_t>(std::stoul(addr->text().toStdString(), nullptr, 16)), find, it->second) == READ_FAIL)
+                QMessageBox::critical(nullptr, "ERROR", "Not possible read memory check offset");
+            break;
+        case 1: // heap
+            addr = ui->infos_addr->item(0, 0);
+            if (mapper.map_find(static_cast<off_t>(std::stoul(addr->text().toStdString(), nullptr, 16)), find, it->second) == READ_FAIL)
+                QMessageBox::critical(nullptr, "ERROR", "Not possible read memory check offset");
+            break;
+        case 2: // all
+            break;
+
+        default:
+            return;
+        }
     }
+    else if (it == typeSizes.end())
+        throw std::runtime_error("[ERROR] Error in code not possible find type\n verify unordered_map[TypeSizes]");
 }
 
+/**
+ * @brief edit address value
+ *
+ */
 void MainWindow::on_editButton_clicked()
 {
-    switch (type)
-    {
-    case CHAR:
-        mapper.map_write(0, sizeof(char));
-        break;
-    case INT:
-        mapper.map_write(0, sizeof(int));
-        break;
-    case INT8:
-        mapper.map_write(0, sizeof(int8_t));
-        break;
-    case INT16:
-        mapper.map_write(0, sizeof(int16_t));
-        break;
-    case UINT32:
-        mapper.map_write(0, sizeof(int32_t));
-        break;
-    case UINT64:
-        mapper.map_write(0, sizeof(int64_t));
-        break;
-    case FLOAT:
-        mapper.map_write(0, sizeof(float));
-        break;
-    case STRING:
-        mapper.map_write(0, sizeof(const char *));
-        break;
-    default:
-        throw std::runtime_error("Type not found");
-    }
+    off_t address = valid_address_edit();
+    std::string varType = ui->type->currentText().toStdString();
+    auto it = typeSizes.find(varType);
+
+    if (it != typeSizes.end() && address != 0 && pid != 0)
+        mapper.map_write(address, it->second);
+    else if (it == typeSizes.end())
+        throw std::runtime_error("[ERROR] Error in code not possible find type\n verify unordered_map[TypeSizes]");
 }
 
 /**
@@ -363,4 +359,21 @@ void MainWindow::on_view_address_cellDoubleClicked(int row, int column)
  */
 void MainWindow::on_aboutButton_triggered()
 {
+}
+
+/**
+ * @brief
+ *
+ * @return off_t if address valid return offset, else address not valid return 0
+ */
+off_t MainWindow::valid_address_edit()
+{
+    std::string address_edit = ui->address_edit->text().toStdString();
+    off_t address = 0;
+    if (address_edit == "null")
+        QMessageBox::critical(nullptr, "ERROR", "Address NULL not valid, set address valid for search/edit value");
+    else
+        address = static_cast<off_t>(std::stoul(address_edit, nullptr, 16));
+
+    return address;
 }

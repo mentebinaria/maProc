@@ -5,23 +5,12 @@
 #include <unordered_map>
 
 #include "proclib.hpp"
-#include "include/datastructs/utils.hpp"
+#include "datastructs/utils.hpp"
+#include "datastructs/utils_pid.hpp"
+#include "include/filedescriptor.hpp"
 
 #define PROC "/proc/"
 #define MAPS "/maps"
-
-/**
- * @brief class for len pseudos files /proc
- * 
- */
-class FileDescriptor
-{
-public:
-    FileDescriptor();
-    ~FileDescriptor();
-    long readFS(std::string __name, std::string &__buffer,
-               long __nblock, bool __blockn2);
-};
 
 /**
  * @brief manipulation of process 
@@ -33,7 +22,7 @@ private:
     FileDescriptor FS;
     std::string maps_buf;
 
-    void split_mem_address(std::string __foo);
+    void split_mem_address(std::string __foo); 
 
     struct Infos
     {
@@ -52,11 +41,11 @@ public:
     bool map_mem(std::string __mem);
 
     bool map_write(off_t __addr, unsigned int __type);
-    bool map_read(off_t __addr, unsigned int __type);
-    int  map_find();
+    bool map_read(off_t __addr, unsigned int __type, Data &__data);
+    off_t  map_find(off_t __addr, std::string __find, uint8_t __type);
 
     off_t get_addrOn() const;
     off_t get_addrOff() const;
     off_t get_sizeAddress();
-    std::string get_utilsPid(int __utils);
+    std::string get_utilsPid(uint8_t __utils);
 };

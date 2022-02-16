@@ -1,90 +1,14 @@
 #include <dirent.h>
 #include <sys/ptrace.h>
-#include <sstream>
 #include <unistd.h>
 #include <sys/types.h>
 #include <fcntl.h>
 #include <string.h>
 #include <stdexcept>
-#include <sys/mman.h>
+#include <sys/stat.h>
 
 #include "include/pmap.hpp"
 #include "include/datastructs/erros.hpp"
-
-/**
- * @brief Construct a new File Descriptor:: File Descriptor object
- *
- */
-FileDescriptor::FileDescriptor()
-{
-}
-
-/**
- * @brief Destroy the File Descriptor:: File Descriptor object
- *
- */
-FileDescriptor::~FileDescriptor()
-{
-}
-
-/**
- * @brief this method will read the entire past file
- *
- * @param __name name for read file
- * @param __buffer in which variable will you store
- * @param __nblock block size for reading
- * @param __blockn2 if this option is turned on the block size will multiply by 2 per __nblock
- *
- * @return if reading file success return size else if not len READ_FAIL not open file return OPEN_FAIL
- */
-long FileDescriptor::readFS(std::string __name, std::string &__buffer,
-                            long __nblock = 256, bool __blockn2 = true)
-{
-    CLEAR_STRING(__buffer)
-
-    long status_exit = 0;
-
-    off_t nblock = __nblock;
-    const char *name = __name.data();
-
-    __buffer.reserve(__nblock);
-    int FS = open(name, O_RDONLY);
-    if (FS > 0)
-    {
-        do
-        {
-            char buffer[nblock];
-            memset(buffer, 0, sizeof(buffer)); // clean buffer array
-
-            if (read(FS, buffer, sizeof(buffer)) == 0)
-                break;
-
-            __buffer += buffer; // save block in variable __buffer
-
-            // increase the bytes of the block thus decreasing the read cycles
-            // it could possibly end up exceeding the file buffer limit by allocating more than necessary
-            (__blockn2) ? nblock += __nblock : nblock;
-
-        } while (FS != EOF);
-
-        status_exit = __buffer.size();
-
-        if (__buffer.size() == 0)
-        {
-            status_exit = READ_FAIL;
-            throw std::runtime_error("Not possible read file, check permission " + __name);
-        }
-
-        close(FS);
-    }
-    else
-    {
-        status_exit = OPEN_FAIL;
-        throw std::runtime_error("Error open file" + __name);
-    }
-
-    return status_exit;
-}
 
 /**
  * @brief function verify pid for passed in user
@@ -207,6 +131,7 @@ Pmap::Pmap()
  */
 Pmap::~Pmap()
 {
+    CLEAR_STRING(maps_buf);
 }
 
 /**
@@ -227,7 +152,7 @@ int Pmap::map_pid(pid_t __pid)
     std::string pid_str = std::to_string(infos.pid);
     std::string fmaps = PROC + pid_str + MAPS;
 
-    FS.readFS(fmaps, maps_buf, 1024);
+    FS.readFS(fmaps, maps_buf, 2048, true);
 
     if (maps_buf.size() == 0)
     {
@@ -284,23 +209,30 @@ bool Pmap::map_write(off_t __addr, unsigned int __type)
  *  @param __off for end address mapped
  *  @return void
  */
-bool Pmap::map_read(off_t __addr, unsigned int __type)
+bool Pmap::map_read(off_t __addr, unsigned int __type, Data &__data)
 {
+    bool status_exit = false;
     Data data(__type);
-    RemoteProcess::readMem(__addr, &data);
 
-    std::cout << (char)data.read() << std::endl;
-    return true;
+    if (RemoteProcess::readMem(__addr, &data) != READ_FAIL)
+    {
+        status_exit = true;
+        __data = data;
+    }
+
+    return status_exit;
 }
 
 /**
  * @brief
  *
- * @return int
+ * @return off_t address in find type
  */
-int Pmap::map_find()
+off_t Pmap::map_find(off_t __addr, std::string __find, uint8_t __type)
 {
-    return 1;
+    Data data(__type);
+
+    return RemoteProcess::findMem(__addr, &data, __find);
 }
 
 /**
@@ -342,42 +274,50 @@ off_t Pmap::get_sizeAddress()
  * @param __utils parameter used to get the pid information
  * @return std::string
  */
-std::string Pmap::get_utilsPid(int __utils)
+std::string Pmap::get_utilsPid(uint8_t __utils)
 {
     std::string buffer = " ";
     std::string pid_str = std::to_string(infos.pid);
     std::string name = PROC + pid_str;
+    struct stat stats;
 
     switch (__utils)
     {
     case NAME:
         name += "/comm";
-        FS.readFS(name, buffer, 20);
+        FS.readFS(name, buffer, 10);
         break;
 
     case WCHAN:
         name += "/wchan";
-        FS.readFS(name, buffer, 30);
+        FS.readFS(name, buffer, 10);
         break;
 
     case SESSIONID:
         name += "/sessionid";
-        FS.readFS(name, buffer, 20);
+        FS.readFS(name, buffer, 10);
         break;
 
     case CMDLINE:
         name += "/cmdline";
-        FS.readFS(name, buffer, 20);
+        FS.readFS(name, buffer, 10);
         break;
 
     case LOGINUID:
         name += "/loginuid";
-        FS.readFS(name, buffer, 20);
+        FS.readFS(name, buffer, 10);
         break;
 
     case SIZEBIN:
         name += "/exe";
-        buffer = std::to_string(FS.readFS(name, buffer, 4098));
+        if (stat(name.data(), &stats) == 0)
+            buffer = std::to_string(stats.st_size);
+        break;
+
+    case BLOCKSIZEBIN:
+        name += "/exe";
+        if (stat(name.data(), &stats) == 0)
+            buffer = std::to_string(stats.st_blksize);
         break;
 
     default:

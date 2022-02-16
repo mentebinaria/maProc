@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
-set(CMAKE_CXX_FLAGS "-mavx  -Wall -Werror -fno-stack-protector -march=native -O2 -Os  -fdelete-null-pointer-checks -fdelete-dead-exceptions")
+set(CMAKE_CXX_FLAGS "-mavx   -fno-stack-protector -march=native -O2 -Os  -fdelete-null-pointer-checks -fdelete-dead-exceptions")
 set(PROJECT_SOURCES
 
         src/main.cpp
@@ -22,6 +22,9 @@ set(PROJECT_SOURCES
         
         include/ps.hpp
         src/ps.cpp
+
+        include/filedescriptor.hpp
+        src/filedescriptor.cpp
         
         include/pmap.hpp
         src/pmap.cpp
@@ -39,28 +42,16 @@ set(PROJECT_SOURCES
         src/dirwindow.cpp
         src/gui/dirwindow.ui
 )
+add_executable(maProc
+        ${PROJECT_SOURCES}
+)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(maProc
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET maProc APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
-else()
-    if(ANDROID)
-        add_library(maProc SHARED
-            ${PROJECT_SOURCES}
-        )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-    else()
-        add_executable(maProc
-            ${PROJECT_SOURCES}
-        )
-    endif()
+
 endif()
 
 target_link_libraries(maProc PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
