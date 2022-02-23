@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * this file descriptor was created in order to read "peseudos files"
+ * this file descriptor was created in order to read 'peseudos files'
  * from linux as we are parsing /proc/*, we created this filedescriptor
  * to make it easy to manipulate linux files
  */
@@ -19,6 +19,4 @@ public:
     ~FileDescriptor();
 
     long readFS(std::string __name, std::string &__buffer, long __nblock, bool __blockn2 = false);
-    int readSeachFS(std::string __name, long __nblock, std::string __find,
-                    int(Analysis)(char *__buffer, std::string __find), off_t __offset);
 };

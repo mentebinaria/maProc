@@ -77,7 +77,7 @@ static void search_line(std::string __find, std::string &__load, std::string &__
 
  * @return void
  */
-void Pmap::split_mem_address(std::string __foo)
+void Pmap::split_mem_address(std::string &__foo)
 {
     // get address start
     std::string addr_on;
@@ -97,20 +97,18 @@ void Pmap::split_mem_address(std::string __foo)
             break;
     }
 
-    // convert string to off_t
-    off_t addr_off_long = static_cast<off_t>(std::stoul(addr_off, nullptr, 16));
-    off_t addr_on_long = static_cast<off_t>(std::stoul(addr_on, nullptr, 16));
+    // convert string to unsigned int
+    unsigned int addr_off_long = std::stoul(addr_off, nullptr, 16);
+    unsigned int addr_on_long = std::stoul(addr_on, nullptr, 16);
 
-    if (addr_on.size() == 0 || addr_on.size() == 0)
+    if (addr_on.size() == 0 || addr_off.size() == 0)
     {
         throw std::runtime_error("Error not split address_on and address_off");
         return;
     }
     else
-    {
-        infos.addr_on = addr_on_long;
-        infos.addr_off = addr_off_long;
-    }
+        infos.addr_on = (off_t)addr_on_long, infos.addr_off = (off_t)addr_off_long;
+
     CLEAR_STRING(__foo)
 }
 
@@ -196,7 +194,7 @@ bool Pmap::map_mem(std::string __mem)
  *  @param __val pass value for modify
  *  @return bool
  */
-bool Pmap::map_write(off_t __addr, unsigned int __type)
+bool Pmap::map_write(off_t __addr, uint8_t __type)
 {
     Data data(__type);
     RemoteProcess::readMem(__addr, &data);
@@ -209,7 +207,7 @@ bool Pmap::map_write(off_t __addr, unsigned int __type)
  *  @param __off for end address mapped
  *  @return void
  */
-bool Pmap::map_read(off_t __addr, unsigned int __type, Data &__data)
+bool Pmap::map_read(off_t __addr, uint8_t __type, Data &__data)
 {
     bool status_exit = false;
     Data data(__type);
@@ -226,13 +224,16 @@ bool Pmap::map_read(off_t __addr, unsigned int __type, Data &__data)
 /**
  * @brief
  *
- * @return off_t address in find type
+ * @return int
  */
-off_t Pmap::map_find(off_t __addr, std::string __find, uint8_t __type)
+int Pmap::map_find(off_t __addr, off_t __length, std::string __find, uint8_t __type, std::vector<off_t> &__offsets)
 {
-    Data data(__type);
+    return RemoteProcess::findMem(__addr, __length, __type, __find, __offsets);
+}
 
-    return RemoteProcess::findMem(__addr, &data, __find);
+void Pmap::map_close()
+{
+    RemoteProcess::closePid();
 }
 
 /**
@@ -261,15 +262,14 @@ off_t Pmap::get_addrOff() const
  * @brief get address size mapped
  * @return size_t
  */
-off_t Pmap::get_sizeAddress()
+uint64_t Pmap::get_sizeAddress()
 {
     return infos.addr_off - infos.addr_on;
 }
 
 /**
  * @brief take the pid utility as an example, the name of the pid,
- * just pass it as a NAME parameter,
- * which will return the process name
+ * just pass it as a NAME parameter, which will return the process name
  *
  * @param __utils parameter used to get the pid information
  * @return std::string
@@ -285,27 +285,27 @@ std::string Pmap::get_utilsPid(uint8_t __utils)
     {
     case NAME:
         name += "/comm";
-        FS.readFS(name, buffer, 10);
+        FS.readFS(name, buffer, BUFFER_READ_UTILS);
         break;
 
     case WCHAN:
         name += "/wchan";
-        FS.readFS(name, buffer, 10);
+        FS.readFS(name, buffer, BUFFER_READ_UTILS);
         break;
 
     case SESSIONID:
         name += "/sessionid";
-        FS.readFS(name, buffer, 10);
+        FS.readFS(name, buffer, BUFFER_READ_UTILS);
         break;
 
     case CMDLINE:
         name += "/cmdline";
-        FS.readFS(name, buffer, 10);
+        FS.readFS(name, buffer, BUFFER_READ_UTILS);
         break;
 
     case LOGINUID:
         name += "/loginuid";
-        FS.readFS(name, buffer, 10);
+        FS.readFS(name, buffer, BUFFER_READ_UTILS);
         break;
 
     case SIZEBIN:

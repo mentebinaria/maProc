@@ -3,6 +3,7 @@
 #include <sstream>
 #include <dirent.h>
 #include <iostream>
+#include <string.h>
 
 /**
  * @brief Construct a new Ps:: Ps object
@@ -29,7 +30,7 @@ Ps::~Ps()
  *
  * @return OPEN_FAIL is /proc not opened else return OPEN_SUCCESS
  */
-int Ps::Reading_DirProcess(std::unordered_map<std::string,std::string> &umap)
+int Ps::Reading_DirProcess(std::unordered_map<std::string, std::string> &umap)
 {
     umap.clear();
 
@@ -45,17 +46,20 @@ int Ps::Reading_DirProcess(std::unordered_map<std::string,std::string> &umap)
 
     while ((dir_read = readdir(dir)) != nullptr)
     {
-        std::string str = PROC + std::string(dir_read->d_name) + COMM;
-
-        FS.open(str);
-        if (FS.is_open())
+        std::string name;
+        if (strcmp(dir_read->d_name, "self") && strcmp(dir_read->d_name, "thread-self"))
         {
-            getline(FS, str);
-            (str.size() == 0) ? str = "NF" : str;
-            
-            umap.insert(std::make_pair(str, dir_read->d_name));
-
-            FS.close();
+            name = PROC + std::string(dir_read->d_name) + COMM;
+            try
+            {
+                readFS(name, name, 24);
+                (name.size() == 0) ? name = "NF" : name;
+                umap.insert(std::make_pair(name, dir_read->d_name));
+            }
+            catch (std::exception &error)
+            {
+                name.clear();
+            }
         }
     }
 

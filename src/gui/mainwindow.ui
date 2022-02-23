@@ -102,7 +102,7 @@
         <property name="minimumSize">
          <size>
           <width>100</width>
-          <height>100</height>
+          <height>160</height>
          </size>
         </property>
         <property name="maximumSize">
@@ -137,6 +137,50 @@
            </property>
            <property name="text">
             <string>CLEAN</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="hexButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>70</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>HEX</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="rpidButton">
+           <property name="minimumSize">
+            <size>
+             <width>40</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>70</width>
+             <height>50</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>RPID</string>
            </property>
           </widget>
          </item>
@@ -176,7 +220,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideRight</enum>
@@ -208,7 +252,7 @@
                <x>0</x>
                <y>0</y>
                <width>710</width>
-               <height>502</height>
+               <height>504</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -407,7 +451,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>116</width>
-                 <height>190</height>
+                 <height>169</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -519,8 +563,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>118</width>
-                 <height>168</height>
+                 <width>116</width>
+                 <height>192</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -538,8 +582,10 @@
                  <widget class="QLabel" name="address_edit">
                   <property name="font">
                    <font>
-                    <family>Fira Code Light</family>
-                    <pointsize>8</pointsize>
+                    <family>Fira Code</family>
+                    <pointsize>9</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
                    </font>
                   </property>
                   <property name="cursor">
@@ -616,7 +662,7 @@
                <x>0</x>
                <y>0</y>
                <width>555</width>
-               <height>547</height>
+               <height>549</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -783,7 +829,7 @@
      <x>0</x>
      <y>0</y>
      <width>853</width>
-     <height>22</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuclean_2">
@@ -838,5 +884,25 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>view_address</sender>
+   <signal>itemDoubleClicked(QTableWidgetItem*)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>view_address_table(QTableWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>202</x>
+     <y>258</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>113</x>
+     <y>227</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>view_address_table(QTableWidgetItem*)</slot>
+ </slots>
 </ui>

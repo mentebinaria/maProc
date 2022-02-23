@@ -45,13 +45,13 @@ void DirWindow::Set_pidTable(void)
 
     if (dir_read == OPEN_SUCCESS)
     {
-        for (auto x : umap)
+        for (auto &x : umap)
         {
-            int rowCount = ui->pidTable->rowCount();
-            
-            ui->pidTable->insertRow(rowCount);
-            ui->pidTable->setItem(rowCount - 1, Pid, new QTableWidgetItem(QString(QString::fromStdString(x.second))));
-            ui->pidTable->setItem(rowCount - 1, Name, new QTableWidgetItem(QString(QString::fromStdString(x.first))));
+            ui->pidTable->insertRow(ui->pidTable->rowCount());
+            int rowCount = ui->pidTable->rowCount() - 1;
+
+            ui->pidTable->setItem(rowCount, Pid, new QTableWidgetItem(QString(QString::fromStdString(x.second))));
+            ui->pidTable->setItem(rowCount, Name, new QTableWidgetItem(QString(QString::fromStdString(x.first))));
         }
     }
 }
@@ -63,16 +63,7 @@ void DirWindow::Set_pidTable(void)
  */
 void DirWindow::on_pidTable_doubleClicked(const QModelIndex &index)
 {
-    try
-    {
-        pid = std::stoi(umap[index.model()->data(index).toString().toStdString()]);
-    }
-    catch (std::exception &e)
-    {
-        pid =  std::stoi(index.model()->data(index).toString().toStdString());
-    }
-
-    this->close();
+    setPid(index.model()->data(index).toString());
 }
 
 /**
@@ -83,4 +74,18 @@ void DirWindow::on_pidTable_doubleClicked(const QModelIndex &index)
 pid_t DirWindow::getPid()
 {
     return pid;
+}
+
+void DirWindow::setPid(QString __pid)
+{
+    try
+    {
+        pid = std::stoi(umap[__pid.toStdString()]);
+    }
+    catch (std::exception &e)
+    {
+        pid = std::stoi(__pid.toStdString());
+    }
+
+    close();
 }

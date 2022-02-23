@@ -4,14 +4,13 @@
 #include <unordered_map>
 
 #include "include/datastructs/erros.hpp"
+#include "include/filedescriptor.hpp"
 
 #define PROC "/proc/"
 #define COMM "/comm"
 
-class Ps
+class Ps : public FileDescriptor
 {
-private:
-    std::fstream FS;
 
 public:
     Ps();

@@ -1,23 +1,65 @@
 #include "include/proclib.hpp"
 #include "include/filedescriptor.hpp"
 
+#include <unordered_map>
 #include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <limits.h>
 
 /**
- * @brief analytics memory
+ * @brief analyze memory
  *
- * @param __buffer memory
- * @param __find search for
- * @return int return  FOUND if found type, if not found NOT_FOUND
+ * @param __buffer
+ * @param __find
+ * @param __offset
+ * @param __type
+ * @return int
  */
-int Analytics(char *__buffer, std::string __find)
+int RemoteProcess::Analyse(char *__buffer, std::string __find, off_t __offset, uint8_t __type, off_t lenght, std::vector<off_t> &offset)
 {
-    int status_exit = FOUND;
+    switch (__type)
+    {
+    case sizeof(char):
+        offset.clear();
+        for (off_t i = 0; i != lenght; i++)
+        {
+            __offset++;
+            if (__buffer[i] == __find[0])
+                offset.push_back(__offset);
+        }
+        break;
+    case sizeof(int):
+        offset.clear();
+        {
+            try
+            {
+                int find = std::stoi(__find);
+                if (find < INT_MAX)
+                {
+                    for (off_t i = 0; i != lenght; i++)
+                    {
+                        __offset++;
+                        if ((int)__buffer[i] == find)
+                            offset.push_back(__offset);
+                    }
+                }
+            }
+            catch (std::exception &error)
+            {
+                throw std::runtime_error("Error, caracter '" + __find + "' not valid");
+            }
+        }
+        break;
+    case sizeof(uint16_t):
+        break;
 
-    for (int i = 0; i <= BUFFER_MAX_ANALYTICS; i++)
-        printf("%c", __buffer[i]);
-
-    return status_exit;
+    default:
+        break;
+    }
+    return 0;
 }
 
 RemoteProcess::RemoteProcess()
@@ -70,9 +112,7 @@ int RemoteProcess::openProcess(pid_t __pid)
 RemoteProcess::~RemoteProcess()
 {
     if (status == OPEN_SUCCESS)
-    {
         ptrace(PTRACE_DETACH, proc.pid, NULL, NULL);
-    }
 }
 
 /**
@@ -135,21 +175,59 @@ int RemoteProcess::writeMem(off_t start, Data *data)
  * @param data if found, it will be stored in data
  * @return int
  */
-int RemoteProcess::findMem(off_t start, Data *data, std::string find)
+int RemoteProcess::findMem(off_t start, off_t length, uint8_t type, std::string find, std::vector<off_t> &offsets)
 {
     if (status != OPEN_SUCCESS)
         return NOT_FOUND;
 
-    FileDescriptor FS;
-
     // call back for analytics bin
-    int (*ptr)(char *buffer, std::string __find) = &Analytics;
-    std::string name = "/proc/" + std::to_string(proc.pid) + "/mem";
+    if (!hasProcMem)
+    {
+        std::string name = PROC + std::to_string(proc.pid) + "/mem";
+        int fd = open(name.data(), O_RDONLY);
+        if (fd > 0)
+        {
+            char *buffer;
+            try
+            {
+                buffer = new char[length];
+                memset(buffer, 0, length); // clear memory for allocation
+                ssize_t read = pread(fd, buffer, length, start);
+                if (read == -1)
+                    return READ_FAIL;
 
-    if (FS.readSeachFS(name, BUFFER_MAX_ANALYTICS, find, ptr, start) == READ_FAIL)
+                Analyse(buffer, find, start, type, length, offsets);
+            }
+            catch (std::exception &error)
+            {
+                throw std::runtime_error(error.what());
+                delete[] buffer;
+                return READ_FAIL;
+            }
+
+            close(fd);
+            delete[] buffer;
+        }
+        else
+        {
+            throw std::runtime_error("Error not open file " + name);
+            return OPEN_FAIL;
+        }
+        // close and delete buffer mem
+    }
+    else
+    {
+        throw std::runtime_error("Not supported find memory, directory /mem not found, \n maProc not support for read mem with ptrace");
         return READ_FAIL;
+    }
 
     return READ_SUCCESS;
+}
+
+void RemoteProcess::closePid()
+{
+    if (status == OPEN_SUCCESS)
+        ptrace(PTRACE_DETACH, proc.pid, NULL, NULL);
 }
 
 Data::Data(uint __size)

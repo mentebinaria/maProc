@@ -14,7 +14,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
-set(CMAKE_CXX_FLAGS "-mavx   -fno-stack-protector -march=native -O2 -Os  -fdelete-null-pointer-checks -fdelete-dead-exceptions")
+set(CMAKE_CXX_FLAGS "-mavx -fno-stack-protector -march=native -O2 -Os  -fdelete-null-pointer-checks -fdelete-dead-exceptions")
+
+
 set(PROJECT_SOURCES
 
         src/main.cpp

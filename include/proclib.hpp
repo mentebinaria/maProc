@@ -6,10 +6,11 @@
 #include <sys/stat.h>
 #include <string>
 #include <iostream>
+#include <vector>
 
 #include "datastructs/erros.hpp"
 
-#define BUFFER_MAX_ANALYTICS 65536
+#define PROC "/proc/"
 
 class Data
 {
@@ -33,18 +34,20 @@ private:
     {
         off_t baseAddr;
         pid_t pid;
-        
+
     } proc;
-    
+
     int status;
     bool hasProcMem;
-    
+
 protected:
     RemoteProcess();
     virtual ~RemoteProcess();
 
+    int Analyse(char *__buffer, std::string __find, off_t __offset, uint8_t __type, off_t lenght, std::vector<off_t> &offset);
     int openProcess(pid_t __pid);
     int readMem(off_t start, Data *data);
     int writeMem(off_t start, Data *data);
-    int findMem(off_t start, Data *data, std::string find);
+    int findMem(off_t start, off_t length, uint8_t type, std::string find, std::vector<off_t> &offsets);
+    void closePid();
 };

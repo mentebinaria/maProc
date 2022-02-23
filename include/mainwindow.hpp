@@ -3,6 +3,7 @@
 #include <QMainWindow>
 #include <QDialog>
 #include <unordered_map>
+#include <QTableWidgetItem>
 
 #include "include/ps.hpp"
 #include "include/pmap.hpp"
@@ -20,9 +21,10 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void Button_clicked();
+    void mainMapper();
 
 private slots:
+
     void verify_pid();
     bool mapper_heap();
     bool mapper_stack();
@@ -33,6 +35,8 @@ private slots:
     void column_clean_all();
     void column_config_all();
     void set_values_column_utils();
+    void set_values_column_address(std::vector<off_t> &offset, std::string value, std::string memory);
+    void view_address_table(QTableWidgetItem *p_first);
     void set_values_column_heap();
     void set_values_column_stack();
     void set_types_edit_read();
@@ -46,9 +50,8 @@ private slots:
     void on_pidButton_2_triggered();
     void on_newButton_triggered();
     void on_editButton_clicked();
-    void on_view_address_cellDoubleClicked(int row, int column);
     void on_aboutButton_triggered();
-    
+    void on_rpidButton_clicked();
 
 private:
     int type;
