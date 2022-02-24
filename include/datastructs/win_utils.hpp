@@ -20,7 +20,8 @@
 enum Heap_Stack
 {
     Address,
-    Value
+    Value,
+    Memory
 };
 
 /**
@@ -31,16 +32,4 @@ enum Infos
     Address_on,
     Address_off,
     Size_map
-};
-
-enum Types
-{
-    CHAR,
-    INT,
-    INT8,
-    INT16,
-    UINT32,
-    UINT64,
-    FLOAT,
-    STRING
 };

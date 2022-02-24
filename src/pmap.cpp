@@ -234,6 +234,7 @@ int Pmap::map_find(off_t __addr, off_t __length, std::string __find, uint8_t __t
 void Pmap::map_close()
 {
     RemoteProcess::closePid();
+    RemoteProcess::proc.pid = 0;
 }
 
 /**

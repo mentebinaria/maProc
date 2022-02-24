@@ -30,6 +30,10 @@ private:
 class RemoteProcess
 {
 private:
+    int status;
+    bool hasProcMem;
+
+protected:
     struct Process
     {
         off_t baseAddr;
@@ -37,10 +41,6 @@ private:
 
     } proc;
 
-    int status;
-    bool hasProcMem;
-
-protected:
     RemoteProcess();
     virtual ~RemoteProcess();
 

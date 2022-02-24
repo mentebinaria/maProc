@@ -344,11 +344,14 @@ void MainWindow::on_searchButton_clicked()
 
                 try
                 {
-                    mapper.map_find(address_start, lenght, find, it->second, offsets);
+                    if (mapper.map_find(address_start, lenght, find, it->second, offsets) == READ_FAIL)
+                    {
+                        QMessageBox::critical(nullptr, "Fail Read", "Not read memory, error in start  0x" + QString::number(address_start, 16));
+                    }
                 }
                 catch (std::exception &error)
                 {
-                    QMessageBox::critical(nullptr, "Not read", error.what());
+                    QMessageBox::critical(nullptr, "Not Read", error.what());
                 }
 
                 if (offsets.size() != 0)
@@ -366,11 +369,14 @@ void MainWindow::on_searchButton_clicked()
 
                 try
                 {
-                    mapper.map_find(address_start, lenght, find, it->second, offsets);
+                    if (mapper.map_find(address_start, lenght, find, it->second, offsets) == READ_FAIL)
+                    {
+                        QMessageBox::critical(nullptr, "Fail Read", "Not read memory, error in start  0x" + QString::number(address_start, 16));
+                    }
                 }
                 catch (std::exception &error)
                 {
-                    QMessageBox::critical(nullptr, "Not read", error.what());
+                    QMessageBox::critical(nullptr, "Not Read", error.what());
                 }
 
                 if (offsets.size() != 0)
@@ -455,9 +461,9 @@ void MainWindow::set_values_column_address(std::vector<off_t> &offset, std::stri
         int rowCount = ui->view_address->rowCount() - 1;
         QString addr = QString::number(offset.back(), 16);
 
-        ui->view_address->setItem(rowCount, 0, new QTableWidgetItem("0x" + addr));
-        ui->view_address->setItem(rowCount, 1, new QTableWidgetItem(QString(QString::fromStdString(value))));
-        ui->view_address->setItem(rowCount, 2, new QTableWidgetItem(QString(QString::fromStdString(memory))));
+        ui->view_address->setItem(rowCount, Address, new QTableWidgetItem("0x" + addr));
+        ui->view_address->setItem(rowCount, Value, new QTableWidgetItem(QString(QString::fromStdString(value))));
+        ui->view_address->setItem(rowCount, Memory, new QTableWidgetItem(QString(QString::fromStdString(memory))));
 
         offset.pop_back();
     }

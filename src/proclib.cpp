@@ -24,12 +24,17 @@ int RemoteProcess::Analyse(char *__buffer, std::string __find, off_t __offset, u
     {
     case sizeof(char):
         offset.clear();
-        for (off_t i = 0; i != lenght; i++)
+        if (!isdigit(__find[0]) && __find.size() == 1)
         {
-            __offset++;
-            if (__buffer[i] == __find[0])
-                offset.push_back(__offset);
+            for (off_t i = 0; i != lenght; i++)
+            {
+                if (__buffer[i] == __find[0])
+                    offset.push_back(__offset);
+                __offset++;
+            }
         }
+        else
+            throw std::runtime_error("Error, caracter '" + __find + "' not valid");
         break;
     case sizeof(int):
         offset.clear();
@@ -41,9 +46,9 @@ int RemoteProcess::Analyse(char *__buffer, std::string __find, off_t __offset, u
                 {
                     for (off_t i = 0; i != lenght; i++)
                     {
-                        __offset++;
                         if ((int)__buffer[i] == find)
                             offset.push_back(__offset);
+                        __offset++;
                     }
                 }
             }
@@ -195,8 +200,8 @@ int RemoteProcess::findMem(off_t start, off_t length, uint8_t type, std::string 
                 ssize_t read = pread(fd, buffer, length, start);
                 if (read == -1)
                     return READ_FAIL;
-
-                Analyse(buffer, find, start, type, length, offsets);
+                else
+                    Analyse(buffer, find, start, type, length, offsets);
             }
             catch (std::exception &error)
             {
@@ -213,11 +218,10 @@ int RemoteProcess::findMem(off_t start, off_t length, uint8_t type, std::string 
             throw std::runtime_error("Error not open file " + name);
             return OPEN_FAIL;
         }
-        // close and delete buffer mem
     }
     else
     {
-        throw std::runtime_error("Not supported find memory, directory /mem not found, \n maProc not support for read mem with ptrace");
+        throw std::runtime_error("Not supported find memory, directory 'proc/" + std::to_string(proc.pid) + "/mem' not found, \n maProc not support for read mem with ptrace");
         return READ_FAIL;
     }
 
@@ -226,7 +230,7 @@ int RemoteProcess::findMem(off_t start, off_t length, uint8_t type, std::string 
 
 void RemoteProcess::closePid()
 {
-    if (status == OPEN_SUCCESS)
+    if (status == OPEN_SUCCESS && proc.pid != 0)
         ptrace(PTRACE_DETACH, proc.pid, NULL, NULL);
 }
 
