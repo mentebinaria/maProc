@@ -20,18 +20,18 @@ public:
     void write(uint8_t b);
     uint8_t read();
     void clear();
-    uint size;
-    uint8_t *buff;
+    uint m_size;
+    uint8_t *m_buff;
 
 private:
-    uint curr;
+    uint m_curr;
 };
 
 class RemoteProcess
 {
 private:
-    int status;
-    bool hasProcMem;
+    int m_status;
+    bool m_hasProcMem;
 
 protected:
     struct Process
@@ -39,15 +39,16 @@ protected:
         off_t baseAddr;
         pid_t pid;
 
-    } proc;
+    } m_proc;
 
     RemoteProcess();
     virtual ~RemoteProcess();
 
-    int Analyse(char *__buffer, std::string __find, off_t __offset, uint8_t __type, off_t lenght, std::vector<off_t> &offset);
+    int Analyse(char *__buffer, std::string __find, off_t __offset,
+                uint8_t __type, uint64_t lenght, std::vector<off_t> &offset);
     int openProcess(pid_t __pid);
     int readMem(off_t start, Data *data);
     int writeMem(off_t start, Data *data);
-    int findMem(off_t start, off_t length, uint8_t type, std::string find, std::vector<off_t> &offsets);
+    int findMem(off_t start, uint64_t length, uint8_t type, std::string find, std::vector<off_t> &offsets);
     void closePid();
 };

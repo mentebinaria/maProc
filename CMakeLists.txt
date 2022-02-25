@@ -4,9 +4,11 @@ project(maProc VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+set(OPTIMIZATIONS ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
+set(DEBUGGER off)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -14,7 +16,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
-set(CMAKE_CXX_FLAGS "-mavx -fno-stack-protector -march=native -O2 -Os  -fdelete-null-pointer-checks -fdelete-dead-exceptions")
+if(OPTIMIZATIONS)
+    set(CMAKE_CXX_FLAGS "-mavx  -fno-stack-protector -march=native -O2 -Os  -fdelete-null-pointer-checks -fdelete-dead-exceptions")
+    if(DEBUGGER)
+        set(CMAKE_CXX_FLAGS "-g -gdwarf -gdwarf-version")
+    endif()
+endif()
 
 
 set(PROJECT_SOURCES
@@ -37,12 +44,17 @@ set(PROJECT_SOURCES
         src/proclib.cpp
         include/proclib.hpp
 
+        src/hexview.cpp
+        include/hexview.hpp
+
         include/mainwindow.hpp
         src/gui/mainwindow.ui
 
         include/dirwindow.hpp 
         src/dirwindow.cpp
         src/gui/dirwindow.ui
+
+
 )
 add_executable(maProc
         ${PROJECT_SOURCES}

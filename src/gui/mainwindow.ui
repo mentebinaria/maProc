@@ -264,10 +264,16 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>180</height>
+                 </size>
+                </property>
                 <property name="maximumSize">
                  <size>
                   <width>10000</width>
-                  <height>260</height>
+                  <height>270</height>
                  </size>
                 </property>
                 <row>
@@ -297,7 +303,7 @@
                 </row>
                 <column>
                  <property name="text">
-                  <string>InfosPid</string>
+                  <string>PID INFO</string>
                  </property>
                 </column>
                </widget>
@@ -309,6 +315,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>100</height>
+                 </size>
                 </property>
                 <property name="maximumSize">
                  <size>
@@ -333,7 +345,42 @@
                 </row>
                 <column>
                  <property name="text">
-                  <string>InfosFile</string>
+                  <string>FILE INFO</string>
+                 </property>
+                </column>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTableWidget" name="infos_sys">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>150</height>
+                 </size>
+                </property>
+                <row>
+                 <property name="text">
+                  <string>Hostname</string>
+                 </property>
+                </row>
+                <row>
+                 <property name="text">
+                  <string>Osrealese</string>
+                 </property>
+                </row>
+                <row>
+                 <property name="text">
+                  <string>Version</string>
+                 </property>
+                </row>
+                <row>
+                 <property name="text">
+                  <string>Ostype</string>
+                 </property>
+                </row>
+                <column>
+                 <property name="text">
+                  <string>SYS INFO</string>
                  </property>
                 </column>
                </widget>
@@ -443,7 +490,7 @@
                </size>
               </property>
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="page">
                <property name="geometry">
@@ -451,7 +498,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>116</width>
-                 <height>169</height>
+                 <height>192</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -494,27 +541,12 @@
                   </item>
                   <item>
                    <property name="text">
-                    <string>int8</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
                     <string>int16</string>
                    </property>
                   </item>
                   <item>
                    <property name="text">
-                    <string>uint32</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
                     <string>uint64</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>float</string>
                    </property>
                   </item>
                   <item>
@@ -564,7 +596,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>116</width>
-                 <height>192</height>
+                 <height>144</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -670,7 +702,7 @@
                <widget class="QTableWidget" name="infos_addr">
                 <property name="minimumSize">
                  <size>
-                  <width>346</width>
+                  <width>500</width>
                   <height>90</height>
                  </size>
                 </property>
@@ -723,6 +755,11 @@
                   <string>Size_mapped</string>
                  </property>
                 </column>
+                <column>
+                 <property name="text">
+                  <string>Flags</string>
+                 </property>
+                </column>
                 <item row="0" column="0">
                  <property name="text">
                   <string>null</string>
@@ -738,6 +775,11 @@
                   <string>0</string>
                  </property>
                 </item>
+                <item row="0" column="3">
+                 <property name="text">
+                  <string>----</string>
+                 </property>
+                </item>
                 <item row="1" column="0">
                  <property name="text">
                   <string>null</string>
@@ -751,6 +793,11 @@
                 <item row="1" column="2">
                  <property name="text">
                   <string>0</string>
+                 </property>
+                </item>
+                <item row="1" column="3">
+                 <property name="text">
+                  <string>----</string>
                  </property>
                 </item>
                </widget>

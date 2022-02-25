@@ -90,26 +90,38 @@ void Pmap::split_mem_address(std::string &__foo)
 
     // get address end
     std::string addr_off;
+    std::string flags;
     for (std::size_t i = addr_on.size() + 2; i <= __foo.size(); i++)
     {
         addr_off += __foo[i];
         if (__foo[i] == ' ')
+        {
+            for (std::size_t i = addr_on.size() + addr_off.size() + 2; i < __foo.size(); i++)
+            {
+                flags += __foo[i];
+                if (__foo[i] == ' ')
+                    break;
+            }
             break;
+        }
     }
-
-    // convert string to unsigned int
-    unsigned int addr_off_long = std::stoul(addr_off, nullptr, 16);
-    unsigned int addr_on_long = std::stoul(addr_on, nullptr, 16);
 
     if (addr_on.size() == 0 || addr_off.size() == 0)
     {
         throw std::runtime_error("Error not split address_on and address_off");
         return;
     }
-    else
-        infos.addr_on = (off_t)addr_on_long, infos.addr_off = (off_t)addr_off_long;
+
+    // convert string to off_t
+    off_t addr_off_long = (off_t)std::stoul(addr_off, nullptr, 16);
+    off_t addr_on_long = (off_t)std::stoul(addr_on, nullptr, 16);
+
+    m_infos.addr_on = (off_t)addr_on_long, m_infos.addr_off = (off_t)addr_off_long, m_infos.flags = flags;
 
     CLEAR_STRING(__foo)
+    CLEAR_STRING(flags);
+    CLEAR_STRING(addr_on);
+    CLEAR_STRING(addr_off);
 }
 
 /**
@@ -117,10 +129,10 @@ void Pmap::split_mem_address(std::string &__foo)
  */
 Pmap::Pmap()
 {
-    infos.pid_max = 0;
-    infos.pid = 0;
-    infos.addr_on = 0;
-    infos.addr_off = 0;
+    m_infos.pid_max = 0;
+    m_infos.pid = 0;
+    m_infos.addr_on = 0;
+    m_infos.addr_off = 0;
     PID_MAX
 }
 
@@ -129,7 +141,7 @@ Pmap::Pmap()
  */
 Pmap::~Pmap()
 {
-    CLEAR_STRING(maps_buf);
+    CLEAR_STRING(m_maps_buf);
 }
 
 /**
@@ -142,20 +154,20 @@ Pmap::~Pmap()
  */
 int Pmap::map_pid(pid_t __pid)
 {
-    infos.pid = __pid;
+    m_infos.pid = __pid;
 
-    int status_exit = verify_pid(infos.pid, infos.pid_max);
-    RemoteProcess::openProcess(infos.pid);
+    int status_exit = verify_pid(m_infos.pid, m_infos.pid_max);
+    RemoteProcess::openProcess(m_infos.pid);
 
-    std::string pid_str = std::to_string(infos.pid);
+    std::string pid_str = std::to_string(m_infos.pid);
     std::string fmaps = PROC + pid_str + MAPS;
 
-    FS.readFS(fmaps, maps_buf, 2048, true);
+    m_FS.readFS(fmaps, m_maps_buf, 2048, true);
 
-    if (maps_buf.size() == 0)
+    if (m_maps_buf.size() == 0)
     {
         status_exit = PID_NOT_READ;
-        throw std::runtime_error("Looks like proc/" + std::to_string(infos.pid) + "/maps is empty, I do a check in the past process");
+        throw std::runtime_error("Looks like proc/" + std::to_string(m_infos.pid) + "/maps is empty, I do a check in the past process");
     }
 
     return status_exit;
@@ -175,7 +187,7 @@ bool Pmap::map_mem(std::string __mem)
     bool status_exit = true;
 
     std::string found;
-    search_line(__mem, found, maps_buf);
+    search_line(__mem, found, m_maps_buf);
 
     if (found.size() == 0)
     {
@@ -226,7 +238,7 @@ bool Pmap::map_read(off_t __addr, uint8_t __type, Data &__data)
  *
  * @return int
  */
-int Pmap::map_find(off_t __addr, off_t __length, std::string __find, uint8_t __type, std::vector<off_t> &__offsets)
+int Pmap::map_find(off_t __addr, uint64_t __length, std::string __find, uint8_t __type, std::vector<off_t> &__offsets)
 {
     return RemoteProcess::findMem(__addr, __length, __type, __find, __offsets);
 }
@@ -234,7 +246,7 @@ int Pmap::map_find(off_t __addr, off_t __length, std::string __find, uint8_t __t
 void Pmap::map_close()
 {
     RemoteProcess::closePid();
-    RemoteProcess::proc.pid = 0;
+    RemoteProcess::m_proc.pid = 0;
 }
 
 /**
@@ -245,7 +257,7 @@ void Pmap::map_close()
  */
 off_t Pmap::get_addrOn() const
 {
-    return infos.addr_on;
+    return m_infos.addr_on;
 }
 
 /**
@@ -256,7 +268,17 @@ off_t Pmap::get_addrOn() const
  */
 off_t Pmap::get_addrOff() const
 {
-    return infos.addr_off;
+    return m_infos.addr_off;
+}
+
+/**
+ * @brief flags in address memory, r(read) w(write) ...
+ *
+ * @return std::string
+ */
+std::string Pmap::get_Flags()
+{
+    return m_infos.flags;
 }
 
 /**
@@ -265,7 +287,7 @@ off_t Pmap::get_addrOff() const
  */
 uint64_t Pmap::get_sizeAddress()
 {
-    return infos.addr_off - infos.addr_on;
+    return m_infos.addr_off - m_infos.addr_on;
 }
 
 /**
@@ -278,7 +300,7 @@ uint64_t Pmap::get_sizeAddress()
 std::string Pmap::get_utilsPid(uint8_t __utils)
 {
     std::string buffer = " ";
-    std::string pid_str = std::to_string(infos.pid);
+    std::string pid_str = std::to_string(m_infos.pid);
     std::string name = PROC + pid_str;
     struct stat stats;
 
@@ -286,27 +308,27 @@ std::string Pmap::get_utilsPid(uint8_t __utils)
     {
     case NAME:
         name += "/comm";
-        FS.readFS(name, buffer, BUFFER_READ_UTILS);
+        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
         break;
 
     case WCHAN:
         name += "/wchan";
-        FS.readFS(name, buffer, BUFFER_READ_UTILS);
+        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
         break;
 
     case SESSIONID:
         name += "/sessionid";
-        FS.readFS(name, buffer, BUFFER_READ_UTILS);
+        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
         break;
 
     case CMDLINE:
         name += "/cmdline";
-        FS.readFS(name, buffer, BUFFER_READ_UTILS);
+        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
         break;
 
     case LOGINUID:
         name += "/loginuid";
-        FS.readFS(name, buffer, BUFFER_READ_UTILS);
+        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
         break;
 
     case SIZEBIN:
@@ -321,8 +343,28 @@ std::string Pmap::get_utilsPid(uint8_t __utils)
             buffer = std::to_string(stats.st_blksize);
         break;
 
+    case HOSTNAME:
+        name = "/proc/sys/kernel/hostname";
+        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
+        break;
+
+    case OSREALESE:
+        name = "/proc/sys/kernel/osrelease";
+        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
+        break;
+
+    case VERSION:
+        name = "/proc/sys/kernel/version";
+        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
+        break;
+
+    case TYPE:
+        name = "/proc/sys/kernel/ostype";
+        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
+        break;
+
     default:
-        throw std::runtime_error("It was not possible to make the get at this value " + __utils);
+        throw std::runtime_error("It was not possible to make the get at this value " + std::to_string(__utils));
     }
 
     return buffer;

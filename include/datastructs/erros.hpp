@@ -21,7 +21,9 @@ enum ERROS_FILES
     READ_SUCCESS,
     READ_FAIL,
     WRITE_FAIL,
-    WRITE_SUCCESS
+    WRITE_SUCCESS,
+    EMPTY,
+    FULL,
 };
 
 /**

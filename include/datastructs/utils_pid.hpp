@@ -4,7 +4,7 @@
  * @brief get utils info pid
  * 
  */
-enum UTILS_PID
+enum PID_INFO
 {
     NAME = 1,
     WCHAN,
@@ -12,5 +12,14 @@ enum UTILS_PID
     CMDLINE,
     LOGINUID,
     SIZEBIN,
-    BLOCKSIZEBIN
+    BLOCKSIZEBIN,
+    COUNT,
+};
+
+enum SYS_INFO
+{
+    HOSTNAME = COUNT,
+    OSREALESE,
+    VERSION,
+    TYPE,
 };

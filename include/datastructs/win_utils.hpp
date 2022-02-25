@@ -12,6 +12,7 @@
 #define ICON_ABOUT "../src/assets/about.png"
 #define ICON_HEX "../src/assets/hex.png"
 
+#define NULL_STR "null"
 #define CLEAN_ROW " "
 
 /**
@@ -31,5 +32,6 @@ enum Infos
 {
     Address_on,
     Address_off,
-    Size_map
+    Size_map,
+    Flags
 };

@@ -8,17 +8,17 @@
 #include <unordered_map>
 
 DirWindow::DirWindow(QWidget *parent) : QDialog(parent),
-                                        ui(new Ui::DirWindow),
-                                        pid(0)
+                                        m_ui(new Ui::DirWindow),
+                                        m_pid(0)
 {
-    ui->setupUi(this);
+    m_ui->setupUi(this);
     Conf_pidTable();
     Set_pidTable();
 }
 
 DirWindow::~DirWindow()
 {
-    delete ui;
+    delete m_ui;
 }
 
 /**
@@ -26,14 +26,9 @@ DirWindow::~DirWindow()
  */
 void DirWindow::Conf_pidTable(void)
 {
-    QStringList column;
-    column << "Pid"
-           << "Name";
-
-    ui->pidTable->setColumnCount(2);
-    ui->pidTable->setHorizontalHeaderLabels(column);
-    ui->pidTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->pidTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_ui->pidTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    m_ui->pidTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_ui->pidTable->verticalHeader()->setVisible(false);
 }
 
 /**
@@ -41,17 +36,17 @@ void DirWindow::Conf_pidTable(void)
  */
 void DirWindow::Set_pidTable(void)
 {
-    int dir_read = ps.Reading_DirProcess(umap);
+    int dir_read = m_ps.Reading_DirProcess(m_umap);
 
     if (dir_read == OPEN_SUCCESS)
     {
-        for (auto &x : umap)
+        for (auto &x : m_umap)
         {
-            ui->pidTable->insertRow(ui->pidTable->rowCount());
-            int rowCount = ui->pidTable->rowCount() - 1;
+            m_ui->pidTable->insertRow(m_ui->pidTable->rowCount());
+            int rowCount = m_ui->pidTable->rowCount() - 1;
 
-            ui->pidTable->setItem(rowCount, Pid, new QTableWidgetItem(QString(QString::fromStdString(x.second))));
-            ui->pidTable->setItem(rowCount, Name, new QTableWidgetItem(QString(QString::fromStdString(x.first))));
+            m_ui->pidTable->setItem(rowCount, Pid, new QTableWidgetItem(QString(QString::fromStdString(x.second))));
+            m_ui->pidTable->setItem(rowCount, Name, new QTableWidgetItem(QString(QString::fromStdString(x.first))));
         }
     }
 }
@@ -73,18 +68,18 @@ void DirWindow::on_pidTable_doubleClicked(const QModelIndex &index)
  */
 pid_t DirWindow::getPid()
 {
-    return pid;
+    return m_pid;
 }
 
 void DirWindow::setPid(QString __pid)
 {
     try
     {
-        pid = std::stoi(umap[__pid.toStdString()]);
+        m_pid = std::stoi(m_umap[__pid.toStdString()]);
     }
     catch (std::exception &e)
     {
-        pid = std::stoi(__pid.toStdString());
+        m_pid = std::stoi(__pid.toStdString());
     }
 
     close();

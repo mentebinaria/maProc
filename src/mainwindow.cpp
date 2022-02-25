@@ -6,7 +6,6 @@
 #include <iostream>
 #include <string>
 #include <QMessageBox>
-#include <limits>
 
 #define column_delete(__column)          \
     {                                    \
@@ -14,39 +13,20 @@
             __column->removeRow(0);      \
     }
 
-/**
- * @brief clean all columns
- *
- */
-void MainWindow::column_clean_all()
-{
-    mapper.map_close();
-    for (int i = 5; i >= 0; i--)
-    {
-        ui->infos_addr->setItem(i, Address_on, new QTableWidgetItem("null"));
-        ui->infos_addr->setItem(i, Address_off, new QTableWidgetItem("null"));
-        ui->infos_addr->setItem(i, Size_map, new QTableWidgetItem("0"));
-
-        ui->infos_pid->setItem(i, 0, new QTableWidgetItem(CLEAN_ROW));
-        ui->infos_file->setItem(i, 0, new QTableWidgetItem(CLEAN_ROW));
-    }
-}
-
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
-                                          ui(new Ui::MainWindow),
-                                          pid(0)
+                                          m_ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
+    m_ui->setupUi(this);
     setWindowTitle(TITLE_WINDOW);
     setWindowIcon(QIcon(ICON_WINDOW));
     setMinimumWidth(500);
     setMinimumHeight(500);
 
     // status bar conf default
-    ui->statusBar->showMessage("No process is being mapped at this time");
+    m_ui->statusBar->showMessage("No process is being mapped at this time");
 
     // get value type combo button
-    type = ui->type->currentIndex();
+    m_type = m_ui->type->currentIndex();
 
     // buttons conf
     conf_button_all();
@@ -60,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    delete m_ui;
 }
 
 /**
@@ -70,32 +50,33 @@ MainWindow::~MainWindow()
 void MainWindow::conf_button_all()
 {
     // buttons for pass pid
-    ui->pidButton->setIcon(QIcon(ICON_PASS_PID));
-    ui->pidButton_2->setIcon(QIcon(ICON_PASS_PID));
-    ui->rpidButton->setIcon(QIcon(ICON_RPASS_PID));
+    m_ui->pidButton->setIcon(QIcon(ICON_PASS_PID));
+    m_ui->pidButton_2->setIcon(QIcon(ICON_PASS_PID));
+    m_ui->rpidButton->setIcon(QIcon(ICON_RPASS_PID));
 
     // buttons for clean
-    ui->cleanButton->setIcon(QIcon(ICON_CLEAN));
-    ui->cleanButton2->setIcon(QIcon(ICON_CLEAN));
+    m_ui->cleanButton->setIcon(QIcon(ICON_CLEAN));
+    m_ui->cleanButton2->setIcon(QIcon(ICON_CLEAN));
 
     // buttons for close
-    ui->closeButton->setIcon(QIcon(ICON_CLOSE));
-    ui->closeButton_2->setIcon(QIcon(ICON_CLOSE));
+    m_ui->closeButton->setIcon(QIcon(ICON_CLOSE));
+    m_ui->closeButton_2->setIcon(QIcon(ICON_CLOSE));
 
     // search button
-    ui->searchButton->setIcon(QIcon(ICON_SEARCH));
+    m_ui->searchButton->setIcon(QIcon(ICON_SEARCH));
 
     // edit button
-    ui->editButton->setIcon(QIcon(ICON_EDIT));
+    m_ui->editButton->setIcon(QIcon(ICON_EDIT));
 
     // about button
-    ui->aboutButton->setIcon(QIcon(ICON_ABOUT));
+    m_ui->aboutButton->setIcon(QIcon(ICON_ABOUT));
 
     // new button
-    ui->newButton->setIcon(QIcon(ICON_NEW));
+    m_ui->newButton->setIcon(QIcon(ICON_NEW));
 
     // hex button
-    ui->hexButton->setIcon(QIcon(ICON_HEX));
+    m_ui->hexButton->setIcon(QIcon(ICON_HEX));
+    m_hex.setWindowIcon(QIcon(ICON_HEX));
 }
 
 /**
@@ -104,11 +85,12 @@ void MainWindow::conf_button_all()
  */
 void MainWindow::mainMapper()
 {
-    column_delete(ui->view_address);
+    column_delete(m_ui->view_address);
     column_clean_all();
 
     try
     {
+        m_hex.LoadBinary(QString::fromStdString("/proc/" + std::to_string(m_pid) + "/exe"));
         verify_pid();
         set_values_column_utils();
 
@@ -130,11 +112,11 @@ void MainWindow::on_pidButton_clicked()
     DirWindow dir;
     dir.exec();
 
-    pid = 0;
-    while (pid == 0)
+    m_pid = 0;
+    while (m_pid == 0)
     {
-        pid = dir.getPid();
-        if (pid == 0)
+        m_pid = dir.getPid();
+        if (m_pid == 0)
             break;
         else
         {
@@ -146,130 +128,140 @@ void MainWindow::on_pidButton_clicked()
 
 void MainWindow::verify_pid()
 {
-    int status_pid = mapper.map_pid(pid);
+    int status_pid = m_mapper.map_pid(m_pid);
 
     if (status_pid == 0)
     {
-        pid_name = QString::fromStdString(mapper.get_utilsPid(NAME));
-        pid_cmdline = QString::fromStdString(mapper.get_utilsPid(CMDLINE));
-        pid_loginuid = QString::fromStdString(mapper.get_utilsPid(LOGINUID));
-        pid_sizebin = QString::fromStdString(mapper.get_utilsPid(SIZEBIN));
-        pid_wchan = QString::fromStdString(mapper.get_utilsPid(WCHAN));
-        pid_blksize = QString::fromStdString(mapper.get_utilsPid(BLOCKSIZEBIN));
+        m_pid_name = QString::fromStdString(m_mapper.get_utilsPid(NAME));
+        m_pid_cmdline = QString::fromStdString(m_mapper.get_utilsPid(CMDLINE));
+        m_pid_loginuid = QString::fromStdString(m_mapper.get_utilsPid(LOGINUID));
+        m_pid_sizebin = QString::fromStdString(m_mapper.get_utilsPid(SIZEBIN));
+        m_pid_wchan = QString::fromStdString(m_mapper.get_utilsPid(WCHAN));
+        m_pid_blksize = QString::fromStdString(m_mapper.get_utilsPid(BLOCKSIZEBIN));
+        m_sys_hostname = QString::fromStdString(m_mapper.get_utilsPid(HOSTNAME));
+        m_sys_osrealese = QString::fromStdString(m_mapper.get_utilsPid(OSREALESE));
+        m_sys_version = QString::fromStdString(m_mapper.get_utilsPid(VERSION));
+        m_sys_type = QString::fromStdString(m_mapper.get_utilsPid(TYPE));
 
         // tell the status bar which pid is being mapped
-        ui->statusBar->showMessage("PID: " + QString::fromStdString(std::to_string(pid)) + " Name: " + pid_name);
+        m_ui->statusBar->showMessage("PID: " + QString::fromStdString(std::to_string(m_pid)) + " Name: " + m_pid_name);
     }
 }
 
 void MainWindow::column_config_all()
 {
-    QStringList view_address;
-    view_address << "Address"
-                 << "Value"
-                 << "Memory";
-
-    QStringList infos_addr;
-    infos_addr << "Address_on"
-               << "Address_off"
-               << "Size_map";
-
-    QStringList infos_pid;
-    infos_pid << "InfosPid";
-
-    // ui->infosView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
     // view address
-    ui->view_address->setColumnCount(3);
-    ui->view_address->setHorizontalHeaderLabels(view_address);
-    ui->view_address->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->view_address->setShowGrid(false);
-    ui->view_address->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->view_address->verticalHeader()->setVisible(false);
+    m_ui->view_address->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    m_ui->view_address->setShowGrid(false);
+    m_ui->view_address->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_ui->view_address->verticalHeader()->setVisible(false);
 
     // infos addr heap and stack
-    ui->infos_addr->setColumnCount(3);
-    ui->infos_addr->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->infos_addr->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->infos_addr->setHorizontalHeaderLabels(infos_addr);
-    ui->infos_addr->setShowGrid(false);
+    m_ui->infos_addr->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    m_ui->infos_addr->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_ui->infos_addr->setShowGrid(false);
 
     // infos pid config
-    ui->infos_pid->setColumnCount(1);
-    ui->infos_pid->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->infos_pid->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->infos_pid->setShowGrid(false);
-    ui->infos_pid->setHorizontalHeaderLabels(infos_pid);
+    m_ui->infos_pid->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_ui->infos_pid->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    m_ui->infos_pid->setShowGrid(false);
 
     // infos file config
-    ui->infos_file->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->infos_file->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    m_ui->infos_file->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_ui->infos_file->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    m_ui->infos_file->setShowGrid(false);
+
+    // infos sys
+    m_ui->infos_sys->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    m_ui->infos_sys->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_ui->infos_sys->setShowGrid(false);
 }
 
 void MainWindow::set_values_column_utils()
 {
     // table files infos
-    ui->infos_file->setItem(0, 0, new QTableWidgetItem("/proc/" + QString::fromStdString(std::to_string(pid)) + "/exe"));
-    ui->infos_file->setItem(0, 1, new QTableWidgetItem(pid_sizebin + "B"));
-    ui->infos_file->setItem(0, 2, new QTableWidgetItem(pid_blksize + "B"));
+    m_ui->infos_file->setItem(0, 0, new QTableWidgetItem("/proc/" + QString::fromStdString(std::to_string(m_pid)) + "/exe"));
+    m_ui->infos_file->setItem(0, 1, new QTableWidgetItem(m_pid_sizebin + "B"));
+    m_ui->infos_file->setItem(0, 2, new QTableWidgetItem(m_pid_blksize + "B"));
 
     // table pid infos
-    ui->infos_pid->setItem(0, 0, new QTableWidgetItem(pid_name));
-    ui->infos_pid->setItem(1, 0, new QTableWidgetItem(QString::fromStdString(std::to_string(pid))));
-    ui->infos_pid->setItem(2, 0, new QTableWidgetItem(pid_loginuid));
-    ui->infos_pid->setItem(3, 0, new QTableWidgetItem(pid_wchan));
-    ui->infos_pid->setItem(4, 0, new QTableWidgetItem(pid_cmdline));
+    m_ui->infos_pid->setItem(0, 0, new QTableWidgetItem(m_pid_name));
+    m_ui->infos_pid->setItem(1, 0, new QTableWidgetItem(QString::fromStdString(std::to_string(m_pid))));
+    m_ui->infos_pid->setItem(2, 0, new QTableWidgetItem(m_pid_loginuid));
+    m_ui->infos_pid->setItem(3, 0, new QTableWidgetItem(m_pid_wchan));
+    m_ui->infos_pid->setItem(4, 0, new QTableWidgetItem(m_pid_cmdline));
+
+    // table sys info
+    m_ui->infos_sys->setItem(0, 0, new QTableWidgetItem(m_sys_hostname));
+    m_ui->infos_sys->setItem(1, 0, new QTableWidgetItem(m_sys_osrealese));
+    m_ui->infos_sys->setItem(2, 0, new QTableWidgetItem(m_sys_version));
+    m_ui->infos_sys->setItem(3, 0, new QTableWidgetItem(m_sys_type));
 }
 
 void MainWindow::set_values_column_heap()
 {
-    ui->view_address->setShowGrid(false);
-    ui->view_address->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_ui->view_address->setShowGrid(false);
+    m_ui->view_address->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     // infos_addr
-    QString on = QString::number(mapper.get_addrOn(), 16);
-    QString off = QString::number(mapper.get_addrOff(), 16);
-    QString size = QString::number(mapper.get_sizeAddress());
+    QString on = QString::number(m_mapper.get_addrOn(), 16);
+    QString off = QString::number(m_mapper.get_addrOff(), 16);
+    QString size = QString::number(m_mapper.get_sizeAddress());
+    QString flags = QString::fromStdString(m_mapper.get_Flags());
 
     // set itens
-    ui->infos_addr->setItem(0, Address_on, new QTableWidgetItem(on));
-    ui->infos_addr->setItem(0, Address_off, new QTableWidgetItem(off));
-    ui->infos_addr->setItem(0, Size_map, new QTableWidgetItem(size));
+    m_ui->infos_addr->setItem(0, Address_on, new QTableWidgetItem("0x" + on));
+    m_ui->infos_addr->setItem(0, Address_off, new QTableWidgetItem("0x" + off));
+    m_ui->infos_addr->setItem(0, Size_map, new QTableWidgetItem(size));
+    m_ui->infos_addr->setItem(0, Flags, new QTableWidgetItem(flags));
 }
 
 void MainWindow::set_values_column_stack()
 {
     // infos_addr
-    QString on = QString::number(mapper.get_addrOn(), 16);
-    QString off = QString::number(mapper.get_addrOff(), 16);
-    QString size = QString::number(mapper.get_sizeAddress());
+    QString on = QString::number(m_mapper.get_addrOn(), 16);
+    QString off = QString::number(m_mapper.get_addrOff(), 16);
+    QString size = QString::number(m_mapper.get_sizeAddress());
+    QString flags = QString::fromStdString(m_mapper.get_Flags());
 
     // set itens
-    ui->infos_addr->setItem(1, Address_on, new QTableWidgetItem(on));
-    ui->infos_addr->setItem(1, Address_off, new QTableWidgetItem(off));
-    ui->infos_addr->setItem(1, Size_map, new QTableWidgetItem(size));
+    m_ui->infos_addr->setItem(1, Address_on, new QTableWidgetItem("0x" + on));
+    m_ui->infos_addr->setItem(1, Address_off, new QTableWidgetItem("0x" + off));
+    m_ui->infos_addr->setItem(1, Size_map, new QTableWidgetItem(size));
+    m_ui->infos_addr->setItem(1, Flags, new QTableWidgetItem(flags));
 }
 
 void MainWindow::set_types_edit_read()
 {
-    typeSizes.insert(std::make_pair<std::string, size_t>("char", sizeof(char)));
-    typeSizes.insert(std::make_pair<std::string, size_t>("int", sizeof(int)));
-    typeSizes.insert(std::make_pair<std::string, size_t>("int8", sizeof(int8_t)));
-    typeSizes.insert(std::make_pair<std::string, size_t>("int16", sizeof(int16_t)));
-    typeSizes.insert(std::make_pair<std::string, size_t>("uint32", sizeof(uint32_t)));
-    typeSizes.insert(std::make_pair<std::string, size_t>("uint64", sizeof(uint64_t)));
-    typeSizes.insert(std::make_pair<std::string, size_t>("float", sizeof(float)));
-    typeSizes.insert(std::make_pair<std::string, size_t>("string", sizeof(uint8_t)));
+    m_typeSizes.insert(std::make_pair<std::string, size_t>("char", sizeof(char)));
+    m_typeSizes.insert(std::make_pair<std::string, size_t>("int", sizeof(int)));
+    m_typeSizes.insert(std::make_pair<std::string, size_t>("int16", sizeof(int16_t)));
+    m_typeSizes.insert(std::make_pair<std::string, size_t>("uint64", sizeof(uint64_t)));
+    m_typeSizes.insert(std::make_pair<std::string, size_t>("string", sizeof(std::string)));
 }
 
 bool MainWindow::mapper_heap()
 {
-    return mapper.map_mem("[heap]");
+    return m_mapper.map_mem("[heap]");
 }
 
 bool MainWindow::mapper_stack()
 {
-    return mapper.map_mem("[stack]");
+    return m_mapper.map_mem("[stack]");
+}
+
+void MainWindow::mapper_find(off_t __addr, off_t __length, std::__cxx11::string __find,
+                             uint8_t __type, std::vector<off_t> &__offsets)
+{
+    try
+    {
+        if (m_mapper.map_find(__addr, __length, __find, __type, __offsets) == READ_FAIL)
+            QMessageBox::critical(nullptr, "Fail Read", "Not read memory, error in start  0x" + QString::number(__addr, 16));
+    }
+    catch (std::exception &error)
+    {
+        QMessageBox::critical(nullptr, "Not Read", error.what());
+    }
 }
 
 void MainWindow::on_closeButton_2_triggered()
@@ -287,7 +279,7 @@ void MainWindow::on_closeButton_clicked()
 void MainWindow::on_cleanButton_triggered()
 {
     column_clean_all();
-    column_delete(ui->view_address);
+    column_delete(m_ui->view_address);
 }
 
 void MainWindow::on_cleanButton2_clicked()
@@ -318,79 +310,85 @@ void MainWindow::on_newButton_triggered()
  */
 void MainWindow::on_searchButton_clicked()
 {
-    column_delete(ui->view_address);
+    column_delete(m_ui->view_address);
 
     QTableWidgetItem *addr;
     QTableWidgetItem *size;
     std::vector<off_t> offsets;
+    off_t address_start;
+    uint64_t lenght;
+    std::string varType = m_ui->type->currentText().toStdString();
+    std::string find = m_ui->find->text().toStdString();
+    std::size_t mem = m_ui->mem->currentIndex();
+    auto it = m_typeSizes.find(varType);
 
-    std::string varType = ui->type->currentText().toStdString();
-    std::string find = ui->find->text().toStdString();
-    std::size_t mem = ui->mem->currentIndex();
-    auto it = typeSizes.find(varType);
-
-    if (find.size() != 0 && pid != 0 && it != typeSizes.end())
+    if (find.size() != 0 && m_pid != 0 && it != m_typeSizes.end())
     {
         switch (mem)
         {
         case 0: // stack
-            addr = ui->infos_addr->item(1, 0);
-            size = ui->infos_addr->item(1, 2);
+            addr = m_ui->infos_addr->item(1, 0);
+            size = m_ui->infos_addr->item(1, 2);
 
-            if (addr->text().toStdString() != "null")
+            if (addr->text().toStdString() != NULL_STR)
             {
-                off_t address_start = static_cast<off_t>(std::stoul(addr->text().toStdString(), nullptr, 16));
-                off_t lenght = std::stoul(size->text().toStdString(), nullptr);
+                address_start = static_cast<off_t>(std::stoul(addr->text().toStdString(), nullptr, 16));
+                lenght = std::stoul(size->text().toStdString(), nullptr);
 
-                try
-                {
-                    if (mapper.map_find(address_start, lenght, find, it->second, offsets) == READ_FAIL)
-                    {
-                        QMessageBox::critical(nullptr, "Fail Read", "Not read memory, error in start  0x" + QString::number(address_start, 16));
-                    }
-                }
-                catch (std::exception &error)
-                {
-                    QMessageBox::critical(nullptr, "Not Read", error.what());
-                }
+                mapper_find(address_start, lenght, find, it->second, offsets);
 
                 if (offsets.size() != 0)
                     set_values_column_address(offsets, find, "stack");
             }
             break;
         case 1: // heap
-            addr = ui->infos_addr->item(0, 0);
-            size = ui->infos_addr->item(0, 2);
+            addr = m_ui->infos_addr->item(0, 0);
+            size = m_ui->infos_addr->item(0, 2);
 
-            if (addr->text().toStdString() != "null")
+            if (addr->text().toStdString() != NULL_STR)
             {
-                off_t address_start = static_cast<off_t>(std::stoul(addr->text().toStdString(), nullptr, 16));
-                off_t lenght = std::stoul(size->text().toStdString(), nullptr);
+                address_start = static_cast<off_t>(std::stoul(addr->text().toStdString(), nullptr, 16));
+                lenght = std::stoul(size->text().toStdString(), nullptr);
 
-                try
-                {
-                    if (mapper.map_find(address_start, lenght, find, it->second, offsets) == READ_FAIL)
-                    {
-                        QMessageBox::critical(nullptr, "Fail Read", "Not read memory, error in start  0x" + QString::number(address_start, 16));
-                    }
-                }
-                catch (std::exception &error)
-                {
-                    QMessageBox::critical(nullptr, "Not Read", error.what());
-                }
-
+                mapper_find(address_start, lenght, find, it->second, offsets);
                 if (offsets.size() != 0)
                     set_values_column_address(offsets, find, "heap");
             }
             break;
         case 2: // all
+            addr = m_ui->infos_addr->item(0, 0);
+            size = m_ui->infos_addr->item(0, 2);
+
+            if (addr->text().toStdString() != NULL_STR)
+            {
+                address_start = static_cast<off_t>(std::stoul(addr->text().toStdString(), nullptr, 16));
+                lenght = std::stoul(size->text().toStdString(), nullptr);
+
+                mapper_find(address_start, lenght, find, it->second, offsets);
+                if (offsets.size() != 0)
+                    set_values_column_address(offsets, find, "heap");
+            }
+
+            addr = m_ui->infos_addr->item(1, 0);
+            size = m_ui->infos_addr->item(1, 2);
+
+            if (addr->text().toStdString() != NULL_STR)
+            {
+                address_start = static_cast<off_t>(std::stoul(addr->text().toStdString(), nullptr, 16));
+                lenght = std::stoul(size->text().toStdString(), nullptr);
+
+                mapper_find(address_start, lenght, find, it->second, offsets);
+
+                if (offsets.size() != 0)
+                    set_values_column_address(offsets, find, "stack");
+            }
             break;
 
         default:
             return;
         }
     }
-    else if (it == typeSizes.end()) // critical error, will exit the program
+    else if (it == m_typeSizes.end()) // critical error, will exit the program
     {
         QMessageBox::critical(nullptr, "ERROR", "Error in code not possible find type\n verify unordered_map[TypeSizes]");
         exit(EXIT_FAILURE);
@@ -404,12 +402,12 @@ void MainWindow::on_searchButton_clicked()
 void MainWindow::on_editButton_clicked()
 {
     off_t address = valid_address_edit();
-    std::string varType = ui->type->currentText().toStdString();
-    auto it = typeSizes.find(varType);
+    std::string varType = m_ui->type->currentText().toStdString();
+    auto it = m_typeSizes.find(varType);
 
-    if (it != typeSizes.end() && address != 0 && pid != 0)
-        mapper.map_write(address, it->second);
-    else if (it == typeSizes.end()) // critical error, will exit the program
+    if (it != m_typeSizes.end() && address != 0 && m_pid != 0)
+        m_mapper.map_write(address, it->second);
+    else if (it == m_typeSizes.end()) // critical error, will exit the program
     {
         QMessageBox::critical(nullptr, "ERROR", "Error in code not possible find type\n verify unordered_map[TypeSizes]");
         exit(EXIT_FAILURE);
@@ -422,7 +420,7 @@ void MainWindow::on_editButton_clicked()
  */
 void MainWindow::on_rpidButton_clicked()
 {
-    if (pid != 0)
+    if (m_pid != 0)
         mainMapper();
 }
 
@@ -441,9 +439,9 @@ void MainWindow::on_aboutButton_triggered()
  */
 off_t MainWindow::valid_address_edit()
 {
-    std::string address_edit = ui->address_edit->text().toStdString();
+    std::string address_edit = m_ui->address_edit->text().toStdString();
     off_t address = 0;
-    if (address_edit == "null")
+    if (address_edit == NULL_STR)
         QMessageBox::critical(nullptr, "ERROR", "Address NULL not valid, set address valid for edit value");
     else
         address = static_cast<off_t>(std::stoul(address_edit, nullptr, 16));
@@ -453,17 +451,16 @@ off_t MainWindow::valid_address_edit()
 
 void MainWindow::set_values_column_address(std::vector<off_t> &offset, std::string value, std::string memory)
 {
-
     for (auto &x : offset)
     {
-        ui->view_address->insertRow(ui->view_address->rowCount());
+        m_ui->view_address->insertRow(m_ui->view_address->rowCount());
 
-        int rowCount = ui->view_address->rowCount() - 1;
+        int rowCount = m_ui->view_address->rowCount() - 1;
         QString addr = QString::number(offset.back(), 16);
 
-        ui->view_address->setItem(rowCount, Address, new QTableWidgetItem("0x" + addr));
-        ui->view_address->setItem(rowCount, Value, new QTableWidgetItem(QString(QString::fromStdString(value))));
-        ui->view_address->setItem(rowCount, Memory, new QTableWidgetItem(QString(QString::fromStdString(memory))));
+        m_ui->view_address->setItem(rowCount, Address, new QTableWidgetItem("0x" + addr));
+        m_ui->view_address->setItem(rowCount, Value, new QTableWidgetItem(QString(QString::fromStdString(value))));
+        m_ui->view_address->setItem(rowCount, Memory, new QTableWidgetItem(QString(QString::fromStdString(memory))));
 
         offset.pop_back();
     }
@@ -471,6 +468,40 @@ void MainWindow::set_values_column_address(std::vector<off_t> &offset, std::stri
 
 void MainWindow::view_address_table(QTableWidgetItem *p_first)
 {
-    QString selected = ui->view_address->item(p_first->row(), 0)->text();
-    ui->address_edit->setText(selected);
+    QString selected = m_ui->view_address->item(p_first->row(), 0)->text();
+    m_ui->address_edit->setText(selected);
+}
+
+void MainWindow::on_hexButton_clicked()
+{
+    try
+    {
+        m_hex.CallDialog();
+    }
+    catch (std::exception &error)
+    {
+        QMessageBox::critical(nullptr, "Error", error.what());
+    }
+}
+
+/**
+ * @brief clean all columns
+ *
+ */
+void MainWindow::column_clean_all()
+{
+    m_ui->address_edit->setText(NULL_STR);
+    m_mapper.map_close();
+    m_hex.Clear();
+    for (int i = 5; i >= 0; i--)
+    {
+        m_ui->infos_addr->setItem(i, Address_on, new QTableWidgetItem(NULL_STR));
+        m_ui->infos_addr->setItem(i, Address_off, new QTableWidgetItem(NULL_STR));
+        m_ui->infos_addr->setItem(i, Size_map, new QTableWidgetItem("0"));
+        m_ui->infos_addr->setItem(i, Flags, new QTableWidgetItem("----"));
+
+        m_ui->infos_pid->setItem(i, 0, new QTableWidgetItem(CLEAN_ROW));
+        m_ui->infos_file->setItem(i, 0, new QTableWidgetItem(CLEAN_ROW));
+        m_ui->infos_sys->setItem(i, 0, new QTableWidgetItem(CLEAN_ROW));
+    }
 }
