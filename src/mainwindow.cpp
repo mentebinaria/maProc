@@ -7,20 +7,26 @@
 #include <string>
 #include <QMessageBox>
 
+#define mapper_heap m_mapper.map_mem("[heap]")
+#define mapper_stack m_mapper.map_mem("[stack]")
+
 #define column_delete(__column)          \
     {                                    \
         while (__column->rowCount() > 0) \
             __column->removeRow(0);      \
     }
 
+#define write_log(string) m_ui->log_text->appendPlainText(string);
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           m_ui(new Ui::MainWindow)
 {
     m_ui->setupUi(this);
+
     setWindowTitle(TITLE_WINDOW);
     setWindowIcon(QIcon(ICON_WINDOW));
-    setMinimumWidth(500);
-    setMinimumHeight(500);
+    setMinimumWidth(650);
+    setMinimumHeight(650);
 
     // status bar conf default
     m_ui->statusBar->showMessage("No process is being mapped at this time");
@@ -64,9 +70,11 @@ void MainWindow::conf_button_all()
 
     // search button
     m_ui->searchButton->setIcon(QIcon(ICON_SEARCH));
+    m_ui->find->setPlaceholderText("Value");
 
     // edit button
     m_ui->editButton->setIcon(QIcon(ICON_EDIT));
+    m_ui->value->setPlaceholderText("Value");
 
     // about button
     m_ui->aboutButton->setIcon(QIcon(ICON_ABOUT));
@@ -77,6 +85,12 @@ void MainWindow::conf_button_all()
     // hex button
     m_ui->hexButton->setIcon(QIcon(ICON_HEX));
     m_hex.setWindowIcon(QIcon(ICON_HEX));
+
+    // kill button
+    m_ui->killButton->setIcon(QIcon(ICON_KILL));
+
+    // stop / play button
+    m_ui->stopButton->setIcon(QIcon(ICON_STOP));
 }
 
 /**
@@ -94,10 +108,10 @@ void MainWindow::mainMapper()
         verify_pid();
         set_values_column_utils();
 
-        if (mapper_stack())
+        if (mapper_stack)
             set_values_column_stack();
 
-        if (mapper_heap())
+        if (mapper_heap)
             set_values_column_heap();
     }
     catch (std::exception &error)
@@ -109,6 +123,7 @@ void MainWindow::mainMapper()
 
 void MainWindow::on_pidButton_clicked()
 {
+    column_clean_all();
     DirWindow dir;
     dir.exec();
 
@@ -138,6 +153,7 @@ void MainWindow::verify_pid()
         m_pid_sizebin = QString::fromStdString(m_mapper.get_utilsPid(SIZEBIN));
         m_pid_wchan = QString::fromStdString(m_mapper.get_utilsPid(WCHAN));
         m_pid_blksize = QString::fromStdString(m_mapper.get_utilsPid(BLOCKSIZEBIN));
+        m_pid_exedir = QString::fromStdString(m_mapper.get_utilsPid(EXEDIR));
         m_sys_hostname = QString::fromStdString(m_mapper.get_utilsPid(HOSTNAME));
         m_sys_osrealese = QString::fromStdString(m_mapper.get_utilsPid(OSREALESE));
         m_sys_version = QString::fromStdString(m_mapper.get_utilsPid(VERSION));
@@ -175,12 +191,16 @@ void MainWindow::column_config_all()
     m_ui->infos_sys->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     m_ui->infos_sys->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_ui->infos_sys->setShowGrid(false);
+
+    // log infos
+    m_ui->log_text->setReadOnly(true);
+    m_ui->cleanButtonLog->setIcon(QIcon(ICON_CLEAN));
 }
 
 void MainWindow::set_values_column_utils()
 {
     // table files infos
-    m_ui->infos_file->setItem(0, 0, new QTableWidgetItem("/proc/" + QString::fromStdString(std::to_string(m_pid)) + "/exe"));
+    m_ui->infos_file->setItem(0, 0, new QTableWidgetItem(m_pid_exedir));
     m_ui->infos_file->setItem(0, 1, new QTableWidgetItem(m_pid_sizebin + "B"));
     m_ui->infos_file->setItem(0, 2, new QTableWidgetItem(m_pid_blksize + "B"));
 
@@ -240,16 +260,6 @@ void MainWindow::set_types_edit_read()
     m_typeSizes.insert(std::make_pair<std::string, size_t>("string", sizeof(std::string)));
 }
 
-bool MainWindow::mapper_heap()
-{
-    return m_mapper.map_mem("[heap]");
-}
-
-bool MainWindow::mapper_stack()
-{
-    return m_mapper.map_mem("[stack]");
-}
-
 void MainWindow::mapper_find(off_t __addr, off_t __length, std::__cxx11::string __find,
                              uint8_t __type, std::vector<off_t> &__offsets)
 {
@@ -257,9 +267,19 @@ void MainWindow::mapper_find(off_t __addr, off_t __length, std::__cxx11::string 
     {
         if (m_mapper.map_find(__addr, __length, __find, __type, __offsets) == READ_FAIL)
             QMessageBox::critical(nullptr, "Fail Read", "Not read memory, error in start  0x" + QString::number(__addr, 16));
+
+        QString sizeFound = QString::fromStdString(std::to_string(__offsets.size()));
+
+        if (m_ui->checkLog->isChecked())
+        {
+            write_log("[SEARCH] PID [" + QString::fromStdString(std::to_string(m_pid)) + "] searched in memory start [" + QString::number(__addr, 16) + "] [" + QString::fromStdString(__find) + "] found these addresses with such values [" + sizeFound + "]");
+        }
+        m_ui->foundAddr_label->setText("Found : " + sizeFound);
     }
     catch (std::exception &error)
     {
+        m_ui->foundAddr_label->setText("Found : 0");
+        write_log("[ERROR] not read memory " + QString::fromStdString(error.what()));
         QMessageBox::critical(nullptr, "Not Read", error.what());
     }
 }
@@ -279,7 +299,6 @@ void MainWindow::on_closeButton_clicked()
 void MainWindow::on_cleanButton_triggered()
 {
     column_clean_all();
-    column_delete(m_ui->view_address);
 }
 
 void MainWindow::on_cleanButton2_clicked()
@@ -338,7 +357,9 @@ void MainWindow::on_searchButton_clicked()
                 mapper_find(address_start, lenght, find, it->second, offsets);
 
                 if (offsets.size() != 0)
+                {
                     set_values_column_address(offsets, find, "stack");
+                }
             }
             break;
         case 1: // heap
@@ -351,11 +372,13 @@ void MainWindow::on_searchButton_clicked()
                 lenght = std::stoul(size->text().toStdString(), nullptr);
 
                 mapper_find(address_start, lenght, find, it->second, offsets);
+
                 if (offsets.size() != 0)
                     set_values_column_address(offsets, find, "heap");
             }
             break;
-        case 2: // all
+        case 2:
+        { // all
             addr = m_ui->infos_addr->item(0, 0);
             size = m_ui->infos_addr->item(0, 2);
 
@@ -365,8 +388,11 @@ void MainWindow::on_searchButton_clicked()
                 lenght = std::stoul(size->text().toStdString(), nullptr);
 
                 mapper_find(address_start, lenght, find, it->second, offsets);
+
                 if (offsets.size() != 0)
+                {
                     set_values_column_address(offsets, find, "heap");
+                }
             }
 
             addr = m_ui->infos_addr->item(1, 0);
@@ -380,17 +406,23 @@ void MainWindow::on_searchButton_clicked()
                 mapper_find(address_start, lenght, find, it->second, offsets);
 
                 if (offsets.size() != 0)
+                {
                     set_values_column_address(offsets, find, "stack");
+                }
             }
-            break;
 
+            QString sizeFound = QString::fromStdString(std::to_string(m_ui->view_address->rowCount()));
+            m_ui->foundAddr_label->setText("Found : " + sizeFound);
+
+            break;
+        }
         default:
             return;
         }
     }
     else if (it == m_typeSizes.end()) // critical error, will exit the program
     {
-        QMessageBox::critical(nullptr, "ERROR", "Error in code not possible find type\n verify unordered_map[TypeSizes]");
+        QMessageBox::critical(nullptr, "CRITICAL ERROR", "Error in code not possible find type\n verify unordered_map[TypeSizes]");
         exit(EXIT_FAILURE);
     }
 }
@@ -404,12 +436,19 @@ void MainWindow::on_editButton_clicked()
     off_t address = valid_address_edit();
     std::string varType = m_ui->type->currentText().toStdString();
     auto it = m_typeSizes.find(varType);
+    std::string value = m_ui->value->text().toStdString();
 
-    if (it != m_typeSizes.end() && address != 0 && m_pid != 0)
-        m_mapper.map_write(address, it->second);
+    if (it != m_typeSizes.end() && address != 0 && m_pid != 0 && value.size() != 0)
+    {
+        std::size_t SizeS = (varType == "string") ? value.size() : it->second;
+        if (m_mapper.map_write(address, (void *)value.data(), SizeS) == true)
+        {
+            QMessageBox::information(nullptr, "SUCESS", "Memory successfully edited");
+        }
+    }
     else if (it == m_typeSizes.end()) // critical error, will exit the program
     {
-        QMessageBox::critical(nullptr, "ERROR", "Error in code not possible find type\n verify unordered_map[TypeSizes]");
+        QMessageBox::critical(nullptr, "CRITICAL ERROR", "Error in code not possible find type\n verify unordered_map[TypeSizes]");
         exit(EXIT_FAILURE);
     }
 }
@@ -442,10 +481,13 @@ off_t MainWindow::valid_address_edit()
     std::string address_edit = m_ui->address_edit->text().toStdString();
     off_t address = 0;
     if (address_edit == NULL_STR)
+    {
         QMessageBox::critical(nullptr, "ERROR", "Address NULL not valid, set address valid for edit value");
+    }
     else
+    {
         address = static_cast<off_t>(std::stoul(address_edit, nullptr, 16));
-
+    }
     return address;
 }
 
@@ -456,7 +498,7 @@ void MainWindow::set_values_column_address(std::vector<off_t> &offset, std::stri
         m_ui->view_address->insertRow(m_ui->view_address->rowCount());
 
         int rowCount = m_ui->view_address->rowCount() - 1;
-        QString addr = QString::number(offset.back(), 16);
+        QString addr = QString::number(x, 16);
 
         m_ui->view_address->setItem(rowCount, Address, new QTableWidgetItem("0x" + addr));
         m_ui->view_address->setItem(rowCount, Value, new QTableWidgetItem(QString(QString::fromStdString(value))));
@@ -468,8 +510,15 @@ void MainWindow::set_values_column_address(std::vector<off_t> &offset, std::stri
 
 void MainWindow::view_address_table(QTableWidgetItem *p_first)
 {
-    QString selected = m_ui->view_address->item(p_first->row(), 0)->text();
-    m_ui->address_edit->setText(selected);
+    QString selectedAddress = m_ui->view_address->item(p_first->row(), Address)->text();
+    QString selectedValue = m_ui->view_address->item(p_first->row(), Value)->text();
+    QString selectedMemory = m_ui->view_address->item(p_first->row(), Memory)->text();
+    m_ui->address_edit->setText(selectedAddress);
+
+    if (m_ui->checkLog->isChecked())
+    {
+        write_log("[CLICKED] Address [" + selectedAddress + "] Value [" + selectedValue + "]" + " Memory [" + selectedMemory + "]");
+    }
 }
 
 void MainWindow::on_hexButton_clicked()
@@ -480,7 +529,7 @@ void MainWindow::on_hexButton_clicked()
     }
     catch (std::exception &error)
     {
-        QMessageBox::critical(nullptr, "Error", error.what());
+        QMessageBox::critical(nullptr, "ERROR", error.what());
     }
 }
 
@@ -490,9 +539,11 @@ void MainWindow::on_hexButton_clicked()
  */
 void MainWindow::column_clean_all()
 {
+    column_delete(m_ui->view_address);
     m_ui->address_edit->setText(NULL_STR);
-    m_mapper.map_close();
     m_hex.Clear();
+    m_ui->foundAddr_label->setText("Found : 0");
+
     for (int i = 5; i >= 0; i--)
     {
         m_ui->infos_addr->setItem(i, Address_on, new QTableWidgetItem(NULL_STR));
@@ -504,4 +555,34 @@ void MainWindow::column_clean_all()
         m_ui->infos_file->setItem(i, 0, new QTableWidgetItem(CLEAN_ROW));
         m_ui->infos_sys->setItem(i, 0, new QTableWidgetItem(CLEAN_ROW));
     }
+}
+
+void MainWindow::on_cleanButtonLog_clicked()
+{
+    m_ui->log_text->clear();
+}
+
+void MainWindow::on_stopButton_clicked()
+{
+    if (m_pid == 0)
+        return;
+    if (m_ui->stopButton->text() == "STOPP")
+    {
+        m_mapper.map_stop();
+        m_ui->stopButton->setText("PPLAY");
+        m_ui->stopButton->setIcon(QIcon(ICON_PLAY));
+    }
+    else if (m_ui->stopButton->text() == "PPLAY")
+    {
+        m_mapper.map_stop(false);
+        m_ui->stopButton->setText("STOPP");
+        m_ui->stopButton->setIcon(QIcon(ICON_STOP));
+    }
+}
+
+void MainWindow::on_killButton_clicked()
+{
+    m_pid = 0;
+    m_mapper.map_kill();
+    column_clean_all();
 }

@@ -8,7 +8,8 @@ set(OPTIMIZATIONS ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-set(DEBUGGER off)
+set(DEBUGGER OFF)
+set(NO_FLAG ON)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -17,9 +18,12 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 if(OPTIMIZATIONS)
-    set(CMAKE_CXX_FLAGS "-mavx  -fno-stack-protector -march=native -O2 -Os  -fdelete-null-pointer-checks -fdelete-dead-exceptions")
-    if(DEBUGGER)
-        set(CMAKE_CXX_FLAGS "-g -gdwarf -gdwarf-version")
+    set(CMAKE_CXX_FLAGS "-mavx -fno-stack-protector -march=native -O2 -Os -fdelete-null-pointer-checks -fdelete-dead-exceptions")
+        if(DEBUGGER)
+            set(CMAKE_CXX_FLAGS "-g -gdwarf -gdwarf-version")
+        endif()
+    if(NO_FLAG)
+        set(CMAKE_CXX_FLAGS " ")
     endif()
 endif()
 
@@ -49,6 +53,7 @@ set(PROJECT_SOURCES
 
         include/mainwindow.hpp
         src/gui/mainwindow.ui
+        src/gui/about.ui
 
         include/dirwindow.hpp 
         src/dirwindow.cpp

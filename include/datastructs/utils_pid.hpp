@@ -13,6 +13,7 @@ enum PID_INFO
     LOGINUID,
     SIZEBIN,
     BLOCKSIZEBIN,
+    EXEDIR,
     COUNT,
 };
 

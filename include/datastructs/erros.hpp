@@ -35,3 +35,10 @@ enum FIND_MEM
     NOT_FOUND,
     FOUND
 };
+
+
+enum STOPP
+{
+    STOPPED,
+    CONT
+};

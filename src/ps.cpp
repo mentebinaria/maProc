@@ -52,8 +52,8 @@ int Ps::Reading_DirProcess(std::unordered_map<std::string, std::string> &umap)
             name = PROC + std::string(dir_read->d_name) + COMM;
             try
             {
-                readFS(name, name, 24);
-                (name.size() == 0) ? name = "NF" : name;
+                readFS(name, name, 20);
+                (name.size() == 0) ? name = "N/S" : name;
                 umap.insert(std::make_pair(name, dir_read->d_name));
             }
             catch (std::exception &error)

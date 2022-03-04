@@ -18,5 +18,5 @@ public:
     FileDescriptor();
     ~FileDescriptor();
 
-    long readFS(std::string __name, std::string &__buffer, long __nblock, bool __blockn2 = false);
+    long readFS(std::string , std::string &, long , bool = false);
 };

@@ -22,15 +22,18 @@ private:
     Ps m_ps;
 
     void Conf_pidTable(void);
+    void setPid(QString );
     void Set_pidTable(void);
-    void setPid(QString __pid);
 
 public:
-    explicit DirWindow(QWidget *parent = nullptr);
+    explicit DirWindow(QWidget * = nullptr);
     virtual ~DirWindow();
 
     pid_t getPid();
-private slots:
-    void on_pidTable_doubleClicked(const QModelIndex &index);
 
+
+
+private slots:
+    void on_search_textEdited(const QString &);
+    void on_pidTable_doubleClicked(const QModelIndex &);
 };

@@ -118,10 +118,8 @@ void Pmap::split_mem_address(std::string &__foo)
 
     m_infos.addr_on = (off_t)addr_on_long, m_infos.addr_off = (off_t)addr_off_long, m_infos.flags = flags;
 
-    CLEAR_STRING(__foo)
+    CLEAR_STRING(__foo);
     CLEAR_STRING(flags);
-    CLEAR_STRING(addr_on);
-    CLEAR_STRING(addr_off);
 }
 
 /**
@@ -206,11 +204,21 @@ bool Pmap::map_mem(std::string __mem)
  *  @param __val pass value for modify
  *  @return bool
  */
-bool Pmap::map_write(off_t __addr, uint8_t __type)
+bool Pmap::map_write(off_t __addr, void *__value, uint8_t __size)
 {
-    Data data(__type);
-    RemoteProcess::readMem(__addr, &data);
-    return true;
+    bool status_exit = false;
+
+    Data data(__size);
+
+    for (int i = 0; i < __size; i++)
+        data.write('a');
+
+    if (RemoteProcess::writeMem(__addr, &data) != WRITE_FAIL)
+        status_exit = true;
+    else        
+        printf("Error\n");
+
+    return status_exit;
 }
 
 /**
@@ -224,11 +232,11 @@ bool Pmap::map_read(off_t __addr, uint8_t __type, Data &__data)
     bool status_exit = false;
     Data data(__type);
 
-    if (RemoteProcess::readMem(__addr, &data) != READ_FAIL)
-    {
-        status_exit = true;
-        __data = data;
-    }
+    // if (RemoteProcess::readMem(__addr, &data) != READ_FAIL)
+    //{
+    //     status_exit = true;
+    //     __data = data;
+    // }
 
     return status_exit;
 }
@@ -243,10 +251,23 @@ int Pmap::map_find(off_t __addr, uint64_t __length, std::string __find, uint8_t 
     return RemoteProcess::findMem(__addr, __length, __type, __find, __offsets);
 }
 
-void Pmap::map_close()
+/**
+ * @brief stop process if process stopped continue
+ *
+ */
+void Pmap::map_stop(bool __enable)
 {
-    RemoteProcess::closePid();
-    RemoteProcess::m_proc.pid = 0;
+     RemoteProcess::stopPid(__enable);
+}
+
+/**
+ * @brief kill process
+ *
+ */
+void Pmap::map_kill()
+{
+    if (m_infos.pid != 0)
+        RemoteProcess::killPid();
 }
 
 /**
@@ -304,68 +325,76 @@ std::string Pmap::get_utilsPid(uint8_t __utils)
     std::string name = PROC + pid_str;
     struct stat stats;
 
-    switch (__utils)
+    if (m_infos.pid != 0)
     {
-    case NAME:
-        name += "/comm";
-        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
-        break;
+        switch (__utils)
+        {
+        case NAME:
+            name += "/comm";
+            m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
+            break;
 
-    case WCHAN:
-        name += "/wchan";
-        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
-        break;
+        case WCHAN:
+            name += "/wchan";
+            m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
+            break;
 
-    case SESSIONID:
-        name += "/sessionid";
-        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
-        break;
+        case SESSIONID:
+            name += "/sessionid";
+            m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
+            break;
 
-    case CMDLINE:
-        name += "/cmdline";
-        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
-        break;
+        case CMDLINE:
+            name += "/cmdline";
+            m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
+            break;
 
-    case LOGINUID:
-        name += "/loginuid";
-        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
-        break;
+        case LOGINUID:
+            name += "/loginuid";
+            m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
+            break;
 
-    case SIZEBIN:
-        name += "/exe";
-        if (stat(name.data(), &stats) == 0)
-            buffer = std::to_string(stats.st_size);
-        break;
+        case SIZEBIN:
+            name += "/exe";
+            if (stat(name.data(), &stats) == 0)
+                buffer = std::to_string(stats.st_size);
+            break;
 
-    case BLOCKSIZEBIN:
-        name += "/exe";
-        if (stat(name.data(), &stats) == 0)
-            buffer = std::to_string(stats.st_blksize);
-        break;
+        case BLOCKSIZEBIN:
+            name += "/exe";
+            if (stat(name.data(), &stats) == 0)
+                buffer = std::to_string(stats.st_blksize);
+            break;
 
-    case HOSTNAME:
-        name = "/proc/sys/kernel/hostname";
-        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
-        break;
+        case EXEDIR:
+            buffer = name += "/exe";
+            break;
 
-    case OSREALESE:
-        name = "/proc/sys/kernel/osrelease";
-        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
-        break;
+        case HOSTNAME:
+            name = "/proc/sys/kernel/hostname";
+            m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
+            break;
 
-    case VERSION:
-        name = "/proc/sys/kernel/version";
-        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
-        break;
+        case OSREALESE:
+            name = "/proc/sys/kernel/osrelease";
+            m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
+            break;
 
-    case TYPE:
-        name = "/proc/sys/kernel/ostype";
-        m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
-        break;
+        case VERSION:
+            name = "/proc/sys/kernel/version";
+            m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
+            break;
 
-    default:
-        throw std::runtime_error("It was not possible to make the get at this value " + std::to_string(__utils));
+        case TYPE:
+            name = "/proc/sys/kernel/ostype";
+            m_FS.readFS(name, buffer, BUFFER_READ_UTILS);
+            break;
+        default:
+            throw std::runtime_error("It was not possible to make the get at this value " + std::to_string(__utils));
+        }
     }
+    else
+        throw std::runtime_error("Not read infos pid, set pid using map_pid(<pid>)");
 
     return buffer;
 }

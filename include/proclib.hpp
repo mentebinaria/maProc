@@ -22,6 +22,7 @@ public:
     void clear();
     uint m_size;
     uint8_t *m_buff;
+    uint m_ccurr;
 
 private:
     uint m_curr;
@@ -36,19 +37,21 @@ private:
 protected:
     struct Process
     {
-        off_t baseAddr;
         pid_t pid;
+        std::string dirmem;
+        int fd;
 
     } m_proc;
 
     RemoteProcess();
     virtual ~RemoteProcess();
 
-    int Analyse(char *__buffer, std::string __find, off_t __offset,
-                uint8_t __type, uint64_t lenght, std::vector<off_t> &offset);
-    int openProcess(pid_t __pid);
-    int readMem(off_t start, Data *data);
-    int writeMem(off_t start, Data *data);
-    int findMem(off_t start, uint64_t length, uint8_t type, std::string find, std::vector<off_t> &offsets);
-    void closePid();
+    int Analyse(char *, std::string, off_t,
+                uint8_t, uint64_t, std::vector<off_t> &);
+    int openProcess(pid_t);
+    int readMem(off_t, off_t, Data *);
+    int writeMem(off_t, Data *);
+    int findMem(off_t, uint64_t, uint8_t, std::string, std::vector<off_t> &);
+    void stopPid(bool);
+    void killPid();
 };

@@ -52,8 +52,6 @@ HexView::HexView(QWidget *parent) : QAbstractScrollArea(parent)
     int calc = m_posAscii + (MIN_BYTES_LINE * m_charWidth);
     setMinimumWidth(calc);
     setMinimumHeight(calc);
-    setMaximumWidth(calc);
-    setMaximumHeight(calc);
 
     setBackgroundRole(QPalette::Dark);
 }
@@ -116,6 +114,7 @@ void HexView::paintEvent(QPaintEvent *event)
             painter.setBackground(painter.brush());
             painter.setBackgroundMode(Qt::OpaqueMode);
         }
+        
         // address offset
         QString address = QString("%1").arg(lineIdx * m_bytesPerLine, 10, 16, QChar('0'));
         painter.drawText(m_posAddr, yPos, address);

@@ -29,6 +29,7 @@ void DirWindow::Conf_pidTable(void)
     m_ui->pidTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     m_ui->pidTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_ui->pidTable->verticalHeader()->setVisible(false);
+    m_ui->search->setPlaceholderText("Find");
 }
 
 /**
@@ -40,6 +41,7 @@ void DirWindow::Set_pidTable(void)
 
     if (dir_read == OPEN_SUCCESS)
     {
+
         for (auto &x : m_umap)
         {
             m_ui->pidTable->insertRow(m_ui->pidTable->rowCount());
@@ -48,6 +50,8 @@ void DirWindow::Set_pidTable(void)
             m_ui->pidTable->setItem(rowCount, Pid, new QTableWidgetItem(QString(QString::fromStdString(x.second))));
             m_ui->pidTable->setItem(rowCount, Name, new QTableWidgetItem(QString(QString::fromStdString(x.first))));
         }
+
+        m_ui->foundLabel->setText("Found " + QString::number(m_ui->pidTable->rowCount()));
     }
 }
 
@@ -71,6 +75,11 @@ pid_t DirWindow::getPid()
     return m_pid;
 }
 
+/**
+ * @brief set pid in table
+ *
+ * @param __pid
+ */
 void DirWindow::setPid(QString __pid)
 {
     try
@@ -83,4 +92,22 @@ void DirWindow::setPid(QString __pid)
     }
 
     close();
+}
+
+void DirWindow::on_search_textEdited(const QString &arg1)
+{
+    for (int i = 0; i < m_ui->pidTable->rowCount(); i++)
+        m_ui->pidTable->hideRow(i);
+
+    QList<QTableWidgetItem *> search = m_ui->pidTable->findItems(arg1, Qt::MatchContains);
+    foreach (auto &Ptr, search)
+    {
+        m_ui->pidTable->showRow(Ptr->row());
+        m_ui->foundLabel->setText("Found " + QString::number(search.size()));
+    }
+
+    if (arg1.size() == 0)
+        m_ui->foundLabel->setText("Found " + QString::number(m_ui->pidTable->rowCount()));
+
+    search.clear();
 }

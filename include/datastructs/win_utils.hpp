@@ -11,6 +11,9 @@
 #define ICON_NEW "../src/assets/new.png"
 #define ICON_ABOUT "../src/assets/about.png"
 #define ICON_HEX "../src/assets/hex.png"
+#define ICON_KILL "../src/assets/kill.png"
+#define ICON_STOP "../src/assets/stop.png"
+#define ICON_PLAY "../src/assets/play.png"
 
 #define NULL_STR "null"
 #define CLEAN_ROW " "

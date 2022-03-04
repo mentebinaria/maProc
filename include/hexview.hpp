@@ -38,29 +38,28 @@ private:
         m_cursorPos,
         m_bytesPerLine,
         m_statusExitWin;
-    void (*callback)();
 
     void confScrollBar();
     void updatePositions();
     void resetSelection();
-    void resetSelection(std::size_t pos);
-    void setSelection(int pos);
+    void resetSelection(std::size_t );
+    void setSelection(int );
     void ensureVisible();
-    void setCursorPos(int pos);
+    void setCursorPos(int );
 
     QSize fullSize() const;
-    std::size_t cursorPos(const QPoint &pos);
+    std::size_t cursorPos(const QPoint &);
 
 protected:
-    void paintEvent(QPaintEvent *event);
-    void keyPressEvent(QKeyEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mousePressEvent(QMouseEvent *event);
+    void paintEvent(QPaintEvent *);
+    void keyPressEvent(QKeyEvent *);
+    void mouseMoveEvent(QMouseEvent *);
+    void mousePressEvent(QMouseEvent *);
 
 public:
-    HexView(QWidget *parent = nullptr);
+    HexView(QWidget * = nullptr);
     ~HexView();
-    int LoadBinary(const QString &__fpath);
+    int LoadBinary(const QString &);
     int CallDialog();
     void Clear();
 };

@@ -21,7 +21,7 @@ private:
     FileDescriptor m_FS;
     std::string m_maps_buf;
 
-    void split_mem_address(std::string &__foo);
+    void split_mem_address(std::string &);
 
     struct Infos
     {
@@ -40,14 +40,15 @@ public:
     int map_pid(pid_t __pid);
     bool map_mem(std::string __mem);
 
-    bool map_write(off_t __addr, uint8_t __type);
-    bool map_read(off_t __addr, uint8_t __type, Data &__data);
-    int map_find(off_t __addr, uint64_t __length, std::string __find, uint8_t __type, std::vector<off_t> &__offsets);
-    void map_close();
+    bool map_write(off_t, void *, uint8_t);
+    bool map_read(off_t, uint8_t, Data &);
+    int map_find(off_t, uint64_t, std::string, uint8_t, std::vector<off_t> &);
+    void map_stop(bool = true);
+    void map_kill();
 
     off_t get_addrOn() const;
     off_t get_addrOff() const;
     uint64_t get_sizeAddress();
     std::string get_Flags();
-    std::string get_utilsPid(uint8_t __utils);
+    std::string get_utilsPid(uint8_t);
 };
