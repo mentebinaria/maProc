@@ -117,8 +117,9 @@ int RemoteProcess::Analyse(char *__buffer, std::string __find, off_t __offset, u
                     if (str == __find)
                         __save.push_back(__offset);
                 }
-                __offset++;
             }
+
+            __offset++;
         }
         break;
     default:
