@@ -92,7 +92,7 @@ If you want to end the process, just kill it
 ![kill](assets/kill.jpg)
 
 # About ©️ 
-we will make the maProc libs available in the following organization [CoffeeCode](https://github.com/0xc0ffeec0de), even shout your maProc.
+we will make the maProc libs available in the following organization [CoffeeCode](https://github.com/0xc0ffeec0de), create your own maProc.
 The project's main creators are [Mob](https://github.com/VitorMob), [Buzzer](https://github.com/AandersonL) with all copyrights to Mente Binária.
 
 
