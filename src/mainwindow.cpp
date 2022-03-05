@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     setWindowTitle(TITLE_WINDOW);
     setWindowIcon(QIcon(ICON_WINDOW));
-    setMinimumWidth(650);
+    setMinimumWidth(660);
     setMinimumHeight(650);
 
     // status bar conf default
@@ -268,14 +268,16 @@ void MainWindow::mapper_find(off_t __addr, off_t __length, std::string __find,
 {
     try
     {
-        if (m_mapper.map_find(__addr, __length, __find, __type, __offsets) == READ_FAIL)
+        if (m_ui->checkCache->isChecked())
+            std::cout << "Done" << std::endl;
+        else if (m_mapper.map_find(__addr, __length, __find, __type, __offsets) == READ_FAIL)
             QMessageBox::critical(nullptr, "Fail Read", "Not read memory, error in start  0x" + QString::number(__addr, 16));
 
         QString sizeFound = QString::fromStdString(std::to_string(__offsets.size()));
 
         if (m_ui->checkLog->isChecked())
         {
-            write_log("[SEARCH] PID [" + QString::fromStdString(std::to_string(m_pid)) + "] searched in memory start [" + QString::number(__addr, 16) + "] [" + QString::fromStdString(__find) + "] found these addresses with such values [" + sizeFound + "]");
+            write_log("[SEARCH] PID [" + QString::fromStdString(std::to_string(m_pid)) + "] searched in memory start 0x[" + QString::number(__addr, 16) + "] [" + QString::fromStdString(__find) + "] found these addresses with such values [" + sizeFound + "]");
         }
         m_ui->foundAddr_label->setText("Found : " + sizeFound);
     }
