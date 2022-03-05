@@ -13,6 +13,8 @@ The project is done in the C++ language.
 
 [License](LICENSE) BSD
 
+Dependency to compile code
+`apt install qtcreator  g++ cmake`
 
 
 # Help
@@ -28,7 +30,9 @@ after the pid selection, the process will start to check and bring information a
 
 search table will try to map the process in memory
 bringing some information, such as addresses where stack/heap starts and ends and the size of each one with the permission flags, in the left part of the table, we can look for both the stack and the heap, or both, for example
+
 ![Example](assets/search.jpg) 
+
 we can notice that I'm looking in the heap, the string value `Mente Binaria`,from there, maProc will scan all the process memory on the heap, looking for all the strings it finds `Mente Binária`
 ![AddressView](assets/viewAddress.jpg) we can see that maProc found this address containing our searched string. 
 
@@ -39,6 +43,7 @@ Note: if a value appears many times in several addresses and you have an idea wh
 ##### Log 
 
 We can save our actions in the maproc log, so we can always consult and check what we changed in the process and possible errors during the process, just check the checkbox, titled as Log
+
 ![CheckBox](assets/checkBoxLog.jpg)
 
 We can check our logs on the LOG page 
