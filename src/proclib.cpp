@@ -112,10 +112,14 @@ int RemoteProcess::Analyse(char *__buffer, std::string __find, off_t __offset, u
             {
                 if (__buffer[it] == __find[0])
                 {
-                    for (std::size_t i = 0; i != __find.size(); i++)
-                        str += __buffer[it += i];
-                    if (str == __find)
+                    
+                    for (std::size_t i = 0; i != __find.size(); i++) 
+                        str += __buffer[it + i];
+                    
+                    if (str == __find) {
                         __save.push_back(__offset);
+
+                    }
                 }
                 __offset++;
             }
