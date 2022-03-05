@@ -1,4 +1,4 @@
-# maProc
+# maProc 🐉
 As the name maProc informs, it will map processes in linux, being able  to check a process's stack/heap, being able to change the memory with write permission,  you can manipulate the process by sending a SIGNAL and can stop or pause it process.
 
 ![Icon](src/assets/maProc.png)
@@ -31,13 +31,13 @@ bringing some information, such as addresses where stack/heap starts and ends an
 
 ![Example](assets/search.jpg) 
 
-we can notice that I'm looking in the heap, the string value `Mente Binaria`,from there, maProc will scan all the process memory on the heap, looking for all the strings it finds `Mente Binária`
+we can notice that I'm looking in the heap, the string value "Mente Binaria",from there, maProc will scan all the process memory on the heap, looking for all the strings it finds "Mente Binária"
 ![AddressView](assets/viewAddress.jpg) 
 we can see that maProc found this address containing our searched string. 
 
-Note: if a value appears many times in several addresses and you have an idea where the string address starts, just do a search in the table.
 ![AddressSearchV](assets/addressSearchV.jpg)
 
+Note: if a value appears many times in several addresses and you have an idea where the string address starts, just do a search in the table.
 
 ##### Log 
 
@@ -54,7 +54,7 @@ With the checkbox checked we can check what we have done so far
 ![Log](assets/log.jpg)
 
 
-#### Edit
+##### Edit
 
 We can take a look at the edit page, we will need the following information for in-memory editing, Address, Value, double clicking on the table containing the address, you will add the address you want to edit ![Addressedit](assets/addressEdit.jpg) 
 
@@ -102,17 +102,23 @@ The project's main creators are [Mob](https://github.com/VitorMob), [Buzzer](htt
 * Infos Executable
 * Infos OS
 
-# Compile
+# Compile 🖨️
 
 > Commands 
-    `cd maProc`
-    `mkdir build`
-    `cd build`
-    `cmake ..`
-    `make`
+>    `cd maProc`
+> 
+>    `mkdir build`
+>
+>    `cd build`
+> 
+>    `cmake ..`
+>
+>    `make`
 
 
 > Dependency
-    `qt-creator`
-    `cmake`
-    `build-essential`
+>    `qt-creator`
+> 
+>    `cmake`
+> 
+>    `build-essential`
