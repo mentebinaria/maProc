@@ -108,13 +108,13 @@ int RemoteProcess::Analyse(char *__buffer, std::string __find, off_t __offset, u
         __save.clear();
         {
             std::string str;
-            for (uint64_t i = 0; i < lenght; i++)
+            for (uint64_t it = 0; it < lenght; it++)
             {
-                if (__buffer[i] == __find[0])
+                if (__buffer[it] == __find[0])
                 {
-                    for (std::size_t i = 0; i < __find.size(); i++)
-                        str += __buffer[i += i];
-                    if (strncmp(str.data(), __find.data(), __find.size()))
+                    for (std::size_t i = 0; i != __find.size(); i++)
+                        str += __buffer[it += i];
+                    if (str == __find)
                         __save.push_back(__offset);
                 }
                 __offset++;
@@ -210,12 +210,9 @@ int RemoteProcess::writeMem(off_t start, Data *data)
     if (m_status == -1)
         return WRITE_FAIL;
 
-    for (uint i = 0; i < data->m_size; i++)
-    {
-        ssize_t write = pwrite(m_proc.fd, reinterpret_cast<const void *>(data->read()), data->m_size, start);
-        if (write == -1)
-            return WRITE_FAIL;
-    }
+    ssize_t write = pwrite(m_proc.fd, reinterpret_cast<const void *>(data->m_buff), data->m_size, start);
+    if (write == -1)
+        return WRITE_FAIL;
 
     return WRITE_SUCCESS;
 }
@@ -289,13 +286,24 @@ Data::Data(uint __size)
 {
     m_size = __size;
     m_buff = new uint8_t[m_size];
+    externalRef = false;
+    m_curr = 0;
+    m_ccurr = 0;
+}
+
+Data::Data(uint8_t *buff, uint size)
+{
+    m_buff = buff;
+    externalRef = true;
+    m_size = size;
     m_curr = 0;
     m_ccurr = 0;
 }
 
 Data::~Data()
 {
-    delete[] m_buff;
+    if (!externalRef)
+        delete[] m_buff;
 }
 
 void Data::write(uint8_t b)
@@ -306,12 +314,12 @@ void Data::write(uint8_t b)
     m_buff[m_curr] = b;
 }
 
-uint8_t Data::read()
+uint8_t *Data::read()
 {
     if (m_ccurr == m_size)
-        return '\0';
+        return nullptr;
 
-    return m_buff[++m_ccurr];
+    return &m_buff[++m_ccurr];
 }
 
 void Data::clear()

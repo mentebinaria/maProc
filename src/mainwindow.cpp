@@ -260,7 +260,7 @@ void MainWindow::set_types_edit_read()
     m_typeSizes.insert(std::make_pair<std::string, size_t>("string", sizeof(std::string)));
 }
 
-void MainWindow::mapper_find(off_t __addr, off_t __length, std::__cxx11::string __find,
+void MainWindow::mapper_find(off_t __addr, off_t __length, std::string __find,
                              uint8_t __type, std::vector<off_t> &__offsets)
 {
     try
@@ -441,7 +441,7 @@ void MainWindow::on_editButton_clicked()
     if (it != m_typeSizes.end() && address != 0 && m_pid != 0 && value.size() != 0)
     {
         std::size_t SizeS = (varType == "string") ? value.size() : it->second;
-        if (m_mapper.map_write(address, (void *)value.data(), SizeS) == true)
+        if (m_mapper.map_write(address, (void *)&value[0], SizeS) == true)
         {
             QMessageBox::information(nullptr, "SUCESS", "Memory successfully edited");
         }

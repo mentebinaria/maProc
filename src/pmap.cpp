@@ -204,19 +204,14 @@ bool Pmap::map_mem(std::string __mem)
  *  @param __val pass value for modify
  *  @return bool
  */
-bool Pmap::map_write(off_t __addr, void *__value, uint8_t __size)
+bool Pmap::map_write(off_t __addr, void *__value, uint __size)
 {
     bool status_exit = false;
 
-    Data data(__size);
-
-    for (int i = 0; i < __size; i++)
-        data.write('a');
+    Data data((uint8_t *)__value, __size);
 
     if (RemoteProcess::writeMem(__addr, &data) != WRITE_FAIL)
         status_exit = true;
-    else        
-        printf("Error\n");
 
     return status_exit;
 }
@@ -257,7 +252,7 @@ int Pmap::map_find(off_t __addr, uint64_t __length, std::string __find, uint8_t 
  */
 void Pmap::map_stop(bool __enable)
 {
-     RemoteProcess::stopPid(__enable);
+    RemoteProcess::stopPid(__enable);
 }
 
 /**

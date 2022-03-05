@@ -7,3 +7,4 @@ bin/
 .vscode
 .gitignore
 *auto*
+.cache

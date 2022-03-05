@@ -29,7 +29,7 @@ public:
 
 private slots:
     void verify_pid();
-    void mapper_find(off_t , off_t , std::__cxx11::string ,
+    void mapper_find(off_t , off_t , std::string ,
                      uint8_t , std::vector<off_t> &);
 
     off_t valid_address_edit();

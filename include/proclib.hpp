@@ -16,13 +16,15 @@ class Data
 {
 public:
     Data(uint __size);
+    Data(uint8_t *m_buff, uint m_size);
     virtual ~Data();
     void write(uint8_t b);
-    uint8_t read();
+    uint8_t *read();
     void clear();
     uint m_size;
     uint8_t *m_buff;
     uint m_ccurr;
+    bool externalRef;
 
 private:
     uint m_curr;
