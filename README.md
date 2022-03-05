@@ -3,25 +3,23 @@ As the name maProc informs, it will map processes in linux, being able  to check
 
 ![Icon](src/assets/maProc.png)
 
-# About
-we will make the maProc libs available in the following organization [CoffeeCode](https://github.com/0xc0ffeec0de), even shout your maProc.
-The project's main creators are [Mob](https://github.com/VitorMob), [Buzzer](https://github.com/AandersonL) with all copyrights to Mente Binária.
 
 
-# Infos
-The project is done in the C++ language.
+# Infos ℹ️
+> Made in C++ lang
 
-[License](LICENSE) BSD
+> Maproc will easily change the memory without depending on ptrace, however we will depend on the support of the system to contain the pseudo directory `/mem`, otherwise reading and writing in memory will not be possible,we intend to implement it with ptrace in the future.
 
-Dependency to compile code
-`apt install qtcreator  g++ cmake`
+> [License](LICENSE) BSD 2-Clause
 
 
-# Help
+# Help 🆘
 
 ##### Pid Button
 To use maproc is very simple, you will need a process running on your machine on which you want to map,the button will check all processes on your machine that are currently running
-![Pid](assets/pid.jpg) Note: it will only bring up processes that maProc has permission to check, if the process is running in `root` and maproc running on a user that does not have permission to check such a process will not bring it to be selected
+
+![Pid](assets/pid.jpg) 
+Note: it will only bring up processes that maProc has permission to check, if the process is running in `root` and maproc running on a user that does not have permission to check such a process will not bring it to be selected
 
 ##### Overview Table
 after the pid selection, the process will start to check and bring information about the process, we can check the `Overview` table, we can have the following information, information about the pid, about the executable and information about our host machine.
@@ -48,6 +46,7 @@ We can save our actions in the maproc log, so we can always consult and check wh
 ![CheckBox](assets/checkBoxLog.jpg)
 
 We can check our logs on the LOG page 
+
 ![Page](assets/pageLog.jpg)
 
 
@@ -70,12 +69,12 @@ This way my process stopped, we can see in my terminal
 Note: Repeating, it is *not necessary* to pause a process to be able to change the memory, I just demonstrated the `STOPP` button.
 
 
-as an editing choice, I chose to add such a string for editing our process `Papo Binario`
+as an editing choice, I chose to add such a string for editing our process "Papo Binario"
 
 ![editMenteBinaria](assets/editValueAddress.jpg)
 
 
-We can notice that in the terminal where the process is being executed with the string `Mente Binaria`, it was changed to `Papo Binario`
+We can notice that in the terminal where the process is being executed with the string "Mente Binaria", it was changed to "Papo Binario"
 
 ![editedMP](assets/editedMP.jpg)
 
@@ -86,3 +85,34 @@ We can check the log if the string was changed
 If you want to end the process, just kill it 
 
 ![kill](assets/kill.jpg)
+
+# About ©️ 
+we will make the maProc libs available in the following organization [CoffeeCode](https://github.com/0xc0ffeec0de), even shout your maProc.
+The project's main creators are [Mob](https://github.com/VitorMob), [Buzzer](https://github.com/AandersonL) with all copyrights to Mente Binária.
+
+
+# Features 🔥
+
+* Stop Process 
+* Kill Process
+* Hex View
+* Read Memory
+* Edit Memory
+* Infos Pid
+* Infos Executable
+* Infos OS
+
+# Compile
+
+> Commands 
+    `cd maProc`
+    `mkdir build`
+    `cd build`
+    `cmake ..`
+    `make`
+
+
+> Dependency
+    `qt-creator`
+    `cmake`
+    `build-essential`
