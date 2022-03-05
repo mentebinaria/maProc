@@ -519,7 +519,7 @@
         <string>Search</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="1" column="2" alignment="Qt::AlignLeft|Qt::AlignTop">
+        <item row="6" column="3" alignment="Qt::AlignLeft|Qt::AlignTop">
          <widget class="QScrollArea" name="editArea">
           <property name="minimumSize">
            <size>
@@ -561,7 +561,7 @@
                </size>
               </property>
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="page">
                <property name="geometry">
@@ -569,7 +569,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>116</width>
-                 <height>169</height>
+                 <height>192</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -745,14 +745,7 @@
           </widget>
          </widget>
         </item>
-        <item row="0" column="2">
-         <widget class="QCheckBox" name="checkLog">
-          <property name="text">
-           <string>Log</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
+        <item row="6" column="1">
          <layout class="QGridLayout" name="grid_Mapping">
           <item row="2" column="1">
            <widget class="QScrollArea" name="viewaArea">
@@ -765,7 +758,7 @@
                <x>0</x>
                <y>0</y>
                <width>555</width>
-               <height>524</height>
+               <height>522</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -931,6 +924,16 @@
                 </column>
                </widget>
               </item>
+              <item alignment="Qt::AlignRight">
+               <widget class="QLineEdit" name="search_address">
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>100</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QLabel" name="foundAddr_label">
                 <property name="text">
@@ -944,6 +947,24 @@
           </item>
          </layout>
         </item>
+        <item row="0" column="3">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QCheckBox" name="checkLog">
+            <property name="text">
+             <string>Log</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox">
+            <property name="text">
+             <string>Cache</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="Log">
@@ -952,17 +973,9 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_9">
         <item alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="log_label">
-          <property name="font">
-           <font>
-            <family>Fira Code Medium</family>
-            <pointsize>24</pointsize>
-            <weight>50</weight>
-            <bold>false</bold>
-           </font>
-          </property>
+         <widget class="QLabel" name="label">
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;LOG&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:22pt; font-weight:600;&quot;&gt;LOG&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>

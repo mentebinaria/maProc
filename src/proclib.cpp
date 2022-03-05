@@ -113,7 +113,7 @@ int RemoteProcess::Analyse(char *__buffer, std::string __find, off_t __offset, u
                 if (__buffer[it] == __find[0])
                 {
                     for (std::size_t i = 0; i != __find.size(); i++)
-                        str += __buffer[it += i];
+                        str += __buffer[it + i];
                     if (str == __find)
                         __save.push_back(__offset);
                 }
@@ -141,7 +141,7 @@ RemoteProcess::RemoteProcess()
 int RemoteProcess::openProcess(pid_t __pid)
 {
     m_proc.pid = __pid;
-
+    m_status = OPEN_SUCCESS;
     struct stat st;
     m_proc.dirmem = PROC + std::to_string(m_proc.pid) + "/mem";
 
@@ -149,10 +149,10 @@ int RemoteProcess::openProcess(pid_t __pid)
     {
         m_proc.fd = open(m_proc.dirmem.data(), O_RDWR);
         if (m_proc.fd == -1)
-            m_status = -1;
+            m_status = OPEN_FAIL;
     }
     else
-        m_status = -1;
+        m_status = OPEN_FAIL;
 
     return m_status;
 }
@@ -181,7 +181,7 @@ RemoteProcess::~RemoteProcess()
  */
 int RemoteProcess::readMem(off_t start, off_t stop, Data *data)
 {
-    if (m_status == -1)
+    if (m_status == OPEN_FAIL)
         return READ_FAIL;
 
     size_t bsize = stop - start;
@@ -207,7 +207,7 @@ int RemoteProcess::readMem(off_t start, off_t stop, Data *data)
  */
 int RemoteProcess::writeMem(off_t start, Data *data)
 {
-    if (m_status == -1)
+    if (m_status == OPEN_FAIL)
         return WRITE_FAIL;
 
     ssize_t write = pwrite(m_proc.fd, reinterpret_cast<const void *>(data->m_buff), data->m_size, start);
@@ -226,7 +226,7 @@ int RemoteProcess::writeMem(off_t start, Data *data)
  */
 int RemoteProcess::findMem(off_t start, uint64_t length, uint8_t type, std::string find, std::vector<off_t> &offsets)
 {
-    if (m_status == -1)
+    if (m_status == OPEN_FAIL)
     {
         throw std::runtime_error("Error not open file " + m_proc.dirmem);
         return OPEN_FAIL;
@@ -281,6 +281,11 @@ void RemoteProcess::killPid()
 {
     kill(m_proc.pid, SIGKILL);
 }
+
+//
+// part of the code in which we are going
+// to move the buffer for writing to memory and reading
+//
 
 Data::Data(uint __size)
 {

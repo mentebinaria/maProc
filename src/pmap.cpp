@@ -227,11 +227,11 @@ bool Pmap::map_read(off_t __addr, uint8_t __type, Data &__data)
     bool status_exit = false;
     Data data(__type);
 
-    // if (RemoteProcess::readMem(__addr, &data) != READ_FAIL)
+    //if (RemoteProcess::readMem(__addr, &data) != READ_FAIL)
     //{
-    //     status_exit = true;
-    //     __data = data;
-    // }
+    //    status_exit = true;
+    //    __data = data;
+    //}
 
     return status_exit;
 }

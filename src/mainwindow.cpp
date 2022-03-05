@@ -91,6 +91,9 @@ void MainWindow::conf_button_all()
 
     // stop / play button
     m_ui->stopButton->setIcon(QIcon(ICON_STOP));
+
+    // search address
+    m_ui->search_address->setPlaceholderText("Address");
 }
 
 /**
@@ -279,7 +282,10 @@ void MainWindow::mapper_find(off_t __addr, off_t __length, std::string __find,
     catch (std::exception &error)
     {
         m_ui->foundAddr_label->setText("Found : 0");
-        write_log("[ERROR] not read memory " + QString::fromStdString(error.what()));
+        if (m_ui->checkLog->isChecked())
+        {
+            write_log("[ERROR] not read memory " + QString::fromStdString(error.what()));
+        }
         QMessageBox::critical(nullptr, "Not Read", error.what());
     }
 }
@@ -440,10 +446,12 @@ void MainWindow::on_editButton_clicked()
 
     if (it != m_typeSizes.end() && address != 0 && m_pid != 0 && value.size() != 0)
     {
-        std::size_t SizeS = (varType == "string") ? value.size() : it->second;
-        if (m_mapper.map_write(address, (void *)&value[0], SizeS) == true)
+        std::size_t SizeT = (varType == "string") ? value.size() : it->second;
+        if (m_mapper.map_write(address, (void *)&value[0], SizeT) == true)
         {
             QMessageBox::information(nullptr, "SUCESS", "Memory successfully edited");
+            if (m_ui->checkLog->isChecked())
+                write_log("[EDITED] Memory edited address [" + QString::number(address, 16) + "]  [" + m_ui->find->text() + "] - > [" + QString::fromStdString(value) + "]");
         }
     }
     else if (it == m_typeSizes.end()) // critical error, will exit the program
@@ -585,4 +593,27 @@ void MainWindow::on_killButton_clicked()
     m_pid = 0;
     m_mapper.map_kill();
     column_clean_all();
+}
+
+/**
+ * @brief search table view address
+ *
+ * @param arg1
+ */
+void MainWindow::on_search_address_textEdited(const QString &arg1)
+{
+    for (int i = 0; i < m_ui->view_address->rowCount(); i++)
+        m_ui->view_address->hideRow(i);
+
+    QList<QTableWidgetItem *> search = m_ui->view_address->findItems(arg1, Qt::MatchContains);
+    foreach (auto &Ptr, search)
+    {
+        m_ui->view_address->showRow(Ptr->row());
+        m_ui->foundAddr_label->setText("Found " + QString::number(search.size()));
+    }
+
+    if (arg1.size() == 0)
+        m_ui->foundAddr_label->setText("Found " + QString::number(m_ui->view_address->rowCount()));
+
+    search.clear();
 }

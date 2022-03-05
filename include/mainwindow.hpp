@@ -28,6 +28,9 @@ public:
 
 
 private slots:
+    void on_search_address_textEdited(const QString &arg1);
+
+private slots:
     void verify_pid();
     void mapper_find(off_t , off_t , std::string ,
                      uint8_t , std::vector<off_t> &);
