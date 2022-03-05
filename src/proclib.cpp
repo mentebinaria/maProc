@@ -19,7 +19,7 @@
  * @param __type type char ...
  * @return int
  */
-int RemoteProcess::Analyse(char *__buffer, std::string __find, off_t __offset, uint8_t __type,
+void RemoteProcess::Analyse(char *__buffer, std::string __find, off_t __offset, uint8_t __type,
                            uint64_t lenght, std::vector<off_t> &__save)
 {
     switch (__type)
@@ -114,18 +114,17 @@ int RemoteProcess::Analyse(char *__buffer, std::string __find, off_t __offset, u
                 {
                     for (std::size_t i = 0; i != __find.size(); i++)
                         str += __buffer[it + i];
+
                     if (str == __find)
                         __save.push_back(__offset);
                 }
+                __offset++;
             }
-
-            __offset++;
         }
         break;
     default:
         break;
     }
-    return 0;
 }
 
 RemoteProcess::RemoteProcess()

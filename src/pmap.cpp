@@ -222,16 +222,16 @@ bool Pmap::map_write(off_t __addr, void *__value, uint __size)
  *  @param __off for end address mapped
  *  @return void
  */
-bool Pmap::map_read(off_t __addr, uint8_t __type, Data &__data)
+bool Pmap::map_read(off_t __addr, uint __size, Data __data)
 {
     bool status_exit = false;
-    Data data(__type);
+    Data data(__size);
 
-    //if (RemoteProcess::readMem(__addr, &data) != READ_FAIL)
-    //{
-    //    status_exit = true;
-    //    __data = data;
-    //}
+    if (RemoteProcess::readMem(__addr, __addr + __size, &data) != READ_FAIL)
+    {
+        status_exit = true;
+        __data = data;
+    }
 
     return status_exit;
 }

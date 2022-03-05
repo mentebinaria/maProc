@@ -48,7 +48,7 @@ protected:
     RemoteProcess();
     virtual ~RemoteProcess();
 
-    int Analyse(char *, std::string, off_t,
+    void Analyse(char *, std::string, off_t,
                 uint8_t, uint64_t, std::vector<off_t> &);
     int openProcess(pid_t);
     int readMem(off_t, off_t, Data *);

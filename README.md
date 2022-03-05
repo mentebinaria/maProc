@@ -34,7 +34,8 @@ bringing some information, such as addresses where stack/heap starts and ends an
 ![Example](assets/search.jpg) 
 
 we can notice that I'm looking in the heap, the string value `Mente Binaria`,from there, maProc will scan all the process memory on the heap, looking for all the strings it finds `Mente Binária`
-![AddressView](assets/viewAddress.jpg) we can see that maProc found this address containing our searched string. 
+![AddressView](assets/viewAddress.jpg) 
+we can see that maProc found this address containing our searched string. 
 
 Note: if a value appears many times in several addresses and you have an idea where the string address starts, just do a search in the table.
 ![AddressSearchV](assets/addressSearchV.jpg)
@@ -85,4 +86,3 @@ We can check the log if the string was changed
 If you want to end the process, just kill it 
 
 ![kill](assets/kill.jpg)
-
