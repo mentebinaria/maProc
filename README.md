@@ -4,7 +4,6 @@ As the name maProc informs, it will map processes in linux, being able  to check
 ![Icon](src/assets/maProc.png)
 
 
-
 # Infos ℹ️
 > Made in C++ lang
 
@@ -19,6 +18,7 @@ As the name maProc informs, it will map processes in linux, being able  to check
 To use maproc is very simple, you will need a process running on your machine on which you want to map,the button will check all processes on your machine that are currently running
 
 ![Pid](assets/pid.jpg) 
+
 Note: it will only bring up processes that maProc has permission to check, if the process is running in `root` and maproc running on a user that does not have permission to check such a process will not bring it to be selected
 
 ##### Overview Table
@@ -32,7 +32,9 @@ bringing some information, such as addresses where stack/heap starts and ends an
 ![Example](assets/search.jpg) 
 
 we can notice that I'm looking in the heap, the string value "Mente Binaria",from there, maProc will scan all the process memory on the heap, looking for all the strings it finds "Mente Binária"
+
 ![AddressView](assets/viewAddress.jpg) 
+
 we can see that maProc found this address containing our searched string. 
 
 ![AddressSearchV](assets/addressSearchV.jpg)
@@ -56,10 +58,13 @@ With the checkbox checked we can check what we have done so far
 
 ##### Edit
 
-We can take a look at the edit page, we will need the following information for in-memory editing, Address, Value, double clicking on the table containing the address, you will add the address you want to edit ![Addressedit](assets/addressEdit.jpg) 
+We can take a look at the edit page, we will need the following information for in-memory editing, Address, Value, double clicking on the table containing the address, you will add the address you want to edit 
+
+![Addressedit](assets/addressEdit.jpg) 
 
 with the process paused or running, we can change the string allocated on the heap as maproc showed us, and check if it was changed correctly,in the process that the string "Binary Mind" is allocated, I paused the process by sending a signal with the
- ![stopp](assets/stopp.jpg)
+ 
+![stopp](assets/stopp.jpg)
 
 This way my process stopped, we can see in my terminal
 
@@ -87,7 +92,7 @@ If you want to end the process, just kill it
 ![kill](assets/kill.jpg)
 
 # About ©️ 
-we will make the maProc libs available in the following organization [CoffeeCode](https://github.com/0xc0ffeec0de), even shout your maProc.
+we will make the maProc libs available in the following organization [CoffeeCode](https://github.com/0xc0ffeec0de), create your own maProc.
 The project's main creators are [Mob](https://github.com/VitorMob), [Buzzer](https://github.com/AandersonL) with all copyrights to Mente Binária.
 
 
@@ -105,20 +110,15 @@ The project's main creators are [Mob](https://github.com/VitorMob), [Buzzer](htt
 # Compile 🖨️
 
 > Commands 
->    `cd maProc`
-> 
->    `mkdir build`
->
->    `cd build`
-> 
->    `cmake ..`
->
->    `make`
+ 
+    cd maProc
+    mkdir build
+    cd build
+    cmake ..
+    make
 
 
 > Dependency
->    `qt-creator`
-> 
->    `cmake`
-> 
->    `build-essential`
+ 
+    qt-creator
+    build-essential
