@@ -681,10 +681,14 @@ void MainWindow::on_stopButton_clicked()
  */
 void MainWindow::on_killButton_clicked()
 {
-    m_pid = 0;
-    m_mapper.map_kill();
-    column_clean_all();
-    write_log("[SIGNAL KILL] you send a signal to the PID=" + QString::fromStdString(std::to_string(m_pid)) + ", sending it on a kill in the process")
+    QMessageBox::StandardButton kill = QMessageBox::question(this, "SIGNAL KILL", "Kill Process " + m_pid_name + "? ", QMessageBox::Yes | QMessageBox::No);
+    if (kill == QMessageBox::Yes)
+    {
+        m_pid = 0;
+        m_mapper.map_kill();
+        column_clean_all();
+        write_log("[SIGNAL KILL] you send a signal to the PID=" + QString::fromStdString(std::to_string(m_pid)) + ", sending it on a kill in the process")
+    }
 }
 
 /**
