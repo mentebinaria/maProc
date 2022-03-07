@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <QTableWidgetItem>
 #include <vector>
+#include <memory>
 
 #include "include/hexview.hpp"
 #include "include/ps.hpp"
@@ -26,26 +27,23 @@ public:
     void mainMapper();
     pid_t m_pid;
 
-
-private slots:
-    void on_search_address_textEdited(const QString &arg1);
-
 private slots:
     void verify_pid();
-    void mapper_find(off_t , off_t , std::string ,
-                     uint8_t , std::vector<off_t> &);
+    void mapper_find(off_t, off_t, std::string,
+                     uint8_t, std::vector<off_t> &);
 
     off_t valid_address_edit();
     void column_clean_all();
     void conf_button_all();
     void column_config_all();
     void set_values_column_utils();
-    void set_values_column_address(std::vector<off_t> &, std::string , std::string );
+    void set_values_column_address(std::vector<off_t> &, std::string, std::string);
     void view_address_table(QTableWidgetItem *);
     void set_values_column_heap();
     void set_values_column_stack();
     void set_types_edit_read();
 
+    void on_search_address_textEdited(const QString &arg1);
     void on_pidButton_clicked();
     void on_searchButton_clicked();
     void on_cleanButton_triggered();
@@ -74,11 +72,12 @@ private:
     QString m_sys_hostname;
     QString m_sys_osrealese;
     QString m_sys_version;
-    QString m_sys_type; 
+    QString m_sys_type;
 
     std::unordered_map<std::string, size_t> m_typeSizes;
     Ui::MainWindow *m_ui;
     Ps m_ps;
     Pmap m_mapper;
     HexView m_hex;
+    std::shared_ptr<QDialog> m_dialog;
 };

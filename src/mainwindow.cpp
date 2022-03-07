@@ -2,6 +2,7 @@
 #include "include/datastructs/win_utils.hpp"
 #include "include/dirwindow.hpp"
 #include "gui/ui_mainwindow.h"
+#include "gui/ui_about.h"
 
 #include <iostream>
 #include <string>
@@ -21,7 +22,8 @@
         m_ui->log_text->appendPlainText(string);
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
-                                          m_ui(new Ui::MainWindow)
+                                          m_ui(new Ui::MainWindow),
+                                          m_dialog()
 {
     m_ui->setupUi(this);
 
@@ -539,6 +541,11 @@ void MainWindow::on_rpidButton_clicked()
  */
 void MainWindow::on_aboutButton_triggered()
 {
+    m_dialog.reset(new QDialog(this));
+    Ui_m_about aboutUi;
+    aboutUi.setupUi(m_dialog.get());
+
+    m_dialog->showNormal();
 }
 
 /**
