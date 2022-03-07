@@ -176,7 +176,8 @@ void MainWindow::verify_pid()
 
         // tell the status bar which pid is being mapped
         m_ui->statusBar->showMessage("PID: " + QString::fromStdString(std::to_string(m_pid)) + " Name: " + m_pid_name);
-    }else
+    }
+    else
         m_pid = 0;
 }
 
@@ -515,9 +516,13 @@ void MainWindow::on_editButton_clicked()
     {
         std::size_t SizeT = (varType == "string") ? value.size() : it->second;
         if (m_mapper.map_write(address, (void *)&value[0], SizeT) == true)
+        {
             write_log("[EDITED] Memory edited address [0x" + QString::number(address, 16) + "]  [" + m_ui->find->text() + "] - > [" + QString::fromStdString(value) + "]");
-
-        write_log("[ERROR] Fail edit memory [0x" + QString::number(address, 16) + "]  [" + m_ui->find->text() + "] - > [" + QString::fromStdString(value) + "]");
+        }
+        else
+        {
+            write_log("[ERROR] Fail edit memory [0x" + QString::number(address, 16) + "]  [" + m_ui->find->text() + "] - > [" + QString::fromStdString(value) + "]");
+        }
     }
     else if (it == m_typeSizes.end()) // critical error, will exit the program
     {
@@ -664,23 +669,31 @@ void MainWindow::on_stopButton_clicked()
     if (m_pid == 0)
         return;
 
-    if (m_ui->stopButton->text() == "STOPP")
+    try
     {
-        m_mapper.map_stop();
-        m_ui->stopButton->setText("PPLAY");
-        m_ui->stopButton->setIcon(QIcon(ICON_PLAY));
-        m_pid_wchan = QString::fromStdString(m_mapper.get_utilsPid(WCHAN));
-        m_ui->infos_pid->setItem(3, 0, new QTableWidgetItem(m_pid_wchan));
-        write_log("[SIGNAL STOP] you send a signal to the PID=" + QString::fromStdString(std::to_string(m_pid)) + ", sending it on a stop in the process")
+        if (m_ui->stopButton->text() == "STOPP")
+        {
+            m_mapper.map_stop();
+            m_ui->stopButton->setText("PPLAY");
+            m_ui->stopButton->setIcon(QIcon(ICON_PLAY));
+            m_pid_wchan = QString::fromStdString(m_mapper.get_utilsPid(WCHAN));
+            m_ui->infos_pid->setItem(3, 0, new QTableWidgetItem(m_pid_wchan));
+            write_log("[SIGNAL STOP] you send a signal to the PID=" + QString::fromStdString(std::to_string(m_pid)) + ", sending it on a stop in the process")
+        }
+        else if (m_ui->stopButton->text() == "PPLAY")
+        {
+            m_mapper.map_stop(false);
+            m_ui->stopButton->setText("STOPP");
+            m_ui->stopButton->setIcon(QIcon(ICON_STOP));
+            m_pid_wchan = QString::fromStdString(m_mapper.get_utilsPid(WCHAN));
+            m_ui->infos_pid->setItem(3, 0, new QTableWidgetItem(m_pid_wchan));
+            write_log("[SIGNAL RUNNING] you send a signal to the PID=" + QString::fromStdString(std::to_string(m_pid)) + ", sending it on a running in the process")
+        }
     }
-    else if (m_ui->stopButton->text() == "PPLAY")
+    catch (std::exception &error)
     {
-        m_mapper.map_stop(false);
-        m_ui->stopButton->setText("STOPP");
-        m_ui->stopButton->setIcon(QIcon(ICON_STOP));
-        m_pid_wchan = QString::fromStdString(m_mapper.get_utilsPid(WCHAN));
-        m_ui->infos_pid->setItem(3, 0, new QTableWidgetItem(m_pid_wchan));
-        write_log("[SIGNAL RUNNING] you send a signal to the PID=" + QString::fromStdString(std::to_string(m_pid)) + ", sending it on a running in the process")
+        QMessageBox::critical(nullptr, "ERROR", error.what());
+        column_clean_all();
     }
 }
 

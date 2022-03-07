@@ -31,8 +31,6 @@ public:
 
     pid_t getPid();
 
-
-
 private slots:
     void on_search_textEdited(const QString &);
     void on_pidTable_doubleClicked(const QModelIndex &);
