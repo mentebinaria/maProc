@@ -23,10 +23,9 @@ public:
     void clear();
     uint m_size;
     uint8_t *m_buff;
-    uint m_ccurr;
-    bool externalRef;
 
 private:
+    bool externalRef;
     uint m_curr;
 };
 

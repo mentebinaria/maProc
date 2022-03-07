@@ -16,7 +16,9 @@
             __column->removeRow(0);      \
     }
 
-#define write_log(string) m_ui->log_text->appendPlainText(string);
+#define write_log(string)            \
+    if (m_ui->checkLog->isChecked()) \
+        m_ui->log_text->appendPlainText(string);
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           m_ui(new Ui::MainWindow)
@@ -25,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     setWindowTitle(TITLE_WINDOW);
     setWindowIcon(QIcon(ICON_WINDOW));
-    setMinimumWidth(650);
+    setMinimumWidth(660);
     setMinimumHeight(650);
 
     // status bar conf default
@@ -124,6 +126,10 @@ void MainWindow::mainMapper()
     }
 }
 
+/**
+ * @brief set pid for verify and mapper
+ *
+ */
 void MainWindow::on_pidButton_clicked()
 {
     column_clean_all();
@@ -144,11 +150,15 @@ void MainWindow::on_pidButton_clicked()
     }
 }
 
+/**
+ * @brief verify pid for mapper
+ *
+ */
 void MainWindow::verify_pid()
 {
     int status_pid = m_mapper.map_pid(m_pid);
 
-    if (status_pid == 0)
+    if (status_pid == PID_SUCCESS)
     {
         m_pid_name = QString::fromStdString(m_mapper.get_utilsPid(NAME));
         m_pid_cmdline = QString::fromStdString(m_mapper.get_utilsPid(CMDLINE));
@@ -167,6 +177,10 @@ void MainWindow::verify_pid()
     }
 }
 
+/**
+ * @brief conf all tables overview, search
+ *
+ */
 void MainWindow::column_config_all()
 {
     // view address
@@ -200,6 +214,10 @@ void MainWindow::column_config_all()
     m_ui->cleanButtonLog->setIcon(QIcon(ICON_CLEAN));
 }
 
+/**
+ * @brief ser values in infos overview
+ *
+ */
 void MainWindow::set_values_column_utils()
 {
     // table files infos
@@ -221,6 +239,10 @@ void MainWindow::set_values_column_utils()
     m_ui->infos_sys->setItem(3, 0, new QTableWidgetItem(m_sys_type));
 }
 
+/**
+ * @brief set offsets in heap column
+ *
+ */
 void MainWindow::set_values_column_heap()
 {
     m_ui->view_address->setShowGrid(false);
@@ -239,6 +261,10 @@ void MainWindow::set_values_column_heap()
     m_ui->infos_addr->setItem(0, Flags, new QTableWidgetItem(flags));
 }
 
+/**
+ * @brief set offsets in stack column
+ *
+ */
 void MainWindow::set_values_column_stack()
 {
     // infos_addr
@@ -254,6 +280,10 @@ void MainWindow::set_values_column_stack()
     m_ui->infos_addr->setItem(1, Flags, new QTableWidgetItem(flags));
 }
 
+/**
+ * @brief set types possibles for search mem
+ *
+ */
 void MainWindow::set_types_edit_read()
 {
     m_typeSizes.insert(std::make_pair<std::string, size_t>("char", sizeof(char)));
@@ -263,30 +293,67 @@ void MainWindow::set_types_edit_read()
     m_typeSizes.insert(std::make_pair<std::string, size_t>("string", sizeof(std::string)));
 }
 
+/**
+ * @brief will try to fetch the information in memory
+ *
+ * @param __addr start address for search
+ * @param __length size for read
+ * @param __find what to look for
+ * @param __type type for search
+ * @param __offsets will store the addresses found in a vector
+ */
 void MainWindow::mapper_find(off_t __addr, off_t __length, std::string __find,
                              uint8_t __type, std::vector<off_t> &__offsets)
 {
     try
     {
-        if (m_mapper.map_find(__addr, __length, __find, __type, __offsets) == READ_FAIL)
-            QMessageBox::critical(nullptr, "Fail Read", "Not read memory, error in start  0x" + QString::number(__addr, 16));
+        // search for locations that have
+        // already been found in the table
+        if (m_ui->checkCache->isChecked())
+        {
+            std::string find = m_ui->find->text().toStdString();
+            int rowCont = m_ui->view_address->rowCount();
+            std::size_t size = find.size();
+
+            Data data(size);
+            for (int it = 0; it < rowCont; it++)
+            {
+                std::string str;
+                off_t addr = std::stoul(m_ui->view_address->item(it, Address)->text().toStdString(), nullptr, 16);
+                m_mapper.map_read(addr, size, data);
+                for (int i = 0; i < data.m_size; i++)
+                    str += data.m_buff[i];
+
+                if (str == find)
+                {
+                    m_ui->view_address->showRow(it);
+                    m_ui->view_address->setItem(it, Value, new QTableWidgetItem(QString(QString::fromStdString(find))));
+                }
+                else
+                    m_ui->view_address->hideRow(it);
+            }
+
+            data.clear();
+        }
+        else
+        {
+            //  will start mapping
+            // from 0 all the memory
+            column_delete(m_ui->view_address);
+            if (m_mapper.map_find(__addr, __length, __find, __type, __offsets) == READ_FAIL)
+                QMessageBox::critical(nullptr, "Fail Read", "Not read memory, error in start  0x" + QString::number(__addr, 16));
+        }
 
         QString sizeFound = QString::fromStdString(std::to_string(__offsets.size()));
+        write_log("[SEARCH] PID [" + QString::fromStdString(std::to_string(m_pid)) + "] searched in memory start 0x[" + QString::number(__addr, 16) + "] [" + QString::fromStdString(__find) + "] found these addresses with such values [" + sizeFound + "]");
 
-        if (m_ui->checkLog->isChecked())
-        {
-            write_log("[SEARCH] PID [" + QString::fromStdString(std::to_string(m_pid)) + "] searched in memory start 0x[" + QString::number(__addr, 16) + "] [" + QString::fromStdString(__find) + "] found these addresses with such values [" + sizeFound + "]");
-        }
         m_ui->foundAddr_label->setText("Found : " + sizeFound);
     }
     catch (std::exception &error)
     {
         m_ui->foundAddr_label->setText("Found : 0");
-        if (m_ui->checkLog->isChecked())
-        {
-            write_log("[ERROR] not read memory " + QString::fromStdString(error.what()));
-        }
         QMessageBox::critical(nullptr, "Not Read", error.what());
+        write_log("[ERROR] not read memory " + QString::fromStdString(error.what()));
     }
 }
 
@@ -331,12 +398,9 @@ void MainWindow::on_newButton_triggered()
 /**
  * @brief search value in  fetch value from an address
  * on the stack or heap, will get the type using the combo box
- *
  */
 void MainWindow::on_searchButton_clicked()
 {
-    column_delete(m_ui->view_address);
-
     QTableWidgetItem *addr;
     QTableWidgetItem *size;
     std::vector<off_t> offsets;
@@ -448,11 +512,9 @@ void MainWindow::on_editButton_clicked()
     {
         std::size_t SizeT = (varType == "string") ? value.size() : it->second;
         if (m_mapper.map_write(address, (void *)&value[0], SizeT) == true)
-        {
-            QMessageBox::information(nullptr, "SUCESS", "Memory successfully edited");
-            if (m_ui->checkLog->isChecked())
-                write_log("[EDITED] Memory edited address [" + QString::number(address, 16) + "]  [" + m_ui->find->text() + "] - > [" + QString::fromStdString(value) + "]");
-        }
+            write_log("[EDITED] Memory edited address [0x" + QString::number(address, 16) + "]  [" + m_ui->find->text() + "] - > [" + QString::fromStdString(value) + "]");
+
+        write_log("[ERROR] Fail edit memory [0x" + QString::number(address, 16) + "]  [" + m_ui->find->text() + "] - > [" + QString::fromStdString(value) + "]");
     }
     else if (it == m_typeSizes.end()) // critical error, will exit the program
     {
@@ -489,16 +551,20 @@ off_t MainWindow::valid_address_edit()
     std::string address_edit = m_ui->address_edit->text().toStdString();
     off_t address = 0;
     if (address_edit == NULL_STR)
-    {
         QMessageBox::critical(nullptr, "ERROR", "Address NULL not valid, set address valid for edit value");
-    }
     else
-    {
         address = static_cast<off_t>(std::stoul(address_edit, nullptr, 16));
-    }
+
     return address;
 }
 
+/**
+ * @brief will set all addresses and values ​​found in the search
+ *
+ * @param offset vector containing the address
+ * @param value value find
+ * @param memory memory in which the value was found
+ */
 void MainWindow::set_values_column_address(std::vector<off_t> &offset, std::string value, std::string memory)
 {
     for (auto &x : offset)
@@ -516,6 +582,11 @@ void MainWindow::set_values_column_address(std::vector<off_t> &offset, std::stri
     }
 }
 
+/**
+ * @brief set address for edit value
+ *
+ * @param p_first address double clicked
+ */
 void MainWindow::view_address_table(QTableWidgetItem *p_first)
 {
     QString selectedAddress = m_ui->view_address->item(p_first->row(), Address)->text();
@@ -523,12 +594,14 @@ void MainWindow::view_address_table(QTableWidgetItem *p_first)
     QString selectedMemory = m_ui->view_address->item(p_first->row(), Memory)->text();
     m_ui->address_edit->setText(selectedAddress);
 
-    if (m_ui->checkLog->isChecked())
-    {
-        write_log("[CLICKED] Address [" + selectedAddress + "] Value [" + selectedValue + "]" + " Memory [" + selectedMemory + "]");
-    }
+    write_log("[CLICKED] Address [" + selectedAddress + "] Value [" + selectedValue + "]" + " Memory [" + selectedMemory + "]");
 }
 
+/**
+ * @brief open hex view binary
+ *
+ * @note it will not bring the binary into memory
+ */
 void MainWindow::on_hexButton_clicked()
 {
     try
@@ -565,11 +638,19 @@ void MainWindow::column_clean_all()
     }
 }
 
+/**
+ * @brief clean log button
+ *
+ */
 void MainWindow::on_cleanButtonLog_clicked()
 {
     m_ui->log_text->clear();
 }
 
+/**
+ * @brief stop process button
+ *
+ */
 void MainWindow::on_stopButton_clicked()
 {
     if (m_pid == 0)
@@ -579,20 +660,31 @@ void MainWindow::on_stopButton_clicked()
         m_mapper.map_stop();
         m_ui->stopButton->setText("PPLAY");
         m_ui->stopButton->setIcon(QIcon(ICON_PLAY));
+        m_pid_wchan = QString::fromStdString(m_mapper.get_utilsPid(WCHAN));
+        m_ui->infos_pid->setItem(3, 0, new QTableWidgetItem(m_pid_wchan));
+        write_log("[SIGNAL STOP] you send a signal to the PID=" + QString::fromStdString(std::to_string(m_pid)) + ", sending it on a stop in the process")
     }
     else if (m_ui->stopButton->text() == "PPLAY")
     {
         m_mapper.map_stop(false);
         m_ui->stopButton->setText("STOPP");
         m_ui->stopButton->setIcon(QIcon(ICON_STOP));
+        m_pid_wchan = QString::fromStdString(m_mapper.get_utilsPid(WCHAN));
+        m_ui->infos_pid->setItem(3, 0, new QTableWidgetItem(m_pid_wchan));
+        write_log("[SIGNAL RUNNING] you send a signal to the PID=" + QString::fromStdString(std::to_string(m_pid)) + ", sending it on a running in the process")
     }
 }
 
+/**
+ * @brief kill process button
+ *
+ */
 void MainWindow::on_killButton_clicked()
 {
     m_pid = 0;
     m_mapper.map_kill();
     column_clean_all();
+    write_log("[SIGNAL KILL] you send a signal to the PID=" + QString::fromStdString(std::to_string(m_pid)) + ", sending it on a kill in the process")
 }
 
 /**

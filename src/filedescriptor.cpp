@@ -49,9 +49,9 @@ long FileDescriptor::readFS(std::string __name, std::string &__buffer, long __nb
         do
         {
             char buffer[nblock];
-            memset(buffer, 0, sizeof(buffer)); // clean buffer array
+            memset(buffer, 0, nblock); // clean buffer array
 
-            if (read(FS, buffer, sizeof(buffer)) == 0)
+            if (read(FS, buffer, nblock) == 0)
                 break;
 
             __buffer += buffer; // save block in variable __buffer

@@ -41,7 +41,7 @@ public:
     bool map_mem(std::string __mem);
 
     bool map_write(off_t, void *, uint);
-    bool map_read(off_t , uint ,Data );
+    bool map_read(off_t, uint, Data &);
     int map_find(off_t, uint64_t, std::string, uint8_t, std::vector<off_t> &);
     void map_stop(bool = true);
     void map_kill();

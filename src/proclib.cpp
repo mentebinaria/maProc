@@ -13,112 +13,112 @@
  * @brief routine to analyze memory,
  * with the appropriate types char, int, int16, int64,'string'I
  *
- * @param __buffer memory for analysis
- * @param __find what to look for
- * @param __offset where to start for counting
- * @param __type type char ...
+ * @param buffer memory for analysis
+ * @param find what to look for
+ * @param offset where to start for counting
+ * @param type type char, int64 ...
  * @return int
  */
-void RemoteProcess::Analyse(char *__buffer, std::string __find, off_t __offset, uint8_t __type,
-                           uint64_t lenght, std::vector<off_t> &__save)
+void RemoteProcess::Analyse(char *buffer, std::string find, off_t offset, uint8_t type,
+                            uint64_t lenght, std::vector<off_t> &save)
 {
-    switch (__type)
+    switch (type)
     {
     case sizeof(char):
-        __save.clear();
-        if (!isdigit(__find[0]) && __find.size() == 1)
+        save.clear();
+        if (!isdigit(find[0]) && find.size() == 1)
         {
             for (uint64_t i = 0; i < lenght; i++)
             {
-                if (__buffer[i] == __find[0])
-                    __save.push_back(__offset);
-                __offset++;
+                if (buffer[i] == find[0])
+                    save.push_back(offset);
+                offset++;
             }
         }
         else
-            throw std::runtime_error("Error, caracter '" + __find + "' not valid");
+            throw std::runtime_error("Error, caracter '" + find + "' not valid");
         break;
     case sizeof(int):
-        __save.clear();
+        save.clear();
         {
             try
             {
-                int find = std::stoi(__find);
-                if (find < INT_MAX && find > 0)
+                int findP = std::stoi(find);
+                if (findP < INT_MAX && findP > 0)
                 {
                     for (uint64_t i = 0; i < lenght; i++)
                     {
-                        if ((int)__buffer[i] == find)
-                            __save.push_back(__offset);
-                        __offset++;
+                        if ((int)buffer[i] == findP)
+                            save.push_back(offset);
+                        offset++;
                     }
                 }
             }
             catch (std::exception &error)
             {
-                throw std::runtime_error("Error, caracter '" + __find + "' not valid");
+                throw std::runtime_error("Error, caracter '" + find + "' not valid");
             }
         }
         break;
     case sizeof(uint16_t):
-        __save.clear();
+        save.clear();
         {
             try
             {
-                int16_t find = (uint16_t)std::stoi(__find);
-                if (find <= UINT16_MAX && find > 0)
+                int16_t findP = (uint16_t)std::stoi(find);
+                if (findP <= UINT16_MAX && findP > 0)
                 {
                     for (uint64_t i = 0; i < lenght; i++)
                     {
-                        if ((uint16_t)__buffer[i] == find)
-                            __save.push_back(__offset);
-                        __offset++;
+                        if ((uint16_t)buffer[i] == findP)
+                            save.push_back(offset);
+                        offset++;
                     }
                 }
             }
             catch (std::exception &error)
             {
-                throw std::runtime_error("Error, caracter '" + __find + "' not valid");
+                throw std::runtime_error("Error, caracter '" + find + "' not valid");
             }
         }
         break;
     case sizeof(uint64_t):
-        __save.clear();
+        save.clear();
         {
             try
             {
-                int64_t find = (uint64_t)std::stoi(__find);
-                if (find < UINT64_MAX && find > 0)
+                int64_t findP = (uint64_t)std::stoi(find);
+                if (findP < UINT64_MAX && findP > 0)
                 {
                     for (uint64_t i = 0; i < lenght; i++)
                     {
-                        if ((int64_t)__buffer[i] == find)
-                            __save.push_back(__offset);
-                        __offset++;
+                        if ((int64_t)buffer[i] == findP)
+                            save.push_back(offset);
+                        offset++;
                     }
                 }
             }
             catch (std::exception &error)
             {
-                throw std::runtime_error("Error, caracter '" + __find + "' not valid");
+                throw std::runtime_error("Error, caracter '" + find + "' not valid");
             }
         }
         break;
     case sizeof(std::string):
-        __save.clear();
+        save.clear();
         {
             std::string str;
             for (uint64_t it = 0; it < lenght; it++)
             {
-                if (__buffer[it] == __find[0])
+                if (buffer[it] == find[0])
                 {
-                    for (std::size_t i = 0; i != __find.size(); i++)
-                        str += __buffer[it + i];
+                    for (std::size_t i = 0; i < find.size(); i++)
+                        str += buffer[it + i];
 
-                    if (str == __find)
-                        __save.push_back(__offset);
+                    if (str == find)
+                        save.push_back(offset);
                 }
-                __offset++;
+                offset++;
             }
         }
         break;
@@ -156,6 +156,7 @@ int RemoteProcess::openProcess(pid_t __pid)
 
     return m_status;
 }
+
 /**
  * @brief Attach to a remote process
  * @param pid_t __pid to be attached inside the system
@@ -185,12 +186,7 @@ int RemoteProcess::readMem(off_t start, off_t stop, Data *data)
         return READ_FAIL;
 
     size_t bsize = stop - start;
-
-    char *buffer = new char[bsize];
-    pread(m_proc.fd, buffer, bsize, start);
-
-    for (uint i = 0; i < bsize; i++)
-        data->write(buffer[i]);
+    pread(m_proc.fd, data->m_buff, bsize, start);
 
     return READ_SUCCESS;
 }
@@ -293,16 +289,14 @@ Data::Data(uint __size)
     m_buff = new uint8_t[m_size];
     externalRef = false;
     m_curr = 0;
-    m_ccurr = 0;
 }
 
 Data::Data(uint8_t *buff, uint size)
 {
-    m_buff = buff;
     externalRef = true;
+    m_buff = buff;
     m_size = size;
     m_curr = 0;
-    m_ccurr = 0;
 }
 
 Data::~Data()
@@ -321,10 +315,7 @@ void Data::write(uint8_t b)
 
 uint8_t *Data::read()
 {
-    if (m_ccurr == m_size)
-        return nullptr;
-
-    return &m_buff[++m_ccurr];
+    return (uint8_t *)m_buff;
 }
 
 void Data::clear()
