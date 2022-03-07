@@ -1,22 +1,20 @@
 #pragma once
 
-#include <vector>
 #include <fstream>
+#include <unordered_map>
 
 #include "include/datastructs/erros.hpp"
+#include "include/filedescriptor.hpp"
 
 #define PROC "/proc/"
-#define CMDLINE "/cmdline"
+#define COMM "/comm"
 
-class Ps
+class Ps : public FileDescriptor
 {
-private:
-    std::fstream FSCMDLINE;
 
 public:
     Ps();
     virtual ~Ps();
 
-    int Reading_DirProcess(std::vector<std::string> &__NameProcess,
-                           std::vector<std::string> &__PidProcess);
+    int Reading_DirProcess(std::unordered_map<std::string, std::string> &umap);
 };

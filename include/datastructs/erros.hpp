@@ -12,7 +12,7 @@ enum ERROR_PID
 };
 
 /**
- * @brief 
+ * @brief  erros files 
  */
 enum ERROS_FILES
 {
@@ -21,5 +21,24 @@ enum ERROS_FILES
     READ_SUCCESS,
     READ_FAIL,
     WRITE_FAIL,
-    WRITE_SUCCESS
+    WRITE_SUCCESS,
+    EMPTY,
+    FULL,
+};
+
+/**
+ * @brief mem find 
+ * 
+ */
+enum FIND_MEM
+{
+    NOT_FOUND,
+    FOUND
+};
+
+
+enum STOPP
+{
+    STOPPED,
+    CONT
 };

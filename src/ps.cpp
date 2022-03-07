@@ -2,6 +2,8 @@
 
 #include <sstream>
 #include <dirent.h>
+#include <iostream>
+#include <string.h>
 
 /**
  * @brief Construct a new Ps:: Ps object
@@ -28,38 +30,37 @@ Ps::~Ps()
  *
  * @return OPEN_FAIL is /proc not opened else return OPEN_SUCCESS
  */
-int Ps::Reading_DirProcess(std::vector<std::string> &__NameProcess,
-                           std::vector<std::string> &__PidProcess)
+int Ps::Reading_DirProcess(std::unordered_map<std::string, std::string> &umap)
 {
-    __NameProcess.clear();
-    __PidProcess.clear();
+    umap.clear();
 
     int status_exit = OPEN_SUCCESS;
     DIR *dir = opendir(PROC);
     struct dirent *dir_read;
 
-    if (dir == NULL)
+    if (dir == nullptr)
     {
         status_exit = OPEN_FAIL;
         throw std::runtime_error("Error not open dir /proc");
     }
 
-    while ((dir_read = readdir(dir)) != NULL)
+    while ((dir_read = readdir(dir)) != nullptr)
     {
-        std::string cmdline = PROC + std::string(dir_read->d_name) + CMDLINE;
-
-        FSCMDLINE.open(cmdline);
-        if (FSCMDLINE.is_open())
+        std::string name;
+        if (strcmp(dir_read->d_name, "self") && strcmp(dir_read->d_name, "thread-self"))
         {
-            getline(FSCMDLINE, cmdline);
-            (cmdline.size() == 0) ? cmdline = "not found" : cmdline;
-
-            __PidProcess.push_back(dir_read->d_name);
-            __NameProcess.push_back(cmdline);
-
-            FSCMDLINE.close();
-        }else
-            continue;
+            name = PROC + std::string(dir_read->d_name) + COMM;
+            try
+            {
+                readFS(name, name, 20);
+                (name.size() == 0) ? name = "N/S" : name;
+                umap.insert(std::make_pair(name, dir_read->d_name));
+            }
+            catch (std::exception &error)
+            {
+                name.clear();
+            }
+        }
     }
 
     closedir(dir);
