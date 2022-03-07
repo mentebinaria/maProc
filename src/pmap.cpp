@@ -220,7 +220,7 @@ bool Pmap::map_write(off_t __addr, void *__value, uint __size)
  *  @brief Reading mem for address in process to preference heap or stack
  *  @param __on address for init reading memory
  *  @param __off for end address mapped
- *  @return bool 
+ *  @return bool
  */
 bool Pmap::map_read(off_t __addr, uint __size, Data &__data)
 {
@@ -233,15 +233,15 @@ bool Pmap::map_read(off_t __addr, uint __size, Data &__data)
 }
 
 /**
- * @brief will scan the memory looking for the 
+ * @brief will scan the memory looking for the
  * desired values ​​and the specific type
- * 
+ *
  * @param __addr  start address for find
  * @param __length size memory for read and find
  * @param __find value for find
  * @param __type type for search
  * @param __offsets store the found offsets in a vector
- * @return int 
+ * @return int
  */
 int Pmap::map_find(off_t __addr, uint64_t __length, std::string __find, uint8_t __type, std::vector<off_t> &__offsets)
 {
@@ -390,8 +390,6 @@ std::string Pmap::get_utilsPid(uint8_t __utils)
             throw std::runtime_error("It was not possible to make the get at this value " + std::to_string(__utils));
         }
     }
-    else
-        throw std::runtime_error("Not read infos pid, set pid using map_pid(<pid>)");
 
     return buffer;
 }

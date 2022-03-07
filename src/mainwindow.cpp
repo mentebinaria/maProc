@@ -176,7 +176,8 @@ void MainWindow::verify_pid()
 
         // tell the status bar which pid is being mapped
         m_ui->statusBar->showMessage("PID: " + QString::fromStdString(std::to_string(m_pid)) + " Name: " + m_pid_name);
-    }
+    }else
+        m_pid = 0;
 }
 
 /**
@@ -662,6 +663,7 @@ void MainWindow::on_stopButton_clicked()
 {
     if (m_pid == 0)
         return;
+
     if (m_ui->stopButton->text() == "STOPP")
     {
         m_mapper.map_stop();
@@ -688,6 +690,9 @@ void MainWindow::on_stopButton_clicked()
  */
 void MainWindow::on_killButton_clicked()
 {
+    if (m_pid == 0)
+        return;
+
     QMessageBox::StandardButton kill = QMessageBox::question(this, "SIGNAL KILL", "Kill Process " + m_pid_name + "? ", QMessageBox::Yes | QMessageBox::No);
     if (kill == QMessageBox::Yes)
     {
