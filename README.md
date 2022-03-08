@@ -45,4 +45,6 @@ The project's main creators are [Mob](https://github.com/VitorMob), [Buzzer](htt
     
 # Pages 📄
 
+* [Home](https://github.com/mentebinaria/maProc/wiki)
 * [Help](https://github.com/mentebinaria/maProc/wiki/Help)
+
