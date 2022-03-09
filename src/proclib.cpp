@@ -11,114 +11,114 @@
 
 /**
  * @brief routine to analyze memory,
- * with the appropriate types char, int, int16, int64,'string'I
+ * with the appropriate p_types char, int, int16, int64,'string'I
  *
- * @param buffer memory for analysis
- * @param find what to look for
- * @param offset where to start for counting
- * @param type type char, int64 ...
+ * @param p_buffer memory for analysis
+ * @param p_find what to look for
+ * @param p_offsets where to p_start for counting
+ * @param p_type p_type char, int64 ...
  * @return int
  */
-void RemoteProcess::Analyse(char *buffer, std::string find, off_t offset, uint8_t type,
-                            uint64_t lenght, std::vector<off_t> &save)
+void RemoteProcess::Analyse(char *p_buffer, std::string p_find, off_t p_offsets, uint8_t p_type,
+                            uint64_t p_lenght, std::vector<off_t> &p_save)
 {
-    switch (type)
+    switch (p_type)
     {
     case sizeof(char):
-        save.clear();
-        if (!isdigit(find[0]) && find.size() == 1)
+        p_save.clear();
+        if (!isdigit(p_find[0]) && p_find.size() == 1)
         {
-            for (uint64_t i = 0; i < lenght; i++)
+            for (uint64_t i = 0; i < p_lenght; i++)
             {
-                if (buffer[i] == find[0])
-                    save.push_back(offset);
-                offset++;
+                if (p_buffer[i] == p_find[0])
+                    p_save.push_back(p_offsets);
+                p_offsets++;
             }
         }
         else
-            throw std::runtime_error("Error, caracter '" + find + "' not valid");
+            throw std::runtime_error("Error, caracter '" + p_find + "' not valid");
         break;
     case sizeof(int):
-        save.clear();
+        p_save.clear();
         {
             try
             {
-                int findP = std::stoi(find);
-                if (findP < INT_MAX && findP > 0)
+                int p_findP = std::stoi(p_find);
+                if (p_findP < INT_MAX && p_findP > 0)
                 {
-                    for (uint64_t i = 0; i < lenght; i++)
+                    for (uint64_t i = 0; i < p_lenght; i++)
                     {
-                        if ((int)buffer[i] == findP)
-                            save.push_back(offset);
-                        offset++;
+                        if ((int)p_buffer[i] == p_findP)
+                            p_save.push_back(p_offsets);
+                        p_offsets++;
                     }
                 }
             }
             catch (std::exception &error)
             {
-                throw std::runtime_error("Error, caracter '" + find + "' not valid");
+                throw std::runtime_error("Error, caracter '" + p_find + "' not valid");
             }
         }
         break;
     case sizeof(uint16_t):
-        save.clear();
+        p_save.clear();
         {
             try
             {
-                int16_t findP = (uint16_t)std::stoi(find);
-                if (findP <= UINT16_MAX && findP > 0)
+                int16_t p_findP = (uint16_t)std::stoi(p_find);
+                if (p_findP <= UINT16_MAX && p_findP > 0)
                 {
-                    for (uint64_t i = 0; i < lenght; i++)
+                    for (uint64_t i = 0; i < p_lenght; i++)
                     {
-                        if ((uint16_t)buffer[i] == findP)
-                            save.push_back(offset);
-                        offset++;
+                        if ((uint16_t)p_buffer[i] == p_findP)
+                            p_save.push_back(p_offsets);
+                        p_offsets++;
                     }
                 }
             }
             catch (std::exception &error)
             {
-                throw std::runtime_error("Error, caracter '" + find + "' not valid");
+                throw std::runtime_error("Error, caracter '" + p_find + "' not valid");
             }
         }
         break;
     case sizeof(uint64_t):
-        save.clear();
+        p_save.clear();
         {
             try
             {
-                int64_t findP = (uint64_t)std::stoi(find);
-                if (findP < UINT64_MAX && findP > 0)
+                int64_t p_findP = (uint64_t)std::stoi(p_find);
+                if (p_findP < UINT64_MAX && p_findP > 0)
                 {
-                    for (uint64_t i = 0; i < lenght; i++)
+                    for (uint64_t i = 0; i < p_lenght; i++)
                     {
-                        if ((int64_t)buffer[i] == findP)
-                            save.push_back(offset);
-                        offset++;
+                        if ((int64_t)p_buffer[i] == p_findP)
+                            p_save.push_back(p_offsets);
+                        p_offsets++;
                     }
                 }
             }
             catch (std::exception &error)
             {
-                throw std::runtime_error("Error, caracter '" + find + "' not valid");
+                throw std::runtime_error("Error, caracter '" + p_find + "' not valid");
             }
         }
         break;
     case sizeof(std::string):
-        save.clear();
+        p_save.clear();
         {
             std::string str;
-            for (uint64_t it = 0; it < lenght; it++)
+            for (uint64_t it = 0; it < p_lenght; it++)
             {
-                if (buffer[it] == find[0])
+                if (p_buffer[it] == p_find[0])
                 {
-                    for (std::size_t i = 0; i < find.size(); i++)
-                        str += buffer[it + i];
+                    for (std::size_t i = 0; i < p_find.size(); i++)
+                        str += p_buffer[it + i];
 
-                    if (str == find)
-                        save.push_back(offset);
+                    if (str == p_find)
+                        p_save.push_back(p_offsets);
                 }
-                offset++;
+                p_offsets++;
             }
         }
         break;
@@ -134,13 +134,13 @@ RemoteProcess::RemoteProcess()
 
 /**
  * @brief Attach to a remote process
- * @param pid_t __pid to be attached inside the system
+ * @param pid_t p_pid to be attached inside the system
  * @return int
  *
  */
-int RemoteProcess::openProcess(pid_t __pid)
+int RemoteProcess::openProcess(pid_t p_pid)
 {
-    m_proc.pid = __pid;
+    m_proc.pid = p_pid;
     m_status = OPEN_SUCCESS;
     struct stat st;
     m_proc.dirmem = PROC + std::to_string(m_proc.pid) + "/mem";
@@ -158,35 +158,30 @@ int RemoteProcess::openProcess(pid_t __pid)
 }
 
 /**
- * @brief Attach to a remote process
- * @param pid_t __pid to be attached inside the system
- * @return int
- *
- * if the current process is unable to attach to the target pid, it returns OPEN_FAIL
- * if the remote process were attached successfully but it does not received the SIGSTOP signal
- * it will also returns OPEN_FAIL, otherwise it will return OPEN_SUCCESS
+ * @brief Destroy the Remote Process:: Remote Process object
+ * 
  */
 RemoteProcess::~RemoteProcess()
 {
     close(m_proc.fd);
 }
 
+
 /**
- * @brief Read the memory of the remote process
- * @param start offset to be read into the remote process
- * @param Data* data class to save the memory data
- * @return int
- *
- * If the remote memory cannot be read, it will returns READ_FAIL otherwise it will returns READ_SUCESS. The error cause can be found at the
- * errno variable, which is set by ptrace.
+ * @brief read memory using pread 
+ * 
+ * @param p_start start offset for read mem
+ * @param p_stop offset for stop read start + size
+ * @param p_data where will the reading be stored in memory
+ * @return int  if read sucess return READ_SUCCESS else READ_FAIL
  */
-int RemoteProcess::readMem(off_t start, off_t stop, Data *data)
+int RemoteProcess::readMem(off_t p_start, off_t p_stop, Data *p_data)
 {
     if (m_status == OPEN_FAIL)
         return READ_FAIL;
 
-    size_t bsize = stop - start;
-    pread(m_proc.fd, data->m_buff, bsize, start);
+    size_t bsize = p_stop - p_start;
+    pread(m_proc.fd, p_data->m_buff, bsize, p_start);
 
     return READ_SUCCESS;
 }
@@ -194,19 +189,19 @@ int RemoteProcess::readMem(off_t start, off_t stop, Data *data)
 /**
  * @brief Write into a remote process memory
  *
- * @param start offset to be written into
- * @param data class with the target data to be write
+ * @param p_start p_offsets to be written into
+ * @param p_data class with the target data to be write
  * @return int
  *
  * If the remote memory cannot be written, it will returns WRITE_FAIL, otherwise WRITE_SUCESS. The error cause can be found at the
  * errno variable, which is set by ptrace.
  */
-int RemoteProcess::writeMem(off_t start, Data *data)
+int RemoteProcess::writeMem(off_t p_start, Data *p_data)
 {
     if (m_status == OPEN_FAIL)
         return WRITE_FAIL;
 
-    ssize_t write = pwrite(m_proc.fd, reinterpret_cast<const void *>(data->m_buff), data->m_size, start);
+    ssize_t write = pwrite(m_proc.fd, reinterpret_cast<const void *>(p_data->m_buff), p_data->m_size, p_start);
     if (write == -1)
         return WRITE_FAIL;
 
@@ -214,13 +209,16 @@ int RemoteProcess::writeMem(off_t start, Data *data)
 }
 
 /**
- * @brief find value in memory if not found return NOT_FOUND, else return FOUND
- *
- * @param start offset to start looking
- * @param data if found, it will be stored in data
- * @return int
+ * @brief find values ​​in memory
+ * 
+ * @param p_start offset for start 
+ * @param p_length size for stop read
+ * @param p_type type for search value
+ * @param p_find what find
+ * @param p_offsets store the offsets
+ * @return int 
  */
-int RemoteProcess::findMem(off_t start, uint64_t length, uint8_t type, std::string find, std::vector<off_t> &offsets)
+int RemoteProcess::findMem(off_t p_start, uint64_t p_length, uint8_t p_type, std::string p_find, std::vector<off_t> &p_offsets)
 {
     if (m_status == OPEN_FAIL)
     {
@@ -229,41 +227,43 @@ int RemoteProcess::findMem(off_t start, uint64_t length, uint8_t type, std::stri
     }
     else if (!m_hasProcMem)
     {
-        char *buffer;
+        char *p_buffer;
         try
         {
-            buffer = new char[length];
-            memset(buffer, 0, length); // clear memory for use memory
-            if (pread(m_proc.fd, buffer, length, start) == -1)
+            p_buffer = new char[p_length];
+            memset(p_buffer, 0, p_length); // clear memory for use memory
+            if (pread(m_proc.fd, p_buffer, p_length, p_start) == -1)
                 return READ_FAIL;
             else
-                Analyse(buffer, find, start, type, length, offsets);
+                Analyse(p_buffer, p_find, p_start, p_type, p_length, p_offsets);
         }
         catch (std::exception &error)
         {
-            delete[] buffer;
+            delete[] p_buffer;
             throw std::runtime_error(error.what());
             return READ_FAIL;
         }
 
-        delete[] buffer;
+        delete[] p_buffer;
     }
     else
     {
-        throw std::runtime_error("Not supported find memory, directory 'proc/" + std::to_string(m_proc.pid) + "/mem' not found, \n maProc not support for read mem with ptrace");
+        throw std::runtime_error("Not supported p_find memory, directory 'proc/" + std::to_string(m_proc.pid) + "/mem' not found, \n maProc not support for read mem with ptrace");
         return READ_FAIL;
     }
 
     return READ_SUCCESS;
 }
 
+
 /**
- * @brief stop pid
- *
+ * @brief stop process
+ * 
+ * @param p_enable if stopped is return cont set true parameter 
  */
-void RemoteProcess::stopPid(bool __enable)
+void RemoteProcess::stopPid(bool p_enable)
 {
-    if (__enable == true && m_proc.pid != 0)
+    if (p_enable == true && m_proc.pid != 0)
         kill(m_proc.pid, SIGSTOP);
     else
         kill(m_proc.pid, SIGCONT);
@@ -280,22 +280,22 @@ void RemoteProcess::killPid()
 
 //
 // part of the code in which we are going
-// to move the buffer for writing to memory and reading
+// to move the p_buffer for writing to memory and reading
 //
 
-Data::Data(uint __size)
+Data::Data(uint p_size)
 {
-    m_size = __size;
+    m_size = p_size;
     m_buff = new uint8_t[m_size];
     externalRef = false;
     m_curr = 0;
 }
 
-Data::Data(uint8_t *buff, uint size)
+Data::Data(uint8_t *p_buff, uint p_size)
 {
     externalRef = true;
-    m_buff = buff;
-    m_size = size;
+    m_buff = p_buff;
+    m_size = p_size;
     m_curr = 0;
 }
 
@@ -305,12 +305,12 @@ Data::~Data()
         delete[] m_buff;
 }
 
-void Data::write(uint8_t b)
+void Data::write(uint8_t p_b)
 {
     if (m_curr++ == m_size)
         return;
 
-    m_buff[m_curr] = b;
+    m_buff[m_curr] = p_b;
 }
 
 uint8_t *Data::read()

@@ -7,7 +7,7 @@
 #include <QMessageBox>
 #include <unordered_map>
 
-DirWindow::DirWindow(QWidget *parent) : QDialog(parent),
+DirWindow::DirWindow(QWidget *p_parent) : QDialog(p_parent),
                                         m_ui(new Ui::DirWindow),
                                         m_pid(0)
 {
@@ -35,7 +35,7 @@ void DirWindow::Conf_pidTable(void)
 /**
  * @brief will add all pid to table
  */
-void DirWindow::Set_pidTable(void)
+void DirWindow::Set_pidTable()
 {
     int dir_read = m_ps.Reading_DirProcess(m_umap);
 
@@ -60,9 +60,9 @@ void DirWindow::Set_pidTable(void)
  *
  * @param index
  */
-void DirWindow::on_pidTable_doubleClicked(const QModelIndex &index)
+void DirWindow::on_pidTable_doubleClicked(const QModelIndex &p_index)
 {
-    setPid(index.model()->data(index).toString());
+    setPid(p_index.model()->data(p_index).toString());
 }
 
 /**
@@ -78,35 +78,35 @@ pid_t DirWindow::getPid()
 /**
  * @brief set pid in table
  *
- * @param __pid
+ * @param p_pid
  */
-void DirWindow::setPid(QString __pid)
+void DirWindow::setPid(QString p_pid)
 {
     try
     {
-        m_pid = std::stoi(m_umap[__pid.toStdString()]);
+        m_pid = std::stoi(m_umap[p_pid.toStdString()]);
     }
     catch (std::exception &e)
     {
-        m_pid = std::stoi(__pid.toStdString());
+        m_pid = std::stoi(p_pid.toStdString());
     }
 
     close();
 }
 
-void DirWindow::on_search_textEdited(const QString &arg1)
+void DirWindow::on_search_textEdited(const QString &p_arg1)
 {
     for (int i = 0; i < m_ui->pidTable->rowCount(); i++)
         m_ui->pidTable->hideRow(i);
 
-    QList<QTableWidgetItem *> search = m_ui->pidTable->findItems(arg1, Qt::MatchContains);
+    QList<QTableWidgetItem *> search = m_ui->pidTable->findItems(p_arg1, Qt::MatchContains);
     foreach (auto &Ptr, search)
     {
         m_ui->pidTable->showRow(Ptr->row());
         m_ui->foundLabel->setText("Found " + QString::number(search.size()));
     }
 
-    if (arg1.size() == 0)
+    if (p_arg1.size() == 0)
         m_ui->foundLabel->setText("Found " + QString::number(m_ui->pidTable->rowCount()));
 
     search.clear();

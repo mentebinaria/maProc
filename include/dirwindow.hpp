@@ -21,9 +21,9 @@ private:
     pid_t m_pid;
     Ps m_ps;
 
-    void Conf_pidTable(void);
-    void setPid(QString );
-    void Set_pidTable(void);
+    void Conf_pidTable();
+    void setPid(QString);
+    void Set_pidTable();
 
 public:
     explicit DirWindow(QWidget * = nullptr);
