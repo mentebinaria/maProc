@@ -1,11 +1,10 @@
 #include "include/mainwindow.hpp"
 #include <QApplication>
-#include <getopt.h>
 
-int main(int argc, char *argv[])
+int main(int p_argc, char *p_argv[])
 {
     QApplication::setSetuidAllowed(true);
-    QApplication a(argc, argv);
+    QApplication a(p_argc, p_argv);
     MainWindow w;
     w.show();
 

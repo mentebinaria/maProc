@@ -31,7 +31,7 @@
  *
  * @param parent
  */
-HexView::HexView(QWidget *parent) : QAbstractScrollArea(parent)
+HexView::HexView(QWidget *p_parent) : QAbstractScrollArea(p_parent)
 {
     // initialize members class
 #if QT_VERSION >= 0x051100
@@ -66,11 +66,11 @@ HexView::~HexView()
 }
 
 /**
- * @brief custom scroll area, designer used for hex editor, paintEvent will run automatically
+ * @brief custom scroll area, designer used for hex editor, paintp_Event will run automatically
  *
- * @param event
+ * @param p_event
  */
-void HexView::paintEvent(QPaintEvent *event)
+void HexView::paintEvent(QPaintEvent *p_event)
 {
     QPainter painter(viewport());
 
@@ -124,116 +124,116 @@ void HexView::paintEvent(QPaintEvent *event)
 /**
  * @brief will treat it as copy, select, select all, etc.
  *
- * @param event
+ * @param p_event
  */
-void HexView::keyPressEvent(QKeyEvent *event)
+void HexView::keyPressEvent(QKeyEvent *p_event)
 {
     bool setVisible = false;
 
-    if (event->matches(QKeySequence::MoveToNextChar))
+    if (p_event->matches(QKeySequence::MoveToNextChar))
     {
         setCursorPos(m_cursorPos++);
         resetSelection(m_cursorPos);
         setVisible = true;
     }
-    if (event->matches(QKeySequence::MoveToPreviousChar))
+    if (p_event->matches(QKeySequence::MoveToPreviousChar))
     {
         setCursorPos(m_cursorPos--);
         resetSelection(m_cursorPos);
         setVisible = true;
     }
-    if (event->matches(QKeySequence::MoveToEndOfLine))
+    if (p_event->matches(QKeySequence::MoveToEndOfLine))
     {
         setCursorPos(m_cursorPos | ((m_bytesPerLine * 2) - 1));
         resetSelection(m_cursorPos);
         setVisible = true;
     }
-    if (event->matches(QKeySequence::MoveToStartOfLine))
+    if (p_event->matches(QKeySequence::MoveToStartOfLine))
     {
         setCursorPos(m_cursorPos | (m_cursorPos % (m_bytesPerLine * 2)));
         resetSelection(m_cursorPos);
         setVisible = true;
     }
-    if (event->matches(QKeySequence::MoveToPreviousLine))
+    if (p_event->matches(QKeySequence::MoveToPreviousLine))
     {
         setCursorPos(m_cursorPos - m_bytesPerLine * 2);
         resetSelection(m_cursorPos);
         setVisible = true;
     }
-    if (event->matches(QKeySequence::MoveToNextLine))
+    if (p_event->matches(QKeySequence::MoveToNextLine))
     {
         setCursorPos(m_cursorPos + m_bytesPerLine * 2);
         resetSelection(m_cursorPos);
         setVisible = true;
     }
 
-    if (event->matches(QKeySequence::MoveToNextPage))
+    if (p_event->matches(QKeySequence::MoveToNextPage))
     {
         setCursorPos(m_cursorPos + (verticalScrollBar()->height() / m_charHeight - 1) * 2 * m_bytesPerLine);
         resetSelection(m_cursorPos);
         setVisible = true;
     }
-    if (event->matches(QKeySequence::MoveToPreviousPage))
+    if (p_event->matches(QKeySequence::MoveToPreviousPage))
     {
         setCursorPos(m_cursorPos - (verticalScrollBar()->height() / m_charHeight - 1) * 2 * m_bytesPerLine);
         resetSelection(m_cursorPos);
         setVisible = true;
     }
-    if (event->matches(QKeySequence::MoveToEndOfDocument))
+    if (p_event->matches(QKeySequence::MoveToEndOfDocument))
     {
         setCursorPos(m_BufferHex.size() * 2);
         resetSelection(m_cursorPos);
         setVisible = true;
     }
-    if (event->matches(QKeySequence::MoveToStartOfDocument))
+    if (p_event->matches(QKeySequence::MoveToStartOfDocument))
     {
         setCursorPos(0);
         resetSelection(m_cursorPos);
         setVisible = true;
     }
 
-    if (event->matches(QKeySequence::SelectAll))
+    if (p_event->matches(QKeySequence::SelectAll))
     {
         resetSelection(0);
         setSelection(2 * m_BufferHex.size() + 1);
         setVisible = true;
     }
-    if (event->matches(QKeySequence::SelectNextChar))
+    if (p_event->matches(QKeySequence::SelectNextChar))
     {
         std::size_t pos = m_cursorPos + 1;
         setCursorPos(pos);
         setSelection(pos);
         setVisible = true;
     }
-    if (event->matches(QKeySequence::SelectPreviousChar))
+    if (p_event->matches(QKeySequence::SelectPreviousChar))
     {
         std::size_t pos = m_cursorPos - 1;
         setSelection(pos);
         setCursorPos(pos);
         setVisible = true;
     }
-    if (event->matches(QKeySequence::SelectEndOfLine))
+    if (p_event->matches(QKeySequence::SelectEndOfLine))
     {
         std::size_t pos = m_cursorPos - (m_cursorPos % (2 * m_bytesPerLine)) + (2 * m_bytesPerLine);
         setCursorPos(pos);
         setSelection(pos);
         setVisible = true;
     }
-    if (event->matches(QKeySequence::SelectStartOfLine))
+    if (p_event->matches(QKeySequence::SelectStartOfLine))
     {
         std::size_t pos = m_cursorPos - (m_cursorPos % (2 * m_bytesPerLine));
         setCursorPos(pos);
         setSelection(pos);
         setVisible = true;
     }
-    if (event->matches(QKeySequence::SelectPreviousLine))
+    if (p_event->matches(QKeySequence::SelectPreviousLine))
     {
         std::size_t pos = m_cursorPos - (2 * m_bytesPerLine);
         setCursorPos(pos);
         setSelection(pos);
         setVisible = true;
     }
-    if (event->matches(QKeySequence::SelectNextLine))
+    if (p_event->matches(QKeySequence::SelectNextLine))
     {
         std::size_t pos = m_cursorPos + (2 * m_bytesPerLine);
         setCursorPos(pos);
@@ -241,21 +241,21 @@ void HexView::keyPressEvent(QKeyEvent *event)
         setVisible = true;
     }
 
-    if (event->matches(QKeySequence::SelectNextPage))
+    if (p_event->matches(QKeySequence::SelectNextPage))
     {
         std::size_t pos = m_cursorPos + (((verticalScrollBar()->height() / m_charHeight) - 1) * 2 * m_bytesPerLine);
         setCursorPos(pos);
         setSelection(pos);
         setVisible = true;
     }
-    if (event->matches(QKeySequence::SelectPreviousPage))
+    if (p_event->matches(QKeySequence::SelectPreviousPage))
     {
         std::size_t pos = m_cursorPos - (((verticalScrollBar()->height() / m_charHeight) - 1) * 2 * m_bytesPerLine);
         setCursorPos(pos);
         setSelection(pos);
         setVisible = true;
     }
-    if (event->matches(QKeySequence::SelectEndOfDocument))
+    if (p_event->matches(QKeySequence::SelectEndOfDocument))
     {
         std::size_t pos = 0;
         pos = m_BufferHex.size() * 2;
@@ -263,7 +263,7 @@ void HexView::keyPressEvent(QKeyEvent *event)
         setSelection(pos);
         setVisible = true;
     }
-    if (event->matches(QKeySequence::SelectStartOfDocument))
+    if (p_event->matches(QKeySequence::SelectStartOfDocument))
     {
         std::size_t pos = 0;
         setCursorPos(pos);
@@ -271,7 +271,7 @@ void HexView::keyPressEvent(QKeyEvent *event)
         setVisible = true;
     }
 
-    if (event->matches(QKeySequence::Copy))
+    if (p_event->matches(QKeySequence::Copy))
     {
         QString res;
         int idx = 0;
@@ -311,11 +311,11 @@ void HexView::keyPressEvent(QKeyEvent *event)
 /**
  * @brief when moved the pressed mouse will set my cursor to the current position
  *
- * @param event
+ * @param p_event
  */
-void HexView::mouseMoveEvent(QMouseEvent *event)
+void HexView::mouseMoveEvent(QMouseEvent *p_event)
 {
-    std::size_t actPos = cursorPos(event->pos());
+    std::size_t actPos = cursorPos(p_event->pos());
     if (actPos != INT_MAX)
     {
         setCursorPos(actPos);
@@ -325,11 +325,11 @@ void HexView::mouseMoveEvent(QMouseEvent *event)
     UPDATE
 }
 
-void HexView::mousePressEvent(QMouseEvent *event)
+void HexView::mousePressEvent(QMouseEvent *p_event)
 {
-    std::size_t cPos = cursorPos(event->pos());
+    std::size_t cPos = cursorPos(p_event->pos());
 
-    if ((QApplication::keyboardModifiers() & Qt::ShiftModifier) && event->button() == Qt::LeftButton)
+    if ((QApplication::keyboardModifiers() & Qt::ShiftModifier) && p_event->button() == Qt::LeftButton)
         setSelection(cPos);
     else
         resetSelection(cPos);
@@ -363,23 +363,23 @@ void HexView::resetSelection()
     m_selectEnd = m_selectInit;
 }
 
-void HexView::resetSelection(std::size_t pos)
+void HexView::resetSelection(std::size_t p_pos)
 {
-    m_selectInit = pos;
-    m_selectBegin = pos;
-    m_selectEnd = pos;
+    m_selectInit = p_pos;
+    m_selectBegin = p_pos;
+    m_selectEnd = p_pos;
 }
 
-void HexView::setSelection(int pos)
+void HexView::setSelection(int p_pos)
 {
-    if (pos >= m_selectInit)
+    if (p_pos >= m_selectInit)
     {
-        m_selectEnd = pos;
+        m_selectEnd = p_pos;
         m_selectBegin = m_selectInit;
     }
     else
     {
-        m_selectBegin = pos;
+        m_selectBegin = p_pos;
         m_selectEnd = m_selectInit;
     }
 }
@@ -402,13 +402,13 @@ void HexView::ensureVisible()
  *
  * @param pos
  */
-void HexView::setCursorPos(int pos)
+void HexView::setCursorPos(int p_pos)
 {
     int maxPos = m_BufferHex.size() * 2;
     (m_BufferHex.size() % m_bytesPerLine) ? maxPos++ : maxPos;
-    (pos > maxPos) ? pos = maxPos : pos;
+    (p_pos > maxPos) ? p_pos = maxPos : p_pos;
 
-    m_cursorPos = pos;
+    m_cursorPos = p_pos;
 }
 
 /**
@@ -433,17 +433,17 @@ QSize HexView::fullSize() const
  * @param pos
  * @return std::size_t
  */
-std::size_t HexView::cursorPos(const QPoint &pos)
+std::size_t HexView::cursorPos(const QPoint &p_pos)
 {
     std::size_t posActual = std::numeric_limits<std::size_t>::max();
 
-    if ((pos.x() >= m_posHex) && (pos.x() < (m_posHex + (m_bytesPerLine * 3 - 1) * m_charWidth)))
+    if ((p_pos.x() >= m_posHex) && (p_pos.x() < (m_posHex + (m_bytesPerLine * 3 - 1) * m_charWidth)))
     {
-        int x = (pos.x() - m_posHex) / m_charWidth;
+        int x = (p_pos.x() - m_posHex) / m_charWidth;
         (x % 3) == 0 ? x = (x / 3) * 2 : x = ((x / 3) * 2) + 1;
 
         int firstLineIdx = verticalScrollBar()->value();
-        int y = (pos.y() / m_charHeight) * 2 * m_bytesPerLine;
+        int y = (p_pos.y() / m_charHeight) * 2 * m_bytesPerLine;
         posActual = x + y + firstLineIdx * m_bytesPerLine * 2;
     }
 
@@ -454,14 +454,14 @@ std::size_t HexView::cursorPos(const QPoint &pos)
  * @brief open file and read binary,
  * will load the entire binary into a buffer
  *
- * @param __fpath name file to open and read
+ * @param p_fpath name file to open and read
  */
-int HexView::LoadBinary(const QString &__fpath)
+int HexView::LoadBinary(const QString &p_fpath)
 {
     int status_exit = OPEN_FAIL;
     QFile qFile;
 
-    qFile.setFileName(__fpath);
+    qFile.setFileName(p_fpath);
 
     qFile.open(QFile::ReadOnly);
     if (qFile.isOpen())
@@ -475,7 +475,7 @@ int HexView::LoadBinary(const QString &__fpath)
         qFile.close();
     }
     else
-        throw std::runtime_error("Falied to open file " + __fpath.toStdString() + " not possible read bin");
+        throw std::runtime_error("Falied to open file " + p_fpath.toStdString() + " not possible read bin");
 
     resetSelection(0);
 

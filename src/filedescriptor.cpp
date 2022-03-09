@@ -26,23 +26,23 @@ FileDescriptor::~FileDescriptor()
 /**
  * @brief this method will read the entire past file
  *
- * @param __name name for read file
- * @param __buffer in which variable will you store
- * @param __nblock block size for reading
- * @param __blockn2 if this option is turned on the block size will multiply by 2 per __nblock
+ * @param p_name name for read file
+ * @param p_buffer in which variable will you store
+ * @param p_nblock block size for reading
+ * @param p_blockm if this option is turned on the block size will multiply by 2 per p_nblock
  *
  * @return long, if reading file success return READ_SUCCESS else if not len READ_FAIL not open file return OPEN_FAIL
  */
-long FileDescriptor::readFS(std::string __name, std::string &__buffer, long __nblock = 256, bool __blockn2)
+long FileDescriptor::readFS(std::string p_name, std::string &p_buffer, long p_nblock = 256, bool p_blockm)
 {
-    CLEAR_STRING(__buffer)
+    CLEAR_STRING(p_buffer)
 
     long status_exit = READ_SUCCESS;
 
-    off_t nblock = __nblock;
-    const char *name = __name.data();
+    off_t nblock = p_nblock;
+    const char *name = p_name.data();
 
-    __buffer.reserve(__nblock);
+    p_buffer.reserve(p_nblock);
     int FS = open(name, O_RDONLY);
     if (FS > 0)
     {
@@ -54,18 +54,18 @@ long FileDescriptor::readFS(std::string __name, std::string &__buffer, long __nb
             if (read(FS, buffer, nblock) == 0)
                 break;
 
-            __buffer += buffer; // save block in variable __buffer
+            p_buffer += buffer; // save block in variable p_buffer
 
             // increase the bytes of the block thus decreasing the read cycles
             // it could possibly end up exceeding the file buffer limit by allocating more than necessary
-            (__blockn2) ? nblock += __nblock : nblock;
+            (p_blockm) ? nblock += p_nblock : nblock;
 
         } while (FS != EOF);
 
-        if (__buffer.size() == 0)
+        if (p_buffer.size() == 0)
         {
             status_exit = READ_FAIL;
-            throw std::runtime_error("Not possible read file, check permission " + __name);
+            throw std::runtime_error("Not possible read file, check permission " + p_name);
         }
 
         close(FS);
@@ -73,7 +73,7 @@ long FileDescriptor::readFS(std::string __name, std::string &__buffer, long __nb
     else
     {
         status_exit = OPEN_FAIL;
-        throw std::runtime_error("Error open file " + __name);
+        throw std::runtime_error("Error open file " + p_name);
     }
 
     return status_exit;

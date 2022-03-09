@@ -11,17 +11,17 @@
 #define mapper_heap m_mapper.map_mem("[heap]")
 #define mapper_stack m_mapper.map_mem("[stack]")
 
-#define column_delete(__column)          \
+#define column_delete(p_column)          \
     {                                    \
-        while (__column->rowCount() > 0) \
-            __column->removeRow(0);      \
+        while (p_column->rowCount() > 0) \
+            p_column->removeRow(0);      \
     }
 
-#define write_log(string)            \
+#define write_log(p_string)            \
     if (m_ui->checkLog->isChecked()) \
-        m_ui->log_text->appendPlainText(string);
+        m_ui->log_text->appendPlainText(p_string);
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
+MainWindow::MainWindow(QWidget *p_parent) : QMainWindow(p_parent),
                                           m_ui(new Ui::MainWindow),
                                           m_dialog()
 {
@@ -244,7 +244,7 @@ void MainWindow::set_values_column_utils()
 }
 
 /**
- * @brief set offsets in heap column
+ * @brief set p_offsetss in heap column
  *
  */
 void MainWindow::set_values_column_heap()
@@ -266,7 +266,7 @@ void MainWindow::set_values_column_heap()
 }
 
 /**
- * @brief set offsets in stack column
+ * @brief set p_offsetss in stack column
  *
  */
 void MainWindow::set_values_column_stack()
@@ -300,14 +300,14 @@ void MainWindow::set_types_edit_read()
 /**
  * @brief will try to fetch the information in memory
  *
- * @param __addr start address for search
- * @param __length size for read
- * @param __find what to look for
- * @param __type type for search
- * @param __offsets will store the addresses found in a vector
+ * @param p_addr start address for search
+ * @param p_length size for read
+ * @param p_find what to look for
+ * @param p_type type for search
+ * @param p_p_offsetss will store the addresses found in a vector
  */
-void MainWindow::mapper_find(off_t __addr, off_t __length, std::string __find,
-                             uint8_t __type, std::vector<off_t> &__offsets)
+void MainWindow::mapper_find(off_t p_addr, off_t p_length, std::string p_find,
+                             uint8_t p_type, std::vector<off_t> &p_p_offsetss)
 {
     try
     {
@@ -344,12 +344,12 @@ void MainWindow::mapper_find(off_t __addr, off_t __length, std::string __find,
             //  will start mapping
             // from 0 all the memory
             column_delete(m_ui->view_address);
-            if (m_mapper.map_find(__addr, __length, __find, __type, __offsets) == READ_FAIL)
-                QMessageBox::critical(nullptr, "Fail Read", "Not read memory, error in start  0x" + QString::number(__addr, 16));
+            if (m_mapper.map_find(p_addr, p_length, p_find, p_type, p_p_offsetss) == READ_FAIL)
+                QMessageBox::critical(nullptr, "Fail Read", "Not read memory, error in start  0x" + QString::number(p_addr, 16));
         }
 
-        QString sizeFound = QString::fromStdString(std::to_string(__offsets.size()));
-        write_log("[SEARCH] PID [" + QString::fromStdString(std::to_string(m_pid)) + "] searched in memory start 0x[" + QString::number(__addr, 16) + "] [" + QString::fromStdString(__find) + "] found these addresses with such values [" + sizeFound + "]");
+        QString sizeFound = QString::fromStdString(std::to_string(p_p_offsetss.size()));
+        write_log("[SEARCH] PID [" + QString::fromStdString(std::to_string(m_pid)) + "] searched in memory start [0x" + QString::number(p_addr, 16) + "] [" + QString::fromStdString(p_find) + "] found these addresses with such values [" + sizeFound + "]");
 
         m_ui->foundAddr_label->setText("Found : " + sizeFound);
     }
@@ -407,7 +407,7 @@ void MainWindow::on_searchButton_clicked()
 {
     QTableWidgetItem *addr;
     QTableWidgetItem *size;
-    std::vector<off_t> offsets;
+    std::vector<off_t> p_offsetss;
     off_t address_start;
     uint64_t lenght;
     std::string varType = m_ui->type->currentText().toStdString();
@@ -428,11 +428,11 @@ void MainWindow::on_searchButton_clicked()
                 address_start = static_cast<off_t>(std::stoul(addr->text().toStdString(), nullptr, 16));
                 lenght = std::stoul(size->text().toStdString(), nullptr);
 
-                mapper_find(address_start, lenght, find, it->second, offsets);
+                mapper_find(address_start, lenght, find, it->second, p_offsetss);
 
-                if (offsets.size() != 0)
+                if (p_offsetss.size() != 0)
                 {
-                    set_values_column_address(offsets, find, "stack");
+                    set_values_column_address(p_offsetss, find, "stack");
                 }
             }
             break;
@@ -445,10 +445,10 @@ void MainWindow::on_searchButton_clicked()
                 address_start = static_cast<off_t>(std::stoul(addr->text().toStdString(), nullptr, 16));
                 lenght = std::stoul(size->text().toStdString(), nullptr);
 
-                mapper_find(address_start, lenght, find, it->second, offsets);
+                mapper_find(address_start, lenght, find, it->second, p_offsetss);
 
-                if (offsets.size() != 0)
-                    set_values_column_address(offsets, find, "heap");
+                if (p_offsetss.size() != 0)
+                    set_values_column_address(p_offsetss, find, "heap");
             }
             break;
         case 2:
@@ -461,11 +461,11 @@ void MainWindow::on_searchButton_clicked()
                 address_start = static_cast<off_t>(std::stoul(addr->text().toStdString(), nullptr, 16));
                 lenght = std::stoul(size->text().toStdString(), nullptr);
 
-                mapper_find(address_start, lenght, find, it->second, offsets);
+                mapper_find(address_start, lenght, find, it->second, p_offsetss);
 
-                if (offsets.size() != 0)
+                if (p_offsetss.size() != 0)
                 {
-                    set_values_column_address(offsets, find, "heap");
+                    set_values_column_address(p_offsetss, find, "heap");
                 }
             }
 
@@ -477,11 +477,11 @@ void MainWindow::on_searchButton_clicked()
                 address_start = static_cast<off_t>(std::stoul(addr->text().toStdString(), nullptr, 16));
                 lenght = std::stoul(size->text().toStdString(), nullptr);
 
-                mapper_find(address_start, lenght, find, it->second, offsets);
+                mapper_find(address_start, lenght, find, it->second, p_offsetss);
 
-                if (offsets.size() != 0)
+                if (p_offsetss.size() != 0)
                 {
-                    set_values_column_address(offsets, find, "stack");
+                    set_values_column_address(p_offsetss, find, "stack");
                 }
             }
 
@@ -557,7 +557,7 @@ void MainWindow::on_aboutButton_triggered()
 /**
  * @brief
  *
- * @return off_t if address valid return offset, else address not valid return 0
+ * @return off_t if address valid return p_offsets, else address not valid return 0
  */
 off_t MainWindow::valid_address_edit()
 {
@@ -574,13 +574,13 @@ off_t MainWindow::valid_address_edit()
 /**
  * @brief will set all addresses and values ​​found in the search
  *
- * @param offset vector containing the address
+ * @param p_offsets vector containing the address
  * @param value value find
  * @param memory memory in which the value was found
  */
-void MainWindow::set_values_column_address(std::vector<off_t> &offset, std::string value, std::string memory)
+void MainWindow::set_values_column_address(std::vector<off_t> &p_offsets, std::string p_value, std::string p_memory)
 {
-    for (auto &x : offset)
+    for (auto &x : p_offsets)
     {
         m_ui->view_address->insertRow(m_ui->view_address->rowCount());
 
@@ -588,10 +588,10 @@ void MainWindow::set_values_column_address(std::vector<off_t> &offset, std::stri
         QString addr = QString::number(x, 16);
 
         m_ui->view_address->setItem(rowCount, Address, new QTableWidgetItem("0x" + addr));
-        m_ui->view_address->setItem(rowCount, Value, new QTableWidgetItem(QString(QString::fromStdString(value))));
-        m_ui->view_address->setItem(rowCount, Memory, new QTableWidgetItem(QString(QString::fromStdString(memory))));
+        m_ui->view_address->setItem(rowCount, Value, new QTableWidgetItem(QString(QString::fromStdString(p_value))));
+        m_ui->view_address->setItem(rowCount, Memory, new QTableWidgetItem(QString(QString::fromStdString(p_memory))));
 
-        offset.pop_back();
+        p_offsets.pop_back();
     }
 }
 
@@ -721,19 +721,19 @@ void MainWindow::on_killButton_clicked()
  *
  * @param arg1
  */
-void MainWindow::on_search_address_textEdited(const QString &arg1)
+void MainWindow::on_search_address_textEdited(const QString &p_arg1)
 {
     for (int i = 0; i < m_ui->view_address->rowCount(); i++)
         m_ui->view_address->hideRow(i);
 
-    QList<QTableWidgetItem *> search = m_ui->view_address->findItems(arg1, Qt::MatchContains);
+    QList<QTableWidgetItem *> search = m_ui->view_address->findItems(p_arg1, Qt::MatchContains);
     foreach (auto &Ptr, search)
     {
         m_ui->view_address->showRow(Ptr->row());
         m_ui->foundAddr_label->setText("Found " + QString::number(search.size()));
     }
 
-    if (arg1.size() == 0)
+    if (p_arg1.size() == 0)
         m_ui->foundAddr_label->setText("Found " + QString::number(m_ui->view_address->rowCount()));
 
     search.clear();

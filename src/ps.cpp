@@ -30,9 +30,9 @@ Ps::~Ps()
  *
  * @return OPEN_FAIL is /proc not opened else return OPEN_SUCCESS
  */
-int Ps::Reading_DirProcess(std::unordered_map<std::string, std::string> &umap)
+int Ps::Reading_DirProcess(std::unordered_map<std::string, std::string> &p_umap)
 {
-    umap.clear();
+    p_umap.clear();
 
     int status_exit = OPEN_SUCCESS;
     DIR *dir = opendir(PROC);
@@ -54,7 +54,7 @@ int Ps::Reading_DirProcess(std::unordered_map<std::string, std::string> &umap)
             {
                 readFS(name, name, 20);
                 (name.size() == 0) ? name = "N/S" : name;
-                umap.insert(std::make_pair(name, dir_read->d_name));
+                p_umap.insert(std::make_pair(name, dir_read->d_name));
             }
             catch (std::exception &error)
             {
