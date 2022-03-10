@@ -163,7 +163,7 @@
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>40</height>
+             <height>50</height>
             </size>
            </property>
            <property name="text">
@@ -175,7 +175,7 @@
           <widget class="QPushButton" name="rpidButton">
            <property name="minimumSize">
             <size>
-             <width>40</width>
+             <width>60</width>
              <height>40</height>
             </size>
            </property>
@@ -194,7 +194,7 @@
           <widget class="QPushButton" name="stopButton">
            <property name="minimumSize">
             <size>
-             <width>70</width>
+             <width>60</width>
              <height>40</height>
             </size>
            </property>
@@ -213,14 +213,14 @@
           <widget class="QPushButton" name="killButton">
            <property name="minimumSize">
             <size>
-             <width>70</width>
+             <width>60</width>
              <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>50</width>
-             <height>70</height>
+             <width>70</width>
+             <height>50</height>
             </size>
            </property>
            <property name="text">
@@ -276,7 +276,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideRight</enum>
@@ -316,8 +316,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>710</width>
-               <height>504</height>
+               <width>715</width>
+               <height>506</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -480,14 +480,14 @@
          <widget class="QScrollArea" name="editArea">
           <property name="minimumSize">
            <size>
-            <width>150</width>
+            <width>170</width>
             <height>300</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>170</width>
-            <height>250</height>
+            <height>260</height>
            </size>
           </property>
           <property name="widgetResizable">
@@ -498,8 +498,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>148</width>
-             <height>298</height>
+             <width>166</width>
+             <height>296</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -536,15 +536,15 @@
                </size>
               </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="page">
                <property name="geometry">
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>132</width>
-                 <height>192</height>
+                 <width>134</width>
+                 <height>186</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -641,8 +641,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>132</width>
-                 <height>192</height>
+                 <width>150</width>
+                 <height>186</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -662,7 +662,6 @@
                    <font>
                     <family>Fira Code</family>
                     <pointsize>9</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -738,8 +737,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>555</width>
-               <height>507</height>
+               <width>539</width>
+               <height>509</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -974,7 +973,6 @@
            <font>
             <family>Lato</family>
             <pointsize>10</pointsize>
-            <weight>75</weight>
             <italic>false</italic>
             <bold>true</bold>
             <underline>false</underline>
@@ -1007,7 +1005,7 @@
      <x>0</x>
      <y>0</y>
      <width>853</width>
-     <height>30</height>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuclean_2">
