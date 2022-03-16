@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>maproc v1.0</string>
+   <string>PID</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>

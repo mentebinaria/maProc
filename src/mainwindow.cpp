@@ -4,6 +4,7 @@
 #include "gui/ui_mainwindow.h"
 #include "gui/ui_about.h"
 
+#include <QInputDialog>
 #include <iostream>
 #include <string>
 #include <QMessageBox>
@@ -23,9 +24,12 @@
 
 MainWindow::MainWindow(QWidget *p_parent) : QMainWindow(p_parent),
                                           m_ui(new Ui::MainWindow),
+										  m_hex(new QHexView),
+										  m_layout(new QVBoxLayout),
+										  m_splitter(new QSplitter),
                                           m_dialog()
 {
-    m_ui->setupUi(this);
+	m_ui->setupUi(this);
 
     setWindowTitle(TITLE_WINDOW);
     setWindowIcon(QIcon(ICON_WINDOW));
@@ -86,10 +90,6 @@ void MainWindow::conf_button_all()
     // new button
     m_ui->newButton->setIcon(QIcon(ICON_NEW));
 
-    // hex button
-    m_ui->hexButton->setIcon(QIcon(ICON_HEX));
-    m_hex.setWindowIcon(QIcon(ICON_HEX));
-
     // kill button
     m_ui->killButton->setIcon(QIcon(ICON_KILL));
 
@@ -98,6 +98,9 @@ void MainWindow::conf_button_all()
 
     // search address
     m_ui->search_address->setPlaceholderText("Address");
+
+	// hex button
+	m_ui->GotooffsetButton->setIcon(QIcon(ICON_HEX));
 }
 
 /**
@@ -107,11 +110,17 @@ void MainWindow::conf_button_all()
 void MainWindow::mainMapper()
 {
     column_delete(m_ui->view_address);
-    column_clean_all();
+	column_clean_all();
 
     try
     {
-        m_hex.LoadBinary(QString::fromStdString("/proc/" + std::to_string(m_pid) + "/exe"));
+		QFile file(QString::fromStdString("/proc/" + std::to_string(m_pid) + "/exe"));
+		if(file.open(QIODevice::ReadOnly))
+		{
+			QByteArray bytes = file.readAll();
+			m_hex->setData(new QHexView::DataStorageArray(bytes));
+		}
+
         verify_pid();
         set_values_column_utils();
 
@@ -216,6 +225,12 @@ void MainWindow::column_config_all()
     // log infos
     m_ui->log_text->setReadOnly(true);
     m_ui->cleanButtonLog->setIcon(QIcon(ICON_CLEAN));
+
+	// hex dump
+	m_splitter->addWidget(m_hex);
+	m_layout->addWidget(m_splitter);
+	m_ui->HexViewTab->setLayout(m_layout);
+
 }
 
 /**
@@ -611,23 +626,6 @@ void MainWindow::view_address_table(QTableWidgetItem *p_first)
 }
 
 /**
- * @brief open hex view binary
- *
- * @note it will not bring the binary into memory
- */
-void MainWindow::on_hexButton_clicked()
-{
-    try
-    {
-        m_hex.CallDialog();
-    }
-    catch (std::exception &error)
-    {
-        QMessageBox::critical(nullptr, "ERROR", error.what());
-    }
-}
-
-/**
  * @brief clean all columns
  *
  */
@@ -635,7 +633,7 @@ void MainWindow::column_clean_all()
 {
     column_delete(m_ui->view_address);
     m_ui->address_edit->setText(NULL_STR);
-    m_hex.Clear();
+    m_hex->clear();
     m_ui->foundAddr_label->setText("Found : 0");
 
     for (int i = 5; i >= 0; i--)
@@ -737,4 +735,13 @@ void MainWindow::on_search_address_textEdited(const QString &p_arg1)
         m_ui->foundAddr_label->setText("Found " + QString::number(m_ui->view_address->rowCount()));
 
     search.clear();
+}
+
+void MainWindow::on_GotooffsetButton_triggered()
+{
+	bool done;
+	int offset = QInputDialog::getInt(0, "Offset", "Offset:", 0, 0, 2147483647, 1, &done);
+
+	if(done)
+		m_hex->showFromOffset(offset);
 }

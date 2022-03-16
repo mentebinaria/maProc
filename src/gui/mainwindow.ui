@@ -31,7 +31,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_7">
+     <layout class="QVBoxLayout" name="Manipulation">
       <property name="spacing">
        <number>10</number>
       </property>
@@ -147,35 +147,10 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="hexButton">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>60</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>70</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>HEX</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QPushButton" name="rpidButton">
            <property name="minimumSize">
             <size>
-             <width>40</width>
+             <width>60</width>
              <height>40</height>
             </size>
            </property>
@@ -194,7 +169,7 @@
           <widget class="QPushButton" name="stopButton">
            <property name="minimumSize">
             <size>
-             <width>70</width>
+             <width>60</width>
              <height>40</height>
             </size>
            </property>
@@ -213,14 +188,14 @@
           <widget class="QPushButton" name="killButton">
            <property name="minimumSize">
             <size>
-             <width>70</width>
+             <width>60</width>
              <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>50</width>
-             <height>70</height>
+             <width>70</width>
+             <height>50</height>
             </size>
            </property>
            <property name="text">
@@ -293,7 +268,7 @@
       <property name="tabBarAutoHide">
        <bool>true</bool>
       </property>
-      <widget class="QWidget" name="Overview">
+      <widget class="QWidget" name="OverviewTab">
        <attribute name="title">
         <string>Overview</string>
        </attribute>
@@ -316,8 +291,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>710</width>
-               <height>504</height>
+               <width>715</width>
+               <height>506</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -471,7 +446,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="Search">
+      <widget class="QWidget" name="SearchTab_2">
        <attribute name="title">
         <string>Search</string>
        </attribute>
@@ -480,14 +455,14 @@
          <widget class="QScrollArea" name="editArea">
           <property name="minimumSize">
            <size>
-            <width>150</width>
+            <width>170</width>
             <height>300</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>170</width>
-            <height>250</height>
+            <height>260</height>
            </size>
           </property>
           <property name="widgetResizable">
@@ -498,8 +473,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>148</width>
-             <height>298</height>
+             <width>166</width>
+             <height>296</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -536,15 +511,15 @@
                </size>
               </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="page">
                <property name="geometry">
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>132</width>
-                 <height>192</height>
+                 <width>126</width>
+                 <height>168</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -636,13 +611,13 @@
                 </item>
                </layout>
               </widget>
-              <widget class="QWidget" name="page_2">
+              <widget class="QWidget" name="scrollArea">
                <property name="geometry">
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>132</width>
-                 <height>192</height>
+                 <width>150</width>
+                 <height>186</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -662,7 +637,6 @@
                    <font>
                     <family>Fira Code</family>
                     <pointsize>9</pointsize>
-                    <weight>75</weight>
                     <bold>true</bold>
                    </font>
                   </property>
@@ -738,8 +712,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>555</width>
-               <height>507</height>
+               <width>539</width>
+               <height>509</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -929,7 +903,7 @@
          </layout>
         </item>
         <item row="0" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_2">
+         <widget class="QLabel" name="SeachLabel">
           <property name="text">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:20pt; font-style:italic;&quot;&gt;Search&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -937,7 +911,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="Log">
+      <widget class="QWidget" name="LogTab">
        <attribute name="title">
         <string>Log</string>
        </attribute>
@@ -974,7 +948,6 @@
            <font>
             <family>Lato</family>
             <pointsize>10</pointsize>
-            <weight>75</weight>
             <italic>false</italic>
             <bold>true</bold>
             <underline>false</underline>
@@ -996,6 +969,20 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="HexViewTab">
+       <property name="maximumSize">
+        <size>
+         <width>1000</width>
+         <height>1000</height>
+        </size>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <attribute name="title">
+        <string>Hex</string>
+       </attribute>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -1007,7 +994,7 @@
      <x>0</x>
      <y>0</y>
      <width>853</width>
-     <height>30</height>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuclean_2">
@@ -1015,6 +1002,7 @@
      <string>utils</string>
     </property>
     <addaction name="cleanButton"/>
+    <addaction name="GotooffsetButton"/>
    </widget>
    <widget class="QMenu" name="menufile">
     <property name="title">
@@ -1057,6 +1045,11 @@
   <action name="closeButton_2">
    <property name="text">
     <string>close</string>
+   </property>
+  </action>
+  <action name="GotooffsetButton">
+   <property name="text">
+    <string>Go to offset</string>
    </property>
   </action>
  </widget>

@@ -32,13 +32,13 @@ set(PROJECT_SOURCES
 
         src/main.cpp
         src/mainwindow.cpp
-        
+
         include/ps.hpp
         src/ps.cpp
 
         include/filedescriptor.hpp
         src/filedescriptor.cpp
-        
+
         include/pmap.hpp
         src/pmap.cpp
 
@@ -48,14 +48,14 @@ set(PROJECT_SOURCES
         src/proclib.cpp
         include/proclib.hpp
 
-        src/hexview.cpp
-        include/hexview.hpp
+        src/qhexview.cpp
+        include/qhexview.hpp
 
         include/mainwindow.hpp
         src/gui/mainwindow.ui
         src/gui/about.ui
 
-        include/dirwindow.hpp 
+        include/dirwindow.hpp
         src/dirwindow.cpp
         src/gui/dirwindow.ui
 
