@@ -6,8 +6,11 @@
 #include <QTableWidgetItem>
 #include <vector>
 #include <memory>
+#include <QSplitter>
+#include <QVBoxLayout>
+#include <QWidget>
 
-#include "include/hexview.hpp"
+#include "include/qhexview.hpp"
 #include "include/ps.hpp"
 #include "include/pmap.hpp"
 
@@ -32,7 +35,7 @@ private slots:
     void mapper_find(off_t, off_t, std::string,
                      uint8_t, std::vector<off_t> &);
 
-    off_t valid_address_edit();
+	off_t valid_address_edit();
     void column_clean_all();
     void conf_button_all();
     void column_config_all();
@@ -50,11 +53,11 @@ private slots:
     void on_closeButton_2_triggered();
     void on_closeButton_clicked();
     void on_cleanButton2_clicked();
-    void on_hexButton_clicked();
     void on_pidButton_2_triggered();
     void on_newButton_triggered();
     void on_editButton_clicked();
     void on_aboutButton_triggered();
+	void on_GotooffsetButton_triggered();
     void on_rpidButton_clicked();
     void on_killButton_clicked();
     void on_stopButton_clicked();
@@ -78,6 +81,8 @@ private:
     Ui::MainWindow *m_ui;
     Ps m_ps;
     Pmap m_mapper;
-    HexView m_hex;
+    QHexView *m_hex;
+	QSplitter *m_splitter;
+	QVBoxLayout *m_layout;
     std::shared_ptr<QDialog> m_dialog;
 };

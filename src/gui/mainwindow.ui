@@ -31,7 +31,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_7">
+     <layout class="QVBoxLayout" name="Manipulation">
       <property name="spacing">
        <number>10</number>
       </property>
@@ -147,31 +147,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="hexButton">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>60</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>70</width>
-             <height>50</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>HEX</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QPushButton" name="rpidButton">
            <property name="minimumSize">
             <size>
@@ -276,7 +251,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideRight</enum>
@@ -293,7 +268,7 @@
       <property name="tabBarAutoHide">
        <bool>true</bool>
       </property>
-      <widget class="QWidget" name="Overview">
+      <widget class="QWidget" name="OverviewTab">
        <attribute name="title">
         <string>Overview</string>
        </attribute>
@@ -471,7 +446,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="Search">
+      <widget class="QWidget" name="SearchTab_2">
        <attribute name="title">
         <string>Search</string>
        </attribute>
@@ -543,8 +518,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>134</width>
-                 <height>186</height>
+                 <width>126</width>
+                 <height>168</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -636,7 +611,7 @@
                 </item>
                </layout>
               </widget>
-              <widget class="QWidget" name="page_2">
+              <widget class="QWidget" name="scrollArea">
                <property name="geometry">
                 <rect>
                  <x>0</x>
@@ -928,7 +903,7 @@
          </layout>
         </item>
         <item row="0" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_2">
+         <widget class="QLabel" name="SeachLabel">
           <property name="text">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:20pt; font-style:italic;&quot;&gt;Search&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -936,7 +911,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="Log">
+      <widget class="QWidget" name="LogTab">
        <attribute name="title">
         <string>Log</string>
        </attribute>
@@ -994,6 +969,20 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="HexViewTab">
+       <property name="maximumSize">
+        <size>
+         <width>1000</width>
+         <height>1000</height>
+        </size>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <attribute name="title">
+        <string>Hex</string>
+       </attribute>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -1013,6 +1002,7 @@
      <string>utils</string>
     </property>
     <addaction name="cleanButton"/>
+    <addaction name="GotooffsetButton"/>
    </widget>
    <widget class="QMenu" name="menufile">
     <property name="title">
@@ -1055,6 +1045,11 @@
   <action name="closeButton_2">
    <property name="text">
     <string>close</string>
+   </property>
+  </action>
+  <action name="GotooffsetButton">
+   <property name="text">
+    <string>Go to offset</string>
    </property>
   </action>
  </widget>
