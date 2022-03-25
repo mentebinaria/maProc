@@ -11,6 +11,8 @@ As the name maProc informs, it will map processes in linux, being able  to check
 
 > [License](LICENSE) BSD 2-Clause
 
+> [DEPENDENCIES](DEPENDENCIES.md)
+
 # About ©️
 we will make the maProc libs available in the following organization [CoffeeCode](https://github.com/0xc0ffeec0de), create your own maProc.
 The project's main creators are [Mob](https://github.com/VitorMob), [Buzzer](https://github.com/AandersonL) with all copyrights to Mente Binária.
@@ -37,11 +39,6 @@ The project's main creators are [Mob](https://github.com/VitorMob), [Buzzer](htt
     cmake ..
     make
 
-
-> Dependency
-
-    qt-creator
-    build-essential
 
 # Pages 📄
 
