@@ -40,8 +40,7 @@ The project's main creators are [Mob](https://github.com/VitorMob), [Buzzer](htt
 
 > Dependency
 
-    qt-creator
-    build-essential
+[Dependency](DEPENDENCIES.md)
 
 # Pages 📄
 
