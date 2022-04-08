@@ -14,6 +14,7 @@
 #define ICON_KILL "../src/assets/kill.png"
 #define ICON_STOP "../src/assets/stop.png"
 #define ICON_PLAY "../src/assets/play.png"
+#define ICON_HELP "../src/assets/help.png"
 
 #define NULL_STR "null"
 #define CLEAN_ROW " "
