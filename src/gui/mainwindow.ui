@@ -31,197 +31,6 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <layout class="QVBoxLayout" name="Manipulation">
-      <property name="spacing">
-       <number>10</number>
-      </property>
-      <property name="sizeConstraint">
-       <enum>QLayout::SetFixedSize</enum>
-      </property>
-      <item alignment="Qt::AlignTop">
-       <widget class="QGroupBox" name="ControlsBox">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>10</horstretch>
-          <verstretch>10</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>150</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>100</width>
-          <height>150</height>
-         </size>
-        </property>
-        <property name="title">
-         <string>Controls</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <widget class="QPushButton" name="pidButton">
-           <property name="minimumSize">
-            <size>
-             <width>40</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>70</width>
-             <height>50</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>PID</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="closeButton">
-           <property name="minimumSize">
-            <size>
-             <width>40</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>70</width>
-             <height>50</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>CLOSE</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item alignment="Qt::AlignTop">
-       <widget class="QGroupBox" name="utilsBox">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>250</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>100</width>
-          <height>1500</height>
-         </size>
-        </property>
-        <property name="title">
-         <string>Utils</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_8">
-         <item>
-          <widget class="QPushButton" name="cleanButton2">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-             <horstretch>60</horstretch>
-             <verstretch>40</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>60</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>70</width>
-             <height>50</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>CLEAN</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="rpidButton">
-           <property name="minimumSize">
-            <size>
-             <width>60</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>70</width>
-             <height>50</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>RPID</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="stopButton">
-           <property name="minimumSize">
-            <size>
-             <width>60</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>70</width>
-             <height>50</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>STOPP</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="killButton">
-           <property name="minimumSize">
-            <size>
-             <width>60</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>70</width>
-             <height>50</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>KILL</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>4</width>
-          <height>300</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
-    <item>
      <widget class="QTabWidget" name="MenuView">
       <property name="enabled">
        <bool>true</bool>
@@ -291,7 +100,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>715</width>
+               <width>823</width>
                <height>506</height>
               </rect>
              </property>
@@ -712,7 +521,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>539</width>
+               <width>647</width>
                <height>509</height>
               </rect>
              </property>
@@ -997,59 +806,99 @@
      <height>28</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuclean_2">
-    <property name="title">
-     <string>utils</string>
-    </property>
-    <addaction name="cleanButton"/>
-    <addaction name="GotooffsetButton"/>
-   </widget>
    <widget class="QMenu" name="menufile">
     <property name="title">
-     <string>file</string>
+     <string>File</string>
     </property>
-    <addaction name="newButton"/>
-    <addaction name="pidButton_2"/>
-    <addaction name="closeButton_2"/>
+    <widget class="QMenu" name="menupid">
+     <property name="title">
+      <string>Pid</string>
+     </property>
+     <addaction name="separator"/>
+     <addaction name="separator"/>
+     <addaction name="rpidButton"/>
+     <addaction name="killButton"/>
+     <addaction name="stopButton"/>
+    </widget>
+    <widget class="QMenu" name="menuHex">
+     <property name="title">
+      <string>Hex</string>
+     </property>
+     <addaction name="gotooffsetButton"/>
+    </widget>
+    <addaction name="pidButton"/>
+    <addaction name="menupid"/>
+    <addaction name="separator"/>
+    <addaction name="menuHex"/>
+    <addaction name="separator"/>
+    <addaction name="cleanButton"/>
+    <addaction name="closeButton"/>
    </widget>
    <widget class="QMenu" name="menuhelp">
     <property name="title">
-     <string>help</string>
+     <string>Help</string>
     </property>
+    <addaction name="quickHelpButton"/>
     <addaction name="aboutButton"/>
    </widget>
+   <widget class="QMenu" name="menuWindows">
+    <property name="title">
+     <string>Windows</string>
+    </property>
+    <addaction name="newButton"/>
+   </widget>
    <addaction name="menufile"/>
-   <addaction name="menuclean_2"/>
+   <addaction name="menuWindows"/>
    <addaction name="menuhelp"/>
   </widget>
-  <action name="cleanButton">
+  <action name="aboutButton">
    <property name="text">
-    <string>clean</string>
+    <string>About</string>
    </property>
   </action>
-  <action name="pidButton_2">
+  <action name="quickHelpButton">
    <property name="text">
-    <string>pid</string>
+    <string>Quick help</string>
    </property>
   </action>
   <action name="newButton">
    <property name="text">
-    <string>new</string>
+    <string>New window</string>
    </property>
   </action>
-  <action name="aboutButton">
+  <action name="closeButton">
    <property name="text">
-    <string>about</string>
+    <string>Close</string>
    </property>
   </action>
-  <action name="closeButton_2">
+  <action name="killButton">
    <property name="text">
-    <string>close</string>
+    <string>kill</string>
    </property>
   </action>
-  <action name="GotooffsetButton">
+  <action name="stopButton">
    <property name="text">
-    <string>Go to offset</string>
+    <string>stop</string>
+   </property>
+  </action>
+  <action name="rpidButton">
+   <property name="text">
+    <string>rpid</string>
+   </property>
+  </action>
+  <action name="pidButton">
+   <property name="text">
+    <string>Open pid</string>
+   </property>
+  </action>
+  <action name="gotooffsetButton">
+   <property name="text">
+    <string>go to offset</string>
+   </property>
+  </action>
+  <action name="cleanButton">
+   <property name="text">
+    <string>Clean</string>
    </property>
   </action>
  </widget>
