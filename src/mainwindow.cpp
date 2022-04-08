@@ -27,7 +27,8 @@ MainWindow::MainWindow ( QWidget *p_parent ) : QMainWindow ( p_parent ),
   m_ui ( new Ui::MainWindow ),
   m_hex ( new QHexView ),
   m_layout ( new QVBoxLayout ),
-  m_dialog()
+  m_dialog(),
+  m_pid(0)
 {
   m_ui->setupUi ( this );
 
