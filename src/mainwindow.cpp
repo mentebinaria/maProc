@@ -53,6 +53,8 @@ MainWindow::MainWindow ( QWidget *p_parent ) : QMainWindow ( p_parent ),
 MainWindow::~MainWindow()
 {
   delete m_ui;
+  delete m_layout;
+  delete m_hex;
 }
 
 /**
@@ -64,9 +66,13 @@ void MainWindow::conf_button_all()
   // buttons for pass pid
   m_ui->pidButton->setIcon ( QIcon ( ICON_PASS_PID ) );
   m_ui->rpidButton->setIcon ( QIcon ( ICON_RPASS_PID ) );
+  m_ui->pidButton->setShortcut ( QKeySequence ( "Ctrl+O" ) );
+  m_ui->rpidButton->setShortcut ( QKeySequence ( "Ctrl+R" ) );
 
   // buttons for clean
   m_ui->cleanButton->setIcon ( QIcon ( ICON_CLEAN ) );
+  m_ui->cleanButtonLog->setIcon ( QIcon ( ICON_CLEAN ) );
+  m_ui->cleanButton->setShortcut ( QKeySequence ( "Ctrl+L" ) );
 
   // search button
   m_ui->searchButton->setIcon ( QIcon ( ICON_SEARCH ) );
@@ -81,24 +87,30 @@ void MainWindow::conf_button_all()
 
   // new button
   m_ui->newButton->setIcon ( QIcon ( ICON_NEW ) );
+  m_ui->newButton->setShortcut ( QKeySequence ( "Ctrl+N" ) );
 
   // kill button
   m_ui->killButton->setIcon ( QIcon ( ICON_KILL ) );
+  m_ui->killButton->setShortcut ( QKeySequence ( "Ctrl+K" ) );
 
   // stop / play button
   m_ui->stopButton->setIcon ( QIcon ( ICON_STOP ) );
+  m_ui->stopButton->setShortcut ( QKeySequence ( "Ctrl+S" ) );
 
   // search address
   m_ui->search_address->setPlaceholderText ( "Address" );
-
+  
   // hex button
   m_ui->gotooffsetButton->setIcon ( QIcon ( ICON_HEX ) );
+  m_ui->gotooffsetButton->setShortcut ( QKeySequence ( "Ctrl+G" ) );
 
   // close
   m_ui->closeButton->setIcon ( QIcon(ICON_CLOSE) );
+  m_ui->closeButton->setShortcut ( QKeySequence ( "Ctrl+Q" ) );
 
   // help
   m_ui->quickHelpButton->setIcon( QIcon(ICON_HELP) );
+  m_ui->quickHelpButton->setShortcut ( QKeySequence ( "Ctrl+H" ) );
 }
 
 /**
@@ -223,7 +235,7 @@ void MainWindow::column_config_all()
 
   // log infos
   m_ui->log_text->setReadOnly ( true );
-  m_ui->cleanButtonLog->setIcon ( QIcon ( ICON_CLEAN ) );
+  
 
   // hex dump
   m_layout->addWidget ( m_hex );
@@ -388,7 +400,6 @@ void MainWindow::on_closeButton_triggered()
 void MainWindow::on_cleanButton_triggered()
 {
   column_clean_all();
-  m_pid = 0;
 }
 
 /**
@@ -455,43 +466,6 @@ void MainWindow::on_searchButton_clicked()
         }
 
         break;
-
-      case 2:
-      {
-        // all
-        addr = m_ui->infos_addr->item ( 0, 0 );
-        size = m_ui->infos_addr->item ( 0, 2 );
-
-        if ( addr->text().toStdString() != NULL_STR )
-        {
-          address_start = static_cast<off_t> ( std::stoul ( addr->text().toStdString(), nullptr, 16 ) );
-          lenght = std::stoul ( size->text().toStdString(), nullptr );
-
-          mapper_find ( address_start, lenght, find, it->second, p_offsetss );
-
-          if ( p_offsetss.size() != 0 )
-            set_values_column_address ( p_offsetss, find, "heap" );
-        }
-
-        addr = m_ui->infos_addr->item ( 1, 0 );
-        size = m_ui->infos_addr->item ( 1, 2 );
-
-        if ( addr->text().toStdString() != NULL_STR )
-        {
-          address_start = static_cast<off_t> ( std::stoul ( addr->text().toStdString(), nullptr, 16 ) );
-          lenght = std::stoul ( size->text().toStdString(), nullptr );
-
-          mapper_find ( address_start, lenght, find, it->second, p_offsetss );
-
-          if ( p_offsetss.size() != 0 )
-            set_values_column_address ( p_offsetss, find, "stack" );
-        }
-
-        QString sizeFound = QString::fromStdString ( std::to_string ( m_ui->view_address->rowCount() ) );
-        m_ui->foundAddr_label->setText ( "Found : " + sizeFound );
-
-        break;
-      }
 
       default:
         return;
@@ -581,6 +555,7 @@ off_t MainWindow::valid_address_edit()
  */
 void MainWindow::set_values_column_address ( std::vector<off_t> &p_offsets, std::string p_value, std::string p_memory )
 {
+  column_delete (m_ui->view_address)
   for ( auto &x : p_offsets )
   {
     m_ui->view_address->insertRow ( m_ui->view_address->rowCount() );
@@ -689,7 +664,8 @@ void MainWindow::on_stopButton_triggered()
  */
 void MainWindow::on_killButton_triggered()
 {
-  if ( m_pid == 0 )
+  QTableWidgetItem* item = m_ui->infos_pid->item(2,0);
+  if(item->text() == CLEAN_ROW)
     return;
 
   QMessageBox::StandardButton kill = QMessageBox::question ( this, "SIGNAL KILL", "Kill Process " + m_pid_name + "? ", QMessageBox::Yes | QMessageBox::No );
