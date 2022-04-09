@@ -59,6 +59,7 @@ class MainWindow : public QMainWindow
   void on_stopButton_triggered();
   void on_cleanButtonLog_clicked();
   void on_quickHelpButton_triggered();
+
  private:
   int m_type;
   QString m_pid_name;

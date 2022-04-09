@@ -320,15 +320,15 @@
                </size>
               </property>
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="page">
                <property name="geometry">
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>126</width>
-                 <height>168</height>
+                 <width>150</width>
+                 <height>186</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -345,11 +345,6 @@
                   <item>
                    <property name="text">
                     <string>heap</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>all</string>
                    </property>
                   </item>
                  </widget>
@@ -390,7 +385,7 @@
                  <widget class="QLineEdit" name="find">
                   <property name="minimumSize">
                    <size>
-                    <width>100</width>
+                    <width>120</width>
                     <height>30</height>
                    </size>
                   </property>
@@ -404,6 +399,12 @@
                 </item>
                 <item>
                  <widget class="QPushButton" name="searchButton">
+                  <property name="minimumSize">
+                   <size>
+                    <width>120</width>
+                    <height>0</height>
+                   </size>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>100</width>
@@ -468,6 +469,12 @@
                 </item>
                 <item>
                  <widget class="QLineEdit" name="value">
+                  <property name="minimumSize">
+                   <size>
+                    <width>120</width>
+                    <height>0</height>
+                   </size>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>100</width>
@@ -480,7 +487,7 @@
                  <widget class="QPushButton" name="editButton">
                   <property name="minimumSize">
                    <size>
-                    <width>100</width>
+                    <width>120</width>
                     <height>30</height>
                    </size>
                   </property>
@@ -720,6 +727,20 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="HexViewTab">
+       <property name="maximumSize">
+        <size>
+         <width>1000</width>
+         <height>1000</height>
+        </size>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <attribute name="title">
+        <string>Hex</string>
+       </attribute>
+      </widget>
       <widget class="QWidget" name="LogTab">
        <attribute name="title">
         <string>Log</string>
@@ -777,20 +798,6 @@
          </widget>
         </item>
        </layout>
-      </widget>
-      <widget class="QWidget" name="HexViewTab">
-       <property name="maximumSize">
-        <size>
-         <width>1000</width>
-         <height>1000</height>
-        </size>
-       </property>
-       <property name="autoFillBackground">
-        <bool>false</bool>
-       </property>
-       <attribute name="title">
-        <string>Hex</string>
-       </attribute>
       </widget>
      </widget>
     </item>
