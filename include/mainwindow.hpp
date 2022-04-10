@@ -45,7 +45,7 @@ class MainWindow : public QMainWindow
   void set_values_column_stack();
   void set_types_edit_read();
 
-  void on_search_address_textEdited ( const QString &arg1 );
+  void on_search_address_textEdited ( const QString & );
   void on_pidButton_triggered();
   void on_searchButton_clicked();
   void on_closeButton_triggered();
@@ -57,8 +57,10 @@ class MainWindow : public QMainWindow
   void on_rpidButton_triggered();
   void on_killButton_triggered();
   void on_stopButton_triggered();
-  void on_cleanButtonLog_clicked();
+  void on_cleanButtonLog_triggered();
   void on_quickHelpButton_triggered();
+  void on_FullScreenButton_triggered();
+  void on_SaveLogButton_triggered();
 
  private:
   int m_type;

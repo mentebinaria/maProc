@@ -28,7 +28,7 @@ MainWindow::MainWindow ( QWidget *p_parent ) : QMainWindow ( p_parent ),
   m_hex ( new QHexView ),
   m_layout ( new QVBoxLayout ),
   m_dialog(),
-  m_pid(0)
+  m_pid ( 0 )
 {
   m_ui->setupUi ( this );
 
@@ -99,18 +99,25 @@ void MainWindow::conf_button_all()
 
   // search address
   m_ui->search_address->setPlaceholderText ( "Address" );
-  
+
   // hex button
   m_ui->gotooffsetButton->setIcon ( QIcon ( ICON_HEX ) );
   m_ui->gotooffsetButton->setShortcut ( QKeySequence ( "Ctrl+G" ) );
 
   // close
-  m_ui->closeButton->setIcon ( QIcon(ICON_CLOSE) );
+  m_ui->closeButton->setIcon ( QIcon ( ICON_CLOSE ) );
   m_ui->closeButton->setShortcut ( QKeySequence ( "Ctrl+Q" ) );
 
   // help
-  m_ui->quickHelpButton->setIcon( QIcon(ICON_HELP) );
+  m_ui->quickHelpButton->setIcon ( QIcon ( ICON_HELP ) );
   m_ui->quickHelpButton->setShortcut ( QKeySequence ( "Ctrl+H" ) );
+
+  // full screen
+  m_ui->FullScreenButton->setIcon ( QIcon ( ICON_SCREEN ) );
+  m_ui->FullScreenButton->setShortcut ( QKeySequence ( "F11" ) );
+
+  // save log
+  m_ui->SaveLogButton->setIcon ( QIcon ( ICON_SAVE ) );
 }
 
 /**
@@ -180,7 +187,7 @@ void MainWindow::on_pidButton_triggered()
  */
 void MainWindow::verify_pid()
 {
-  if ( m_mapper.map_pid(m_pid) == PID_SUCCESS )
+  if ( m_mapper.map_pid ( m_pid ) == PID_SUCCESS )
   {
     m_pid_name = QString::fromStdString ( m_mapper.get_utilsPid ( NAME ) );
     m_pid_cmdline = QString::fromStdString ( m_mapper.get_utilsPid ( CMDLINE ) );
@@ -189,10 +196,6 @@ void MainWindow::verify_pid()
     m_pid_wchan = QString::fromStdString ( m_mapper.get_utilsPid ( WCHAN ) );
     m_pid_blksize = QString::fromStdString ( m_mapper.get_utilsPid ( BLOCKSIZEBIN ) );
     m_pid_exedir = QString::fromStdString ( m_mapper.get_utilsPid ( EXEDIR ) );
-    m_sys_hostname = QString::fromStdString ( m_mapper.get_utilsPid ( HOSTNAME ) );
-    m_sys_osrealese = QString::fromStdString ( m_mapper.get_utilsPid ( OSREALESE ) );
-    m_sys_version = QString::fromStdString ( m_mapper.get_utilsPid ( VERSION ) );
-    m_sys_type = QString::fromStdString ( m_mapper.get_utilsPid ( TYPE ) );
 
     // tell the status bar which pid is being mapped
     setWindowTitle ( "maProc - PID: " + QString::fromStdString ( std::to_string ( m_pid ) ) + " Name: " + m_pid_name );
@@ -228,18 +231,27 @@ void MainWindow::column_config_all()
   m_ui->infos_file->horizontalHeader()->setSectionResizeMode ( QHeaderView::Stretch );
   m_ui->infos_file->setShowGrid ( false );
 
-  // infos sys
-  m_ui->infos_sys->horizontalHeader()->setSectionResizeMode ( QHeaderView::Stretch );
-  m_ui->infos_sys->setEditTriggers ( QAbstractItemView::NoEditTriggers );
-  m_ui->infos_sys->setShowGrid ( false );
-
   // log infos
   m_ui->log_text->setReadOnly ( true );
   
-
+  // maps table
+  m_ui->maps_table->horizontalHeader()->setSectionResizeMode ( QHeaderView::Stretch );
+  m_ui->maps_table->setEditTriggers ( QAbstractItemView::NoEditTriggers );
+  
   // hex dump
   m_layout->addWidget ( m_hex );
   m_ui->HexViewTab->setLayout ( m_layout );
+  
+  // config values type OS
+  m_sys_hostname = QString::fromStdString ( m_mapper.get_utilsPid ( HOSTNAME ) );
+  m_sys_osrealese = QString::fromStdString ( m_mapper.get_utilsPid ( OSREALESE ) );
+  m_sys_version = QString::fromStdString ( m_mapper.get_utilsPid ( VERSION ) );
+  m_sys_type = QString::fromStdString ( m_mapper.get_utilsPid ( TYPE ) );
+  
+  m_ui->host_name_label->setText( "Host-Name -> " + m_sys_hostname );
+  m_ui->os_realese_label->setText( "OS-Realese -> " + m_sys_osrealese );
+  m_ui->version_label->setText ("Version -> " + m_sys_version );
+  m_ui->os_type_label->setText ( "OS-Type -> " +  m_sys_type );
 
 }
 
@@ -260,12 +272,6 @@ void MainWindow::set_values_column_utils()
   m_ui->infos_pid->setItem ( 2, 0, new QTableWidgetItem ( m_pid_loginuid ) );
   m_ui->infos_pid->setItem ( 3, 0, new QTableWidgetItem ( m_pid_wchan ) );
   m_ui->infos_pid->setItem ( 4, 0, new QTableWidgetItem ( m_pid_cmdline ) );
-
-  // table sys info
-  m_ui->infos_sys->setItem ( 0, 0, new QTableWidgetItem ( m_sys_hostname ) );
-  m_ui->infos_sys->setItem ( 1, 0, new QTableWidgetItem ( m_sys_osrealese ) );
-  m_ui->infos_sys->setItem ( 2, 0, new QTableWidgetItem ( m_sys_version ) );
-  m_ui->infos_sys->setItem ( 3, 0, new QTableWidgetItem ( m_sys_type ) );
 }
 
 /**
@@ -419,11 +425,6 @@ void MainWindow::on_newButton_triggered()
  */
 void MainWindow::on_searchButton_clicked()
 {
-  QTableWidgetItem *addr;
-  QTableWidgetItem *size;
-  std::vector<off_t> p_offsetss;
-  off_t address_start;
-  uint64_t lenght;
   std::string varType = m_ui->type->currentText().toStdString();
   std::string find = m_ui->find->text().toStdString();
   std::size_t mem = m_ui->mem->currentIndex();
@@ -431,6 +432,12 @@ void MainWindow::on_searchButton_clicked()
 
   if ( find.size() != 0 && m_pid != 0 && it != m_typeSizes.end() )
   {
+    QTableWidgetItem *addr;
+    QTableWidgetItem *size;
+    uint64_t lenght;
+    std::vector<off_t> p_offsetss;
+    off_t address_start;
+
     switch ( mem )
     {
       case 0: // stack
@@ -495,8 +502,10 @@ void MainWindow::on_editButton_clicked()
 
     if ( m_mapper.map_write ( address, ( void * ) &value[0], SizeT ) == true ){
       write_log ( "[EDITED] Memory edited address [0x" + QString::number ( address, 16 ) + "]  [" + m_ui->find->text() + "] - > [" + QString::fromStdString ( value ) + "]" );
-    }else
+
+    }else{
       write_log ( "[ERROR] Fail edit memory [0x" + QString::number ( address, 16 ) + "]  [" + m_ui->find->text() + "] - > [" + QString::fromStdString ( value ) + "]" );
+    }
   }
   else if ( it == m_typeSizes.end() ) // critical error, will exit the program
   {
@@ -555,7 +564,8 @@ off_t MainWindow::valid_address_edit()
  */
 void MainWindow::set_values_column_address ( std::vector<off_t> &p_offsets, std::string p_value, std::string p_memory )
 {
-  column_delete (m_ui->view_address)
+  column_delete ( m_ui->view_address )
+
   for ( auto &x : p_offsets )
   {
     m_ui->view_address->insertRow ( m_ui->view_address->rowCount() );
@@ -592,12 +602,12 @@ void MainWindow::view_address_table ( QTableWidgetItem *p_first )
  */
 void MainWindow::column_clean_all()
 {
-  setWindowTitle(TITLE_WINDOW);
+  setWindowTitle ( TITLE_WINDOW );
   column_delete ( m_ui->view_address );
   m_ui->address_edit->setText ( NULL_STR );
   m_hex->clear();
   m_ui->foundAddr_label->setText ( "Found : 0" );
-  
+
 
   for ( int i = 5; i >= 0; i-- )
   {
@@ -608,7 +618,6 @@ void MainWindow::column_clean_all()
 
     m_ui->infos_pid->setItem ( i, 0, new QTableWidgetItem ( CLEAN_ROW ) );
     m_ui->infos_file->setItem ( i, 0, new QTableWidgetItem ( CLEAN_ROW ) );
-    m_ui->infos_sys->setItem ( i, 0, new QTableWidgetItem ( CLEAN_ROW ) );
   }
 }
 
@@ -616,7 +625,7 @@ void MainWindow::column_clean_all()
  * @brief clean log button
  *
  */
-void MainWindow::on_cleanButtonLog_clicked()
+void MainWindow::on_cleanButtonLog_triggered()
 {
   m_ui->log_text->clear();
 }
@@ -632,19 +641,19 @@ void MainWindow::on_stopButton_triggered()
 
   try
   {
-    if ( m_ui->stopButton->text() == "STOPP" )
+    if ( m_ui->stopButton->text() == "Stop Pid" )
     {
       m_mapper.map_stop();
-      m_ui->stopButton->setText ( "PPLAY" );
+      m_ui->stopButton->setText ( "Play Pid" );
       m_ui->stopButton->setIcon ( QIcon ( ICON_PLAY ) );
       m_pid_wchan = QString::fromStdString ( m_mapper.get_utilsPid ( WCHAN ) );
       m_ui->infos_pid->setItem ( 3, 0, new QTableWidgetItem ( m_pid_wchan ) );
       write_log ( "[SIGNAL STOP] you send a signal to the PID=" + QString::fromStdString ( std::to_string ( m_pid ) ) + ", sending it on a stop in the process" )
     }
-    else if ( m_ui->stopButton->text() == "PPLAY" )
+    else if ( m_ui->stopButton->text() == "Play Pid" )
     {
       m_mapper.map_stop ( false );
-      m_ui->stopButton->setText ( "STOPP" );
+      m_ui->stopButton->setText ( "Stop Pid" );
       m_ui->stopButton->setIcon ( QIcon ( ICON_STOP ) );
       m_pid_wchan = QString::fromStdString ( m_mapper.get_utilsPid ( WCHAN ) );
       m_ui->infos_pid->setItem ( 3, 0, new QTableWidgetItem ( m_pid_wchan ) );
@@ -664,8 +673,9 @@ void MainWindow::on_stopButton_triggered()
  */
 void MainWindow::on_killButton_triggered()
 {
-  QTableWidgetItem* item = m_ui->infos_pid->item(2,0);
-  if(item->text() == CLEAN_ROW)
+  QTableWidgetItem *item = m_ui->infos_pid->item ( 2, 0 );
+
+  if ( item->text() == CLEAN_ROW )
     return;
 
   QMessageBox::StandardButton kill = QMessageBox::question ( this, "SIGNAL KILL", "Kill Process " + m_pid_name + "? ", QMessageBox::Yes | QMessageBox::No );
@@ -682,7 +692,7 @@ void MainWindow::on_killButton_triggered()
 /**
  * @brief search table view address
  *
- * @param arg1
+ * @param arg1 search address table view_address
  */
 void MainWindow::on_search_address_textEdited ( const QString &p_arg1 )
 {
@@ -703,6 +713,10 @@ void MainWindow::on_search_address_textEdited ( const QString &p_arg1 )
   search.clear();
 }
 
+
+/**
+ * @brief set offset for jumṕ
+ * */
 void MainWindow::on_gotooffsetButton_triggered()
 {
   bool done;
@@ -712,7 +726,32 @@ void MainWindow::on_gotooffsetButton_triggered()
     m_hex->showFromOffset ( offset );
 }
 
+
+/**
+ * @brief open browser for help maProc
+ * */
 void MainWindow::on_quickHelpButton_triggered()
 {
-  QDesktopServices::openUrl(QUrl("https://github.com/mentebinaria/maProc/wiki/Help"));
+  QDesktopServices::openUrl ( QUrl ( "https://github.com/mentebinaria/maProc/wiki/Help" ) );
+}
+
+
+/**
+ * @brief full screen window
+ * */
+void MainWindow::on_FullScreenButton_triggered()
+{
+  if ( isFullScreen() )
+    showNormal();
+  else
+    showFullScreen();
+}
+
+
+/**
+ * @brief Save log
+ * */
+void MainWindow::on_SaveLogButton_triggered()
+{
+
 }

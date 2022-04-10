@@ -15,6 +15,8 @@
 #define ICON_STOP "../src/assets/stop.png"
 #define ICON_PLAY "../src/assets/play.png"
 #define ICON_HELP "../src/assets/help.png"
+#define ICON_SCREEN "../src/assets/show.png"
+#define ICON_SAVE "../src/assets/save.png"
 
 #define NULL_STR "null"
 #define CLEAN_ROW " "
