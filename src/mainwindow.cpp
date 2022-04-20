@@ -242,16 +242,16 @@ void MainWindow::column_config_all()
   m_layout->addWidget ( m_hex );
   m_ui->HexViewTab->setLayout ( m_layout );
   
-  // config values type OS
+  // config infos type OS 
   m_sys_hostname = QString::fromStdString ( m_mapper.get_utilsPid ( HOSTNAME ) );
   m_sys_osrealese = QString::fromStdString ( m_mapper.get_utilsPid ( OSREALESE ) );
   m_sys_version = QString::fromStdString ( m_mapper.get_utilsPid ( VERSION ) );
   m_sys_type = QString::fromStdString ( m_mapper.get_utilsPid ( TYPE ) );
   
-  m_ui->host_name_label->setText( "Host-Name -> " + m_sys_hostname );
-  m_ui->os_realese_label->setText( "OS-Realese -> " + m_sys_osrealese );
-  m_ui->version_label->setText ("Version -> " + m_sys_version );
-  m_ui->os_type_label->setText ( "OS-Type -> " +  m_sys_type );
+  m_ui->host_name_label->setText( "Host-Name :  " + m_sys_hostname );
+  m_ui->os_realese_label->setText( "OS-Realese :  " + m_sys_osrealese );
+  m_ui->version_label->setText ("Version :  " + m_sys_version );
+  m_ui->os_type_label->setText ( "OS-Type :  " +  m_sys_type );
 
 }
 

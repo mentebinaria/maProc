@@ -136,13 +136,13 @@
                      <property name="minimumSize">
                       <size>
                        <width>0</width>
-                       <height>100</height>
+                       <height>130</height>
                       </size>
                      </property>
                      <property name="maximumSize">
                       <size>
-                       <width>10000</width>
-                       <height>260</height>
+                       <width>100000</width>
+                       <height>130</height>
                       </size>
                      </property>
                      <row>
@@ -920,7 +920,7 @@
   </action>
   <action name="newButton">
    <property name="text">
-    <string>New window</string>
+    <string>New Window</string>
    </property>
   </action>
   <action name="closeButton">
