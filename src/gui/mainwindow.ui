@@ -2,6 +2,12 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -12,7 +18,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>600</width>
+    <width>800</width>
     <height>100</height>
    </size>
   </property>
@@ -20,7 +26,7 @@
    <enum>Qt::NoContextMenu</enum>
   </property>
   <property name="windowTitle">
-   <string>maproc v1.0</string>
+   <string>maProc</string>
   </property>
   <property name="documentMode">
    <bool>false</bool>
@@ -101,188 +107,196 @@
                <x>0</x>
                <y>0</y>
                <width>823</width>
-               <height>552</height>
+               <height>554</height>
               </rect>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_6">
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout">
-                <item>
-                 <widget class="QGroupBox" name="groupBox_2">
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>100</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>500</width>
-                    <height>220</height>
-                   </size>
-                  </property>
-                  <property name="title">
-                   <string>Infos File</string>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_8">
-                   <item>
-                    <widget class="QTableWidget" name="infos_file">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>130</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>100000</width>
-                       <height>130</height>
-                      </size>
-                     </property>
-                     <row>
-                      <property name="text">
-                       <string>Executable</string>
-                      </property>
-                     </row>
-                     <row>
-                      <property name="text">
-                       <string>Size</string>
-                      </property>
-                     </row>
-                     <row>
-                      <property name="text">
-                       <string>Blksize</string>
-                      </property>
-                     </row>
-                     <column>
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </column>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item alignment="Qt::AlignRight">
-                 <widget class="QGroupBox" name="groupBox">
-                  <property name="maximumSize">
-                   <size>
-                    <width>16777215</width>
-                    <height>120</height>
-                   </size>
-                  </property>
-                  <property name="title">
-                   <string>System Infos</string>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_7">
-                   <item>
-                    <widget class="QLabel" name="host_name_label">
+               <widget class="QToolBox" name="toolBox">
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <widget class="QWidget" name="infosProcessPage">
+                 <property name="geometry">
+                  <rect>
+                   <x>0</x>
+                   <y>0</y>
+                   <width>697</width>
+                   <height>480</height>
+                  </rect>
+                 </property>
+                 <attribute name="label">
+                  <string>Infos Process</string>
+                 </attribute>
+                 <layout class="QVBoxLayout" name="verticalLayout_6">
+                  <item>
+                   <widget class="QTableWidget" name="infos_pid">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>100</width>
+                      <height>180</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>10000</width>
+                      <height>240</height>
+                     </size>
+                    </property>
+                    <row>
                      <property name="text">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; font-style:italic;&quot;&gt;Host-Name :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      <string>Name</string>
                      </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="version_label">
+                    </row>
+                    <row>
                      <property name="text">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; font-style:italic;&quot;&gt;Version :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      <string>Pid</string>
                      </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="os_realese_label">
+                    </row>
+                    <row>
                      <property name="text">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; font-style:italic;&quot;&gt;OS-Realese :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      <string>Loginuid</string>
                      </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="os_type_label">
+                    </row>
+                    <row>
                      <property name="text">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; font-style:italic;&quot;&gt;OS-Type :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      <string>Wchan</string>
                      </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-               </layout>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>Cmdline</string>
+                     </property>
+                    </row>
+                    <column>
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </column>
+                   </widget>
+                  </item>
+                  <item alignment="Qt::AlignTop">
+                   <widget class="QTableWidget" name="infos_file">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>200</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>100000</width>
+                      <height>130</height>
+                     </size>
+                    </property>
+                    <row>
+                     <property name="text">
+                      <string>Executable</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>Size</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>Blksize</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>New Row</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>SHA-1</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>MD5</string>
+                     </property>
+                    </row>
+                    <column>
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </column>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="infosELfHeader">
+                 <property name="geometry">
+                  <rect>
+                   <x>0</x>
+                   <y>0</y>
+                   <width>697</width>
+                   <height>480</height>
+                  </rect>
+                 </property>
+                 <attribute name="label">
+                  <string>Elf Header</string>
+                 </attribute>
+                 <layout class="QVBoxLayout" name="verticalLayout_8"/>
+                </widget>
+               </widget>
               </item>
               <item>
-               <widget class="QGroupBox" name="groupBox_3">
-                <property name="minimumSize">
-                 <size>
-                  <width>100</width>
-                  <height>230</height>
-                 </size>
-                </property>
+               <layout class="QHBoxLayout" name="horizontalLayout"/>
+              </item>
+              <item alignment="Qt::AlignTop">
+               <widget class="QGroupBox" name="groupBox">
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>300</height>
+                  <height>120</height>
                  </size>
                 </property>
                 <property name="title">
-                 <string>Infos Process</string>
+                 <string>System Infos</string>
                 </property>
-                <layout class="QVBoxLayout" name="verticalLayout_11">
+                <layout class="QVBoxLayout" name="verticalLayout_7">
+                 <item alignment="Qt::AlignTop">
+                  <widget class="QLabel" name="host_name_label">
+                   <property name="text">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; font-style:italic;&quot;&gt;Host-Name :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                  </widget>
+                 </item>
                  <item>
-                  <widget class="QTableWidget" name="infos_pid">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
+                  <widget class="QLabel" name="version_label">
+                   <property name="text">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; font-style:italic;&quot;&gt;Version :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>180</height>
-                    </size>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="os_realese_label">
+                   <property name="text">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; font-style:italic;&quot;&gt;OS-Realese :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>10000</width>
-                     <height>240</height>
-                    </size>
+                  </widget>
+                 </item>
+                 <item alignment="Qt::AlignTop">
+                  <widget class="QLabel" name="os_type_label">
+                   <property name="text">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; font-style:italic;&quot;&gt;OS-Type :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
-                   <row>
-                    <property name="text">
-                     <string>Name</string>
-                    </property>
-                   </row>
-                   <row>
-                    <property name="text">
-                     <string>Pid</string>
-                    </property>
-                   </row>
-                   <row>
-                    <property name="text">
-                     <string>Loginuid</string>
-                    </property>
-                   </row>
-                   <row>
-                    <property name="text">
-                     <string>Wchan</string>
-                    </property>
-                   </row>
-                   <row>
-                    <property name="text">
-                     <string>Cmdline</string>
-                    </property>
-                   </row>
-                   <column>
-                    <property name="text">
-                     <string/>
-                    </property>
-                   </column>
                   </widget>
                  </item>
                 </layout>
@@ -311,6 +325,15 @@
               <height>100</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string notr="true"/>
+            </property>
+            <property name="statusTip">
+             <string notr="true"/>
+            </property>
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
             <property name="widgetResizable">
              <bool>true</bool>
             </property>
@@ -320,7 +343,7 @@
                <x>0</x>
                <y>0</y>
                <width>647</width>
-               <height>552</height>
+               <height>554</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -584,7 +607,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>150</width>
-                 <height>186</height>
+                 <height>188</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -683,7 +706,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>132</width>
-                 <height>123</height>
+                 <height>121</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -851,7 +874,7 @@
      <x>0</x>
      <y>0</y>
      <width>853</width>
-     <height>28</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menufile">
@@ -902,6 +925,8 @@
     <addaction name="menuLog"/>
     <addaction name="separator"/>
     <addaction name="menuHex_2"/>
+    <addaction name="separator"/>
+    <addaction name="actionCpu"/>
    </widget>
    <addaction name="menufile"/>
    <addaction name="menuEdit"/>
@@ -971,6 +996,11 @@
   <action name="FullScreenButton">
    <property name="text">
     <string>Full Screen</string>
+   </property>
+  </action>
+  <action name="actionCpu">
+   <property name="text">
+    <string>CPU Analysis Process...</string>
    </property>
   </action>
  </widget>

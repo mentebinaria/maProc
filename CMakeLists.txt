@@ -59,7 +59,6 @@ set(PROJECT_SOURCES
         src/dirwindow.cpp
         src/gui/dirwindow.ui
 
-
 )
 add_executable(maProc
         ${PROJECT_SOURCES}

@@ -9,6 +9,7 @@
 #include <string>
 #include <QMessageBox>
 #include <QDesktopServices>
+#include <QFile>
 
 #define mapper_heap m_mapper.map_mem("[heap]")
 #define mapper_stack m_mapper.map_mem("[stack]")
@@ -233,24 +234,24 @@ void MainWindow::column_config_all()
 
   // log infos
   m_ui->log_text->setReadOnly ( true );
-  
+
   // maps table
   m_ui->maps_table->horizontalHeader()->setSectionResizeMode ( QHeaderView::Stretch );
   m_ui->maps_table->setEditTriggers ( QAbstractItemView::NoEditTriggers );
-  
+
   // hex dump
   m_layout->addWidget ( m_hex );
   m_ui->HexViewTab->setLayout ( m_layout );
-  
-  // config infos type OS 
+
+  // config infos type OS
   m_sys_hostname = QString::fromStdString ( m_mapper.get_utilsPid ( HOSTNAME ) );
   m_sys_osrealese = QString::fromStdString ( m_mapper.get_utilsPid ( OSREALESE ) );
   m_sys_version = QString::fromStdString ( m_mapper.get_utilsPid ( VERSION ) );
   m_sys_type = QString::fromStdString ( m_mapper.get_utilsPid ( TYPE ) );
-  
-  m_ui->host_name_label->setText( "Host-Name :  " + m_sys_hostname );
-  m_ui->os_realese_label->setText( "OS-Realese :  " + m_sys_osrealese );
-  m_ui->version_label->setText ("Version :  " + m_sys_version );
+
+  m_ui->host_name_label->setText ( "Host-Name :  " + m_sys_hostname );
+  m_ui->os_realese_label->setText ( "OS-Realese :  " + m_sys_osrealese );
+  m_ui->version_label->setText ( "Version :  " + m_sys_version );
   m_ui->os_type_label->setText ( "OS-Type :  " +  m_sys_type );
 
 }
@@ -502,10 +503,9 @@ void MainWindow::on_editButton_clicked()
 
     if ( m_mapper.map_write ( address, ( void * ) &value[0], SizeT ) == true ){
       write_log ( "[EDITED] Memory edited address [0x" + QString::number ( address, 16 ) + "]  [" + m_ui->find->text() + "] - > [" + QString::fromStdString ( value ) + "]" );
-
-    }else{
-      write_log ( "[ERROR] Fail edit memory [0x" + QString::number ( address, 16 ) + "]  [" + m_ui->find->text() + "] - > [" + QString::fromStdString ( value ) + "]" );
     }
+    else
+      write_log ( "[ERROR] Fail edit memory [0x" + QString::number ( address, 16 ) + "]  [" + m_ui->find->text() + "] - > [" + QString::fromStdString ( value ) + "]" );
   }
   else if ( it == m_typeSizes.end() ) // critical error, will exit the program
   {
@@ -607,6 +607,11 @@ void MainWindow::column_clean_all()
   m_ui->address_edit->setText ( NULL_STR );
   m_hex->clear();
   m_ui->foundAddr_label->setText ( "Found : 0" );
+  m_pid_name.clear();
+  m_pid_wchan.clear();
+  m_pid_exedir.clear();
+  m_pid_loginuid.clear();
+  m_pid_cmdline.clear();
 
 
   for ( int i = 5; i >= 0; i-- )
@@ -636,7 +641,7 @@ void MainWindow::on_cleanButtonLog_triggered()
  */
 void MainWindow::on_stopButton_triggered()
 {
-  if ( m_pid == 0 )
+  if(m_pid_name.size() == 0)
     return;
 
   try
@@ -673,9 +678,7 @@ void MainWindow::on_stopButton_triggered()
  */
 void MainWindow::on_killButton_triggered()
 {
-  QTableWidgetItem *item = m_ui->infos_pid->item ( 2, 0 );
-
-  if ( item->text() == CLEAN_ROW )
+  if(m_pid_name.size() == 0)
     return;
 
   QMessageBox::StandardButton kill = QMessageBox::question ( this, "SIGNAL KILL", "Kill Process " + m_pid_name + "? ", QMessageBox::Yes | QMessageBox::No );
@@ -753,5 +756,29 @@ void MainWindow::on_FullScreenButton_triggered()
  * */
 void MainWindow::on_SaveLogButton_triggered()
 {
+  QString textLog = m_ui->log_text->toPlainText();
 
+  if ( textLog.size() != 0 )
+  {
+    bool ok;
+    QString text = QInputDialog::getText ( this, tr ( "Save Logging" ),
+                                           tr ( "File Name:" ), QLineEdit::Normal,
+                                           m_pid_name+QString("Log"), &ok );
+
+    if ( !text.isEmpty() )
+    {
+      QFile file(text+QString(".mPl"));
+      if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return;
+      else
+      {
+        file.write(textLog.toUtf8().data(), textLog.size());
+        file.close();
+        QMessageBox::information(nullptr, "Save Logging", "Logging saved is sucessful"); 
+      }
+    }
+  
+  }
+  else
+    QMessageBox::critical ( nullptr, "ERROR", "Logging is empty, active checkbox []Log" );
 }
