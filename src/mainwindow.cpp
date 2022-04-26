@@ -16,7 +16,8 @@
 
 #define column_delete(p_column)          \
     {                                    \
-        while (p_column->rowCount() > 0) \
+      m_ui->progressFind->setValue(0);       \
+      while (p_column->rowCount() > 0)   \
             p_column->removeRow(0);      \
     }
 
@@ -253,6 +254,10 @@ void MainWindow::column_config_all()
   m_ui->os_realese_label->setText ( "OS-Realese :  " + m_sys_osrealese );
   m_ui->version_label->setText ( "Version :  " + m_sys_version );
   m_ui->os_type_label->setText ( "OS-Type :  " +  m_sys_type );
+  
+  // elf header
+  m_ui->elfheader_table->horizontalHeader()->setSectionResizeMode ( QHeaderView::Stretch );
+  m_ui->elfheader_table->setEditTriggers ( QAbstractItemView::NoEditTriggers );
 
 }
 
@@ -336,17 +341,22 @@ void MainWindow::set_types_edit_read()
  * @param p_length size for read
  * @param p_find what to look for
  * @param p_type type for search
- * @param p_p_offsetss will store the addresses found in a vector
+ * @param p_offsets will store the addresses found in a vector
  */
 void MainWindow::mapper_find ( off_t p_addr, off_t p_length, std::string p_find,
-                               uint8_t p_type, std::vector<off_t> &p_p_offsetss )
+                               uint8_t p_type, std::vector<off_t> &p_offsets )
 {
   try
   {
+    int valueMax = p_offsets.size();
     // search for locations that have
     // already been found in the table
     if ( m_ui->checkCache->isChecked() )
     {
+
+      // progress bar
+      m_ui->progressFind->setValue(0);
+
       std::string find = m_ui->find->text().toStdString();
       int rowCont = m_ui->view_address->rowCount();
       std::size_t size = find.size();
@@ -369,7 +379,12 @@ void MainWindow::mapper_find ( off_t p_addr, off_t p_length, std::string p_find,
         }
         else
           m_ui->view_address->hideRow ( it );
+
+        m_ui->progressFind->setValue(it);
       }
+
+      if(m_ui->progressFind->value() < valueMax)
+          m_ui->progressFind->setValue(valueMax);
 
       data.clear();
     }
@@ -379,14 +394,15 @@ void MainWindow::mapper_find ( off_t p_addr, off_t p_length, std::string p_find,
       // from 0 all the memory
       column_delete ( m_ui->view_address );
 
-      if ( m_mapper.map_find ( p_addr, p_length, p_find, p_type, p_p_offsetss ) == READ_FAIL )
+      if ( m_mapper.map_find ( p_addr, p_length, p_find, p_type, p_offsets ) == READ_FAIL )
         QMessageBox::critical ( nullptr, "Fail Read", "Not read memory, error in start  0x" + QString::number ( p_addr, 16 ) );
     }
 
-    QString sizeFound = QString::fromStdString ( std::to_string ( p_p_offsetss.size() ) );
+    QString sizeFound = QString::fromStdString ( std::to_string (valueMax ) );
     write_log ( "[SEARCH] PID [" + QString::fromStdString ( std::to_string ( m_pid ) ) + "] searched in memory start [0x" + QString::number ( p_addr, 16 ) + "] [" + QString::fromStdString ( p_find ) + "] found these addresses with such values [" + sizeFound + "]" );
 
     m_ui->foundAddr_label->setText ( "Found : " + sizeFound );
+
   }
   catch ( std::exception &error )
   {
@@ -564,6 +580,11 @@ off_t MainWindow::valid_address_edit()
  */
 void MainWindow::set_values_column_address ( std::vector<off_t> &p_offsets, std::string p_value, std::string p_memory )
 {
+  int i = 0;
+  int valueMax = p_offsets.size();
+  m_ui->progressFind->reset();
+  m_ui->progressFind->setMaximum(valueMax);
+
   column_delete ( m_ui->view_address )
 
   for ( auto &x : p_offsets )
@@ -578,7 +599,12 @@ void MainWindow::set_values_column_address ( std::vector<off_t> &p_offsets, std:
     m_ui->view_address->setItem ( rowCount, Memory, new QTableWidgetItem ( QString ( QString::fromStdString ( p_memory ) ) ) );
 
     p_offsets.pop_back();
+    m_ui->progressFind->setValue(i);
+    i++;
   }
+
+  if(m_ui->progressFind->value() < valueMax)
+      m_ui->progressFind->setValue(valueMax);
 }
 
 /**
@@ -612,7 +638,7 @@ void MainWindow::column_clean_all()
   m_pid_exedir.clear();
   m_pid_loginuid.clear();
   m_pid_cmdline.clear();
-
+  m_ui->progressFind->reset();
 
   for ( int i = 5; i >= 0; i-- )
   {
@@ -774,7 +800,7 @@ void MainWindow::on_SaveLogButton_triggered()
       {
         file.write(textLog.toUtf8().data(), textLog.size());
         file.close();
-        QMessageBox::information(nullptr, "Save Logging", "Logging saved is sucessful"); 
+        QMessageBox::information(nullptr, "SUCESSS", "Logging saved is sucessfull"); 
       }
     }
   

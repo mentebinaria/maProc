@@ -33,29 +33,29 @@ set(PROJECT_SOURCES
         src/main.cpp
         src/mainwindow.cpp
 
-        include/ps.hpp
+        src/include/ps.hpp
         src/ps.cpp
 
-        include/filedescriptor.hpp
+        src/include/filedescriptor.hpp
         src/filedescriptor.cpp
 
-        include/pmap.hpp
+        src/include/pmap.hpp
         src/pmap.cpp
 
-        include/proclib.hpp
+        src/include/proclib.hpp
         src/proclib.cpp
 
         src/proclib.cpp
-        include/proclib.hpp
+        src/include/proclib.hpp
 
         src/qhexview.cpp
-        include/qhexview.hpp
+        src/include/qhexview.hpp
 
-        include/mainwindow.hpp
+        src/include/mainwindow.hpp
         src/gui/mainwindow.ui
         src/gui/about.ui
 
-        include/dirwindow.hpp
+        src/include/dirwindow.hpp
         src/dirwindow.cpp
         src/gui/dirwindow.ui
 

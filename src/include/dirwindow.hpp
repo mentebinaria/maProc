@@ -2,8 +2,8 @@
 
 #include <QDialog>
 
-#include "include/ps.hpp"
-#include "include/mainwindow.hpp"
+#include "src/include/ps.hpp"
+#include "src/include/mainwindow.hpp"
 #include <unordered_map>
 
 namespace Ui

@@ -3,8 +3,8 @@
 #include <fstream>
 #include <unordered_map>
 
-#include "include/datastructs/erros.hpp"
-#include "include/filedescriptor.hpp"
+#include "datastructs/erros.hpp"
+#include "filedescriptor.hpp"
 
 #define PROC "/proc/"
 #define COMM "/comm"

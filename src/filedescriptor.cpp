@@ -1,6 +1,6 @@
-#include "../include/filedescriptor.hpp"
-#include "../include/datastructs/utils.hpp"
-#include "../include/datastructs/erros.hpp"
+#include "include/filedescriptor.hpp"
+#include "include/datastructs/utils.hpp"
+#include "include/datastructs/erros.hpp"
 
 #include <sstream>
 #include <fcntl.h>

@@ -18,7 +18,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>800</width>
+    <width>700</width>
     <height>100</height>
    </size>
   </property>
@@ -28,14 +28,20 @@
   <property name="windowTitle">
    <string>maProc</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
+  <property name="animated">
+   <bool>false</bool>
+  </property>
   <property name="documentMode">
    <bool>false</bool>
   </property>
   <property name="dockOptions">
-   <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks|QMainWindow::VerticalTabs</set>
+   <set>QMainWindow::AllowTabbedDocks|QMainWindow::VerticalTabs</set>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout_11">
     <item>
      <widget class="QTabWidget" name="MenuView">
       <property name="enabled">
@@ -66,7 +72,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideRight</enum>
@@ -213,12 +219,12 @@
                     </row>
                     <row>
                      <property name="text">
-                      <string>Blksize</string>
+                      <string>Block Size</string>
                      </property>
                     </row>
                     <row>
                      <property name="text">
-                      <string>New Row</string>
+                      <string>SHA-256</string>
                      </property>
                     </row>
                     <row>
@@ -252,7 +258,93 @@
                  <attribute name="label">
                   <string>Elf Header</string>
                  </attribute>
-                 <layout class="QVBoxLayout" name="verticalLayout_8"/>
+                 <layout class="QVBoxLayout" name="verticalLayout_8">
+                  <item>
+                   <widget class="QTableWidget" name="elfheader_table">
+                    <property name="minimumSize">
+                     <size>
+                      <width>300</width>
+                      <height>300</height>
+                     </size>
+                    </property>
+                    <row>
+                     <property name="text">
+                      <string>Magic</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>Version</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>Entry Point</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>Start of program headers</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>Start of section headers</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>Abi Version</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>Flags</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>Size of section headers</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>Number of section headers</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>Section header string table index</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>Class</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>Os/Abi</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>Type</string>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string>Machine</string>
+                     </property>
+                    </row>
+                    <column>
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </column>
+                   </widget>
+                  </item>
+                 </layout>
                 </widget>
                </widget>
               </item>
@@ -817,7 +909,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="HexViewTab">
+      <widget class="QWidget" name="HexTab">
        <property name="maximumSize">
         <size>
          <width>1000</width>
@@ -830,6 +922,18 @@
        <attribute name="title">
         <string>Hex</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_12">
+        <item>
+         <widget class="QWidget" name="HexViewTab" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>500</width>
+            <height>500</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="LogTab">
        <attribute name="title">

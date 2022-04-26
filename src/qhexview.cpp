@@ -13,6 +13,7 @@
 #define COLOR_SELECTION 98, 114, 164, 0xff
 #define COLOR_ADDRESS 68, 71, 90, 0xff
 #define COLOR_CHARACTERS Qt::white
+#define SIZE_HEX 14
 
 // config lines
 #define MIN_HEXCHARS_IN_LINE 47
@@ -36,7 +37,7 @@ QHexView::QHexView(QWidget *parent):
 QAbstractScrollArea(parent),
 m_pdata(nullptr)
 {
-	setFont(QFont("Courier", 13));
+	setFont(QFont("Courier", SIZE_HEX));
 
 	m_posAddr = 0;
 	m_posHex = ADR_LENGTH * m_charWidth + GAP_ADR_HEX;
