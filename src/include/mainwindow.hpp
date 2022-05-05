@@ -12,6 +12,7 @@
 #include "src/include/qhexview.hpp"
 #include "src/include/ps.hpp"
 #include "src/include/pmap.hpp"
+#include "src/include/relf.hpp"
 
 namespace Ui
 {
@@ -38,12 +39,14 @@ class MainWindow : public QMainWindow
   void column_clean_all();
   void conf_button_all();
   void column_config_all();
-  void set_values_column_utils();
   void set_values_column_address ( std::vector<off_t> &, std::string, std::string );
   void view_address_table ( QTableWidgetItem * );
   void set_values_column_heap();
   void set_values_column_stack();
+  void set_values_column_elf();
   void set_types_edit_read();
+  void set_values_process();
+  void set_values_column_maps();
 
   void on_search_address_textEdited ( const QString & );
   void on_pidButton_triggered();
@@ -61,26 +64,31 @@ class MainWindow : public QMainWindow
   void on_quickHelpButton_triggered();
   void on_FullScreenButton_triggered();
   void on_SaveLogButton_triggered();
+  void on_SystemInfoButton_triggered();
+  void on_pidButton2_clicked();
 
- private:
+private:
   int m_type;
   QString m_pid_name;
   QString m_pid_cmdline;
   QString m_pid_loginuid;
   QString m_pid_sizebin;
   QString m_pid_wchan;
-  QString m_pid_blksize;
   QString m_pid_exedir;
   QString m_sys_hostname;
   QString m_sys_osrealese;
   QString m_sys_version;
   QString m_sys_type;
-
+  QString m_pid_blocksize;
+  
+  std::unordered_map<std::string, maps> m_unmap;
   std::unordered_map<std::string, size_t> m_typeSizes;
   Ui::MainWindow *m_ui;
+  struct SELF pelf;
   Ps m_ps;
   Pmap m_mapper;
   QHexView *m_hex;
   QVBoxLayout *m_layout;
   std::shared_ptr<QDialog> m_dialog;
+
 };

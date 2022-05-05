@@ -6,5 +6,7 @@
 enum Column
 {
     Pid,
-    Name
+    Name,
+    User
+  
 };

@@ -5,40 +5,50 @@
  */
 enum ERROR_PID
 {
-    PID_OVERDRIVE = -3,
-    PID_NOT_READ,
-    PID_NOT_FOUND,
-    PID_SUCCESS
+  PID_OVERDRIVE = -3,
+  PID_NOT_READ,
+  PID_NOT_FOUND,
+  PID_SUCCESS
 };
 
 /**
- * @brief  erros files 
+ * @brief  erros files
  */
 enum ERROS_FILES
 {
-    OPEN_SUCCESS,
-    OPEN_FAIL,
-    READ_SUCCESS,
-    READ_FAIL,
-    WRITE_FAIL,
-    WRITE_SUCCESS,
-    EMPTY,
-    FULL,
+  OPEN_SUCCESS,
+  OPEN_FAIL,
+  READ_SUCCESS,
+  READ_FAIL,
+  WRITE_FAIL,
+  WRITE_SUCCESS,
+  EMPTY,
+  FULL,
 };
 
 /**
- * @brief mem find 
- * 
+ * @brief mem find
+ *
  */
 enum FIND_MEM
 {
-    NOT_FOUND,
-    FOUND
+  NOT_FOUND,
+  FOUND
 };
 
 
 enum STOPP
 {
-    STOPPED,
-    CONT
+  STOPPED,
+  CONT
+};
+
+/**
+* @brief is enum for verify files
+* and valid format ELF
+*/
+enum
+{
+  ELF_INVALID,
+  ELF_VALID
 };

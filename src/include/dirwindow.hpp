@@ -16,7 +16,7 @@ class DirWindow : public QDialog
     Q_OBJECT
 
 private:
-    std::unordered_map<std::string, std::string> m_umap;
+    std::unordered_map<std::string, infos> m_umap;
     Ui::DirWindow *m_ui;
     pid_t m_pid;
     Ps m_ps;

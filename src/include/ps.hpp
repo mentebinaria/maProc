@@ -6,15 +6,21 @@
 #include "datastructs/erros.hpp"
 #include "filedescriptor.hpp"
 
-#define PROC "/proc/"
-#define COMM "/comm"
+struct infos
+{
+  std::string pid;
+  std::string name;
+  std::string user;
+
+};
+
 
 class Ps : public FileDescriptor
 {
 
-public:
-    Ps();
-    virtual ~Ps();
+ public:
+  Ps();
+  virtual ~Ps();
 
-    int Reading_DirProcess(std::unordered_map<std::string, std::string> &umap);
+  void Reading_DirProcess ( std::unordered_map<std::string, infos> &umap );
 };

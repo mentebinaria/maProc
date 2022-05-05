@@ -41,3 +41,12 @@ enum Infos
     Size_map,
     Flags
 };
+
+enum Maps
+{
+    Address_start,
+    Address_stop,
+    Perms,
+    Offset,
+    Pathname
+};
