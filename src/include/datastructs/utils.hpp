@@ -22,6 +22,7 @@ struct maps
 {
     off_t addr_on;
     off_t addr_off;
+    uint64_t size_map;
     std::string offset;
     std::string flags;
     std::string pathname;

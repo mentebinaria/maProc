@@ -48,7 +48,7 @@
     </size>
    </property>
    <layout class="QGridLayout" name="gridLayout_3">
-    <item row="6" column="0">
+    <item row="7" column="0">
      <widget class="QTabWidget" name="MenuView">
       <property name="enabled">
        <bool>true</bool>
@@ -84,7 +84,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideRight</enum>
@@ -623,8 +623,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>160</width>
-                 <height>185</height>
+                 <width>210</width>
+                 <height>350</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -982,6 +982,25 @@
      </widget>
     </item>
     <item row="4" column="0">
+     <widget class="QPushButton" name="pidButton2">
+      <property name="minimumSize">
+       <size>
+        <width>40</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
      <layout class="QVBoxLayout" name="verticalLayout_7">
       <item alignment="Qt::AlignHCenter">
        <widget class="QLabel" name="Process_label">
@@ -1014,25 +1033,6 @@ p, li { white-space: pre-wrap; }
        </widget>
       </item>
      </layout>
-    </item>
-    <item row="4" column="0">
-     <widget class="QPushButton" name="pidButton2">
-      <property name="minimumSize">
-       <size>
-        <width>40</width>
-        <height>30</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>50</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
     </item>
    </layout>
   </widget>
@@ -1071,7 +1071,32 @@ p, li { white-space: pre-wrap; }
     <addaction name="newButton"/>
     <addaction name="FullScreenButton"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <widget class="QMenu" name="menuLog">
+     <property name="title">
+      <string>Log</string>
+     </property>
+     <addaction name="SaveLogButton"/>
+     <addaction name="cleanButtonLog"/>
+    </widget>
+    <widget class="QMenu" name="menuHex_2">
+     <property name="title">
+      <string>Hex</string>
+     </property>
+     <addaction name="gotooffsetButton"/>
+    </widget>
+    <addaction name="killButton"/>
+    <addaction name="stopButton"/>
+    <addaction name="menuHex_2"/>
+    <addaction name="menuLog"/>
+    <addaction name="actionCpu"/>
+    <addaction name="SystemInfoButton"/>
+   </widget>
    <addaction name="menufile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuWindows"/>
    <addaction name="menuhelp"/>
   </widget>
@@ -1083,11 +1108,6 @@ p, li { white-space: pre-wrap; }
   <action name="quickHelpButton">
    <property name="text">
     <string>Quick help</string>
-   </property>
-  </action>
-  <action name="newButton">
-   <property name="text">
-    <string>New Window</string>
    </property>
   </action>
   <action name="closeButton">
@@ -1148,6 +1168,11 @@ p, li { white-space: pre-wrap; }
   <action name="SystemInfoButton">
    <property name="text">
     <string>System Info</string>
+   </property>
+  </action>
+  <action name="newButton">
+   <property name="text">
+    <string>New Window</string>
    </property>
   </action>
  </widget>

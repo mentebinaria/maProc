@@ -45,7 +45,7 @@ void Pmap::split_maps()
     if (m_maps_buf[i] == '\n')
     {
       split_mem_address(line);
-      m_maps_buf.erase(0, i + 1);
+      m_maps_buf.erase(0, i);
       i = 0;
     }
   }
@@ -97,10 +97,10 @@ void Pmap::split_mem_address(std::string &p_foo)
     addr_on += p_foo[i];
   }
 
-  for (std::size_t i = m_maps.flags.size() + addr_off.size() + addr_on.size() + 25; i <= size; i++)
+  for (std::size_t l = m_maps.flags.size() + addr_off.size() + addr_on.size() + 26; l <= size; l++)
   {
-    m_maps.pathname += p_foo[i];
-    if (p_foo[i] == '\n')
+    m_maps.pathname += p_foo[l];
+    if (p_foo[l] == '\n')
       break;
   }
 
@@ -108,8 +108,8 @@ void Pmap::split_mem_address(std::string &p_foo)
     throw std::runtime_error("Error not split address_on and address_off");
 
   // convert string to off_t
-  m_maps.addr_on = (off_t)std::stoul(addr_off, nullptr, 16);
-  m_maps.addr_off = (off_t)std::stoul(addr_on, nullptr, 16);
+  m_maps.addr_on = (off_t)std::stoul(addr_on, nullptr, 16);
+  m_maps.addr_off = (off_t)std::stoul(addr_off, nullptr, 16);
   m_maps.pathname.erase(remove_if(m_maps.pathname.begin(), m_maps.pathname.end(), isspace), m_maps.pathname.end());
 
   m_unmap.insert(std::make_pair(m_maps.pathname, m_maps));
@@ -165,9 +165,10 @@ int Pmap::map_pid(pid_t p_pid)
     status_exit = PID_NOT_READ;
     throw std::runtime_error("Looks like proc/" + std::to_string(m_infos.pid) + "/maps is empty, I do a check in the past process");
   }
-  else
+  else{
+    m_unmap.clear();
     split_maps();
-
+  }
   return status_exit;
 }
 
@@ -189,10 +190,13 @@ bool Pmap::map_mem(const std::string &p_mem)
     m_maps.flags = m_unmap[p_mem].flags;
     m_maps.addr_on = m_unmap[p_mem].addr_on;
     m_maps.addr_off = m_unmap[p_mem].addr_off;
+    m_maps.size_map = m_maps.addr_off - m_maps.addr_on;
     m_maps.pathname = m_unmap[p_mem].pathname;
     
     status_exit = true;
-  }
+  }else
+    throw std::runtime_error("Process not using memory " + p_mem );
+
   return status_exit;
 }
 
@@ -422,9 +426,9 @@ std::string Pmap::get_Flags()
 
 /**
  * @brief get address size mapped
- * @return size_t
+ * @return uint64_t
  */
 uint64_t Pmap::get_sizeAddress()
 {
-  return m_maps.addr_off - m_maps.addr_on;
+  return m_maps.size_map;
 }
