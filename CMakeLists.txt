@@ -40,6 +40,9 @@ set(PROJECT_SOURCES
         src/include/ps.hpp
         src/ps.cpp
 
+        src/include/arena.hpp
+        src/arena.cpp
+
         src/include/filedescriptor.hpp
         src/filedescriptor.cpp
 
@@ -62,6 +65,7 @@ set(PROJECT_SOURCES
         src/include/dirwindow.hpp
         src/dirwindow.cpp
         src/gui/dirwindow.ui
+
 )
 add_executable(maProc
         ${PROJECT_SOURCES}

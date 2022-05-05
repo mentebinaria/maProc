@@ -1,5 +1,6 @@
 #include "include/proclib.hpp"
 #include "include/filedescriptor.hpp"
+#include "include/arena.hpp"
 
 #include <unordered_map>
 #include <string.h>
@@ -8,6 +9,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <limits.h>
+
+Arena fast;
 
 /**
  * @brief routine to analyze memory,
@@ -200,11 +203,9 @@ int RemoteProcess::findMem(off_t p_start, uint64_t p_length, uint8_t p_type, std
     }
     else if (!m_hasProcMem)
     {
-        char *p_buffer;
         try
         {
-            p_buffer = new char[p_length];
-            memset(p_buffer, 0, p_length); // clear memory for use memory
+            char *p_buffer = (char*)fast.req(p_length);
             if (pread(m_proc.fd, p_buffer, p_length, p_start) == -1)
                 return READ_FAIL;
             else
@@ -212,18 +213,11 @@ int RemoteProcess::findMem(off_t p_start, uint64_t p_length, uint8_t p_type, std
         }
         catch (std::exception &error)
         {
-            delete[] p_buffer;
             throw std::runtime_error(error.what());
-            return READ_FAIL;
         }
-
-        delete[] p_buffer;
     }
     else
-    {
         throw std::runtime_error("Not supported p_find memory, directory 'proc/" + std::to_string(m_proc.pid) + "/mem' not found, \n maProc not support for read mem with ptrace");
-        return READ_FAIL;
-    }
 
     return READ_SUCCESS;
 }

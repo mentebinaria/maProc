@@ -101,6 +101,7 @@ void MainWindow::conf_button_all()
 
   // search button
   m_ui->searchButton->setIcon(QIcon(ICON_SEARCH));
+  m_ui->searchButton->setAutoDefault(true);
   m_ui->find->setPlaceholderText("Value");
 
   // edit button
@@ -163,6 +164,7 @@ void MainWindow::column_clean_all()
   m_pid_exedir.clear();
   m_pid_loginuid.clear();
   m_pid_cmdline.clear();
+  m_ui->Process_List->clear();
   m_ui->progressFind->reset();
 
   for (int i = 10; i >= 0; i--)
@@ -308,7 +310,7 @@ void MainWindow::set_values_column_maps()
 void MainWindow::set_values_process()
 {
   m_ui->Process_label->setText("Process");
-  m_ui->Process_List->setText("\t\tName : " + m_pid_name.trimmed() + "\tPID: " + QString::fromStdString(std::to_string(m_pid)));
+  m_ui->Process_List->setText("\t\tName : " + m_pid_name.trimmed() + "\t\tPid: " + QString::fromStdString(std::to_string(m_pid)));
 }
 
 /**
@@ -320,14 +322,15 @@ void MainWindow::set_values_process()
  */
 void MainWindow::set_values_column_address(std::vector<off_t> &p_offsets, std::string p_value, std::string p_memory)
 {
-  int i = 0;
+  int progress = 0;
   int valueMax = p_offsets.size();
   m_ui->progressFind->reset();
   m_ui->progressFind->setMaximum(valueMax);
 
-  column_delete(m_ui->view_address)
+  if (m_ui->CheckHex->isChecked())
+    p_value = "0x" + p_value;
 
-      for (auto &x : p_offsets)
+  for (auto &x : p_offsets)
   {
     m_ui->view_address->insertRow(m_ui->view_address->rowCount());
 
@@ -339,8 +342,8 @@ void MainWindow::set_values_column_address(std::vector<off_t> &p_offsets, std::s
     m_ui->view_address->setItem(rowCount, Memory, new QTableWidgetItem(QString(QString::fromStdString(p_memory))));
 
     p_offsets.pop_back();
-    m_ui->progressFind->setValue(i);
-    i++;
+    m_ui->progressFind->setValue(progress);
+    progress++;
   }
 
   m_ui->foundAddr_label->setText("Found : " + QString::number(m_ui->view_address->rowCount()));
@@ -483,6 +486,21 @@ void MainWindow::on_SaveLogButton_triggered()
     QString fileName = QFileDialog::getSaveFileName(this,
                                                     tr("Save Log maProc"), "",
                                                     tr("maProc Logs (*.mpl);;All Files (*)"));
+
+    if (fileName.isEmpty())
+      return;
+    else
+    {
+      QFile file(fileName + ".mpl");
+      if (!file.open(QIODevice::WriteOnly))
+      {
+        QMessageBox::information(this, tr("Unable to open file"),
+                                 file.errorString());
+        return;
+      }
+
+      file.write(textLog.toStdString().data(), textLog.size());
+    }
   }
   else
     QMessageBox::critical(nullptr, "Error", "Logging is empty, active checkbox []Log");
@@ -528,6 +546,9 @@ void MainWindow::on_searchButton_clicked()
   std::size_t mem = m_ui->mem->currentIndex();
   auto it = m_typeSizes.find(varType);
 
+  if (m_ui->CheckHex->isChecked() && it->second != sizeof(std::string))
+    find = std::to_string(stoul(find, nullptr, 16));
+
   if (find.size() != 0 && m_pid != 0 && it != m_typeSizes.end())
   {
     QTableWidgetItem *addr;
@@ -572,6 +593,25 @@ void MainWindow::on_searchButton_clicked()
 
       break;
 
+    case 2: // personalization
+    {
+      if (m_ui->StartAddress->text().size() != 0 && m_ui->StopAddress->text().size() != 0)
+      {
+        address_start = static_cast<off_t>(std::stoul(m_ui->StartAddress->text().toStdString(), nullptr, 16));
+        off_t address_stop = static_cast<off_t>(std::stoul(m_ui->StopAddress->text().toStdString(), nullptr, 16));
+        if (address_start < address_stop)
+        {
+          lenght = address_stop - address_start;
+          mapper_find(address_start, lenght, find, it->second, offsets);
+        }
+        else
+          QMessageBox::information(nullptr, "ERROR", "Offsets invalids, consult tab maps");
+
+        if (offsets.size() != 0)
+          set_values_column_address(offsets, find, "[personalization]");
+      }
+      break;
+    }
     default:
       return;
     }
@@ -667,7 +707,7 @@ void MainWindow::on_aboutButton_triggered()
 }
 
 // =======================================================================
-// Utils, clean columns and view columns, 
+// Utils, clean columns and view columns,
 // verify pid and main mapper process and validatios
 //
 // =======================================================================
@@ -792,7 +832,6 @@ void MainWindow::mapper_find(off_t p_addr, off_t p_length, std::string p_find,
       if (m_ui->view_address->rowCount() > 0)
         column_delete(m_ui->view_address);
 
-      std::cout << p_type << std::endl;
       if (m_mapper.map_find(p_addr, p_length, p_find, p_type, p_offsets) == READ_FAIL)
         QMessageBox::critical(nullptr, "Error", "Not read memory, error in start  0x" + QString::number(p_addr, 16));
     }

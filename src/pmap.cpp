@@ -165,7 +165,8 @@ int Pmap::map_pid(pid_t p_pid)
     status_exit = PID_NOT_READ;
     throw std::runtime_error("Looks like proc/" + std::to_string(m_infos.pid) + "/maps is empty, I do a check in the past process");
   }
-  else{
+  else
+  {
     m_unmap.clear();
     split_maps();
   }
@@ -184,7 +185,7 @@ int Pmap::map_pid(pid_t p_pid)
 bool Pmap::map_mem(const std::string &p_mem)
 {
   bool status_exit = false;
-  
+
   if (m_unmap[p_mem].addr_on != 0)
   {
     m_maps.flags = m_unmap[p_mem].flags;
@@ -192,10 +193,11 @@ bool Pmap::map_mem(const std::string &p_mem)
     m_maps.addr_off = m_unmap[p_mem].addr_off;
     m_maps.size_map = m_maps.addr_off - m_maps.addr_on;
     m_maps.pathname = m_unmap[p_mem].pathname;
-    
+
     status_exit = true;
-  }else
-    throw std::runtime_error("Process not using memory " + p_mem );
+  }
+  else
+    throw std::runtime_error("Process not using memory " + p_mem);
 
   return status_exit;
 }
@@ -278,7 +280,8 @@ error:
  */
 void Pmap::map_stop(bool p_enable)
 {
-  RemoteProcess::stopPid(p_enable);
+  if (m_infos.pid != 0)
+    RemoteProcess::stopPid(p_enable);
 }
 
 /**
