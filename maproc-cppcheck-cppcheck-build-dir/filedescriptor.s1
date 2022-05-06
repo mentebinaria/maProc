@@ -1,3 +1,0 @@
-FileDescriptor
-FileDescriptor
-readFS call:[clear,close,data,memset,open,read,reserve,runtime_error,size,while] noreturn:[close,runtime_error]

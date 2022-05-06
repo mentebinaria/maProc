@@ -1,7 +1,0 @@
-DirWindow
-Conf_pidTable call:[setEditTriggers,setPlaceholderText,setVisible,verticalHeader] noreturn:[setPlaceholderText]
-Set_pidTable call:[QString,QTableWidgetItem,Reading_DirProcess,fromStdString,insertRow,number,rowCount,setItem,setText] noreturn:[setItem,setText]
-on_pidTable_doubleClicked call:[column,data,model,setPid,toString] noreturn:[setPid]
-getPid
-setPid call:[close,stoi,toStdString] noreturn:[close,stoi]
-on_search_textEdited call:[clear,findItems,hideRow,number,row,rowCount,setText,showRow,size] noreturn:[clear,hideRow,setText]

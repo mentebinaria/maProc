@@ -1,6 +1,0 @@
-SwapEndian64 global:[Elf] call:[bswap_16,bswap_32,bswap_64] noreturn:[bswap_64]
-SwapEndian32 global:[Elf] call:[bswap_16,bswap_32] noreturn:[bswap_32]
-ElfStruct global:[Elf] call:[SwapEndian32,SwapEndian64] noreturn:[SwapEndian32,SwapEndian64]
-VElfMagic global:[Elf]
-PElf global:[Elf,ElfPointer] call:[VElfMagic,close,fstat,mmap,open,perror] noreturn:[close]
-ElfMagic global:[Elf]
