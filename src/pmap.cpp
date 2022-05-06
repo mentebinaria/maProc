@@ -7,7 +7,6 @@
 #include <stdexcept>
 #include <sys/stat.h>
 #include <algorithm>
-#include <iostream>
 
 #include "include/pmap.hpp"
 #include "include/datastructs/erros.hpp"
@@ -42,7 +41,7 @@ void Pmap::split_maps()
   for (int i = 0; i <= m_maps_buf.size(); i++)
   {
     line += m_maps_buf.substr(i, 1);
-    if (m_maps_buf[i] == '\n')
+    if (m_maps_buf.data()[i] == '\n')
     {
       split_mem_address(line);
       m_maps_buf.erase(0, i);
@@ -54,7 +53,8 @@ void Pmap::split_maps()
 /**
  * @brief will do a get the addresses from the line
  * @param __line which line to pass to get the addresses
-
+ * 
+ * Big O(n²)
  * @return void
  */
 void Pmap::split_mem_address(std::string &p_foo)
@@ -153,7 +153,6 @@ Pmap::~Pmap()
 int Pmap::map_pid(pid_t p_pid)
 {
   m_infos.pid = p_pid;
-  int status_exit = PID_SUCCESS;
 
   verify_pid(m_infos.pid, m_infos.pid_max);
   RemoteProcess::openProcess(m_infos.pid);
@@ -161,16 +160,13 @@ int Pmap::map_pid(pid_t p_pid)
   m_FS.readFS(PROC + std::to_string(m_infos.pid) + MAPS, m_maps_buf, 2048, true);
 
   if (m_maps_buf.size() == 0)
-  {
-    status_exit = PID_NOT_READ;
     throw std::runtime_error("Looks like proc/" + std::to_string(m_infos.pid) + "/maps is empty, I do a check in the past process");
-  }
   else
   {
     m_unmap.clear();
     split_maps();
   }
-  return status_exit;
+  return PID_SUCCESS;
 }
 
 /**

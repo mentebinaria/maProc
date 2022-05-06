@@ -15,7 +15,7 @@
 class Data
 {
 public:
-    Data(uint);
+    Data(uint = sysconf ( _SC_PAGESIZE ));
     Data(uint8_t *, uint);
     virtual ~Data();
     void write(uint8_t);

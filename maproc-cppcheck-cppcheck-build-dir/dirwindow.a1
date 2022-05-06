@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<analyzerinfo checksum="379532521">
+  <FileInfo check="Uninitialized variables">
+    <unsafe-usage my-id="src/include/dirwindow.hpp:36:10" my-argnr="1" my-argname="p_index" file="src/dirwindow.cpp" line="60" col="6" value="0"/>
+  </FileInfo>
+  <FileInfo check="CheckUnusedFunctions">
+    <functiondecl functionName="Conf_pidTable" lineNumber="25"/>
+    <functiondecl functionName="Set_pidTable" lineNumber="36"/>
+    <functiondecl functionName="on_pidTable_doubleClicked" lineNumber="58"/>
+    <functiondecl functionName="getPid" lineNumber="70"/>
+    <functiondecl functionName="setPid" lineNumber="80"/>
+    <functiondecl functionName="on_search_textEdited" lineNumber="94"/>
+    <functioncall functionName="Conf_pidTable"/>
+    <functioncall functionName="DirWindow"/>
+    <functioncall functionName="MatchContains"/>
+    <functioncall functionName="Name"/>
+    <functioncall functionName="NoEditTriggers"/>
+    <functioncall functionName="Pid"/>
+    <functioncall functionName="QDialog"/>
+    <functioncall functionName="QString"/>
+    <functioncall functionName="QTableWidgetItem"/>
+    <functioncall functionName="Reading_DirProcess"/>
+    <functioncall functionName="Set_pidTable"/>
+    <functioncall functionName="User"/>
+    <functioncall functionName="catch"/>
+    <functioncall functionName="clear"/>
+    <functioncall functionName="close"/>
+    <functioncall functionName="column"/>
+    <functioncall functionName="data"/>
+    <functioncall functionName="false"/>
+    <functioncall functionName="findItems"/>
+    <functioncall functionName="first"/>
+    <functioncall functionName="for"/>
+    <functioncall functionName="foreach"/>
+    <functioncall functionName="fromStdString"/>
+    <functioncall functionName="hideRow"/>
+    <functioncall functionName="i"/>
+    <functioncall functionName="if"/>
+    <functioncall functionName="infos"/>
+    <functioncall functionName="insertRow"/>
+    <functioncall functionName="m_pid"/>
+    <functioncall functionName="m_ui"/>
+    <functioncall functionName="m_umap"/>
+    <functioncall functionName="model"/>
+    <functioncall functionName="number"/>
+    <functioncall functionName="p_arg1"/>
+    <functioncall functionName="p_index"/>
+    <functioncall functionName="p_parent"/>
+    <functioncall functionName="pid"/>
+    <functioncall functionName="return"/>
+    <functioncall functionName="row"/>
+    <functioncall functionName="rowCount"/>
+    <functioncall functionName="search"/>
+    <functioncall functionName="setEditTriggers"/>
+    <functioncall functionName="setItem"/>
+    <functioncall functionName="setPid"/>
+    <functioncall functionName="setPlaceholderText"/>
+    <functioncall functionName="setText"/>
+    <functioncall functionName="setVisible"/>
+    <functioncall functionName="setupUi"/>
+    <functioncall functionName="showRow"/>
+    <functioncall functionName="size"/>
+    <functioncall functionName="stoi"/>
+    <functioncall functionName="string"/>
+    <functioncall functionName="this"/>
+    <functioncall functionName="toStdString"/>
+    <functioncall functionName="toString"/>
+    <functioncall functionName="user"/>
+    <functioncall functionName="verticalHeader"/>
+    <functioncall functionName="void"/>
+  </FileInfo>
+</analyzerinfo>

@@ -65,18 +65,14 @@ long FileDescriptor::readFS ( std::string p_name, std::string &p_buffer, long p_
     } while ( FS != EOF );
 
     if ( p_buffer.size() == 0 )
-    {
-      status_exit = READ_FAIL;
       throw std::runtime_error ( "Not possible read file, check permission " + p_name );
-    }
+
 
     close ( FS );
   }
   else
-  {
-    status_exit = OPEN_FAIL;
     throw std::runtime_error ( "Error open file " + p_name );
-  }
+
 
   return status_exit;
 }

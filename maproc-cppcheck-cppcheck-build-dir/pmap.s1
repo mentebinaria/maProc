@@ -1,0 +1,18 @@
+verify_pid call:[c_str,closedir,opendir,runtime_error,to_string] noreturn:[closedir,runtime_error]
+split_maps call:[erase,size,split_mem_address,substr]
+split_mem_address call:[begin,clear,end,erase,insert,make_pair,remove_if,runtime_error,size,stoul] noreturn:[clear,runtime_error]
+Pmap call:[clear,readFS,stoi] noreturn:[clear]
+Pmap call:[clear] noreturn:[clear]
+map_pid call:[clear,openProcess,readFS,runtime_error,size,split_maps,to_string,verify_pid] noreturn:[runtime_error,split_maps]
+map_mem call:[runtime_error] noreturn:[runtime_error]
+map_write call:[data,writeMem]
+map_read call:[readMem]
+map_find call:[findMem,isdigit,runtime_error,size,sizeof] noreturn:[runtime_error]
+map_stop call:[stopPid] noreturn:[stopPid]
+map_kill call:[killPid] noreturn:[killPid]
+get_utilsPid call:[data,readFS,runtime_error,size,stat,to_string] noreturn:[runtime_error,to_string]
+get_Maps
+get_addrOn
+get_addrOff
+get_Flags
+get_sizeAddress

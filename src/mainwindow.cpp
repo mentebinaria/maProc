@@ -5,7 +5,6 @@
 #include "gui/ui_about.h"
 #include "src/include/relf.hpp"
 
-#include <iostream>
 #include <ctime>
 #include <QFileDialog>
 #include <sstream>
@@ -14,6 +13,7 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QFile>
+#include <iostream>
 
 // =======================================================================
 // Macros utilizade for mapper determinate memory
@@ -51,6 +51,7 @@ MainWindow::MainWindow(QWidget *p_parent) : QMainWindow(p_parent),
                                             m_hex(new QHexView),
                                             m_layout(new QVBoxLayout),
                                             m_dialog(),
+                                            m_countRow(0),
                                             m_pid(0)
 {
   m_ui->setupUi(this);
@@ -91,7 +92,6 @@ void MainWindow::conf_button_all()
   m_ui->pidButton2->setIcon(QIcon(ICON_PASS_PID));
   m_ui->rpidButton->setIcon(QIcon(ICON_RPASS_PID));
   m_ui->pidButton->setShortcut(QKeySequence("Ctrl+O"));
-  m_ui->pidButton2->setShortcut(QKeySequence("Ctrl+O"));
   m_ui->rpidButton->setShortcut(QKeySequence("Ctrl+R"));
 
   // buttons for clean
@@ -233,8 +233,8 @@ void MainWindow::set_values_column_heap()
   QString flags = QString::fromStdString(m_mapper.get_Flags());
 
   // set itens
-  m_ui->infos_addr->setItem(0, Address_on, new QTableWidgetItem("0x" + on));
-  m_ui->infos_addr->setItem(0, Address_off, new QTableWidgetItem("0x" + off));
+  m_ui->infos_addr->setItem(0, Address_on, new QTableWidgetItem(on));
+  m_ui->infos_addr->setItem(0, Address_off, new QTableWidgetItem(off));
   m_ui->infos_addr->setItem(0, Size_map, new QTableWidgetItem(size));
   m_ui->infos_addr->setItem(0, Flags, new QTableWidgetItem(flags));
 }
@@ -248,8 +248,8 @@ void MainWindow::set_values_column_stack()
   QString flags = QString::fromStdString(m_mapper.get_Flags());
 
   // set itens
-  m_ui->infos_addr->setItem(1, Address_on, new QTableWidgetItem("0x" + on));
-  m_ui->infos_addr->setItem(1, Address_off, new QTableWidgetItem("0x" + off));
+  m_ui->infos_addr->setItem(1, Address_on, new QTableWidgetItem(on));
+  m_ui->infos_addr->setItem(1, Address_off, new QTableWidgetItem(off));
   m_ui->infos_addr->setItem(1, Size_map, new QTableWidgetItem(size));
   m_ui->infos_addr->setItem(1, Flags, new QTableWidgetItem(flags));
 }
@@ -263,7 +263,7 @@ void MainWindow::set_values_column_elf()
 
   m_ui->elfheader_table->setItem(0, 0, new QTableWidgetItem(QString("7f 45 4c 46")));
   m_ui->elfheader_table->setItem(0, 1, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_version : pelf.elf32.Header->e_version)));
-  m_ui->elfheader_table->setItem(0, 2, new QTableWidgetItem("0x" + QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_entry : pelf.elf32.Header->e_entry, 16)));
+  m_ui->elfheader_table->setItem(0, 2, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_entry : pelf.elf32.Header->e_entry, 16)));
   m_ui->elfheader_table->setItem(0, 3, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_phoff : pelf.elf32.Header->e_phoff)));
   m_ui->elfheader_table->setItem(0, 4, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_shoff : pelf.elf32.Header->e_shoff)));
   m_ui->elfheader_table->setItem(0, 5, new QTableWidgetItem(QString::number(ElfMagic()[EI_ABIVERSION])));
@@ -292,6 +292,7 @@ void MainWindow::set_types_edit_read()
   m_typeSizes.insert(std::make_pair<std::string, size_t>("string", sizeof(std::string)));
 }
 
+// Big O(n²)
 void MainWindow::set_values_column_maps()
 {
   for (auto &x : m_unmap)
@@ -314,6 +315,8 @@ void MainWindow::set_values_process()
 }
 
 /**
+ * Big O(n²)
+ *
  * @brief will set all addresses and values ​​found in the search
  *
  * @param p_offsets vector containing the address
@@ -329,22 +332,30 @@ void MainWindow::set_values_column_address(std::vector<off_t> &p_offsets, std::s
 
   if (m_ui->CheckHex->isChecked())
     p_value = "0x" + p_value;
+  
+  if(m_all_mapper)
+    m_ui->view_address->setRowCount(m_countRow);
+  else
+      if (m_ui->view_address->rowCount() > 0)   
+        column_delete(m_ui->view_address);  
 
   for (auto &x : p_offsets)
   {
     m_ui->view_address->insertRow(m_ui->view_address->rowCount());
-
     int rowCount = m_ui->view_address->rowCount() - 1;
+
     QString addr = QString::number(x, 16);
 
-    m_ui->view_address->setItem(rowCount, Address, new QTableWidgetItem("0x" + addr));
+    m_ui->view_address->setItem(rowCount, Address, new QTableWidgetItem(addr));
     m_ui->view_address->setItem(rowCount, Value, new QTableWidgetItem(QString(QString::fromStdString(p_value))));
     m_ui->view_address->setItem(rowCount, Memory, new QTableWidgetItem(QString(QString::fromStdString(p_memory))));
 
-    p_offsets.pop_back();
     m_ui->progressFind->setValue(progress);
     progress++;
   }
+  
+  if(m_all_mapper)
+    m_countRow = m_ui->view_address->rowCount();
 
   m_ui->foundAddr_label->setText("Found : " + QString::number(m_ui->view_address->rowCount()));
 
@@ -356,6 +367,19 @@ void MainWindow::set_values_column_address(std::vector<off_t> &p_offsets, std::s
 // Buttons clicked and actions
 //
 // =======================================================================
+
+void MainWindow::on_PidInfoButton_triggered()
+{
+  if (m_pid_name.size() == 0)
+    return;
+
+  QString infos = "<h5>Name : </h5>" + m_pid_name +
+                  "\n<h5>Command Line : </h5>" + m_pid_cmdline +
+                  "\n<h5>Login uid : </h5>" + m_pid_loginuid +
+                  "\n<h5>Binary Size : </h5>" + m_pid_sizebin +
+                  "\n<h5>Wchan : </h5>" + m_pid_wchan;
+  QMessageBox::about(nullptr, "System Info", infos);
+}
 
 /**
  * @brief clean log button
@@ -448,11 +472,18 @@ void MainWindow::on_search_address_textEdited(const QString &p_arg1)
  * */
 void MainWindow::on_gotooffsetButton_triggered()
 {
-  bool done;
-  int offset = QInputDialog::getInt(0, "Offset", "Offset:", 0, 0, 2147483647, 1, &done);
+  if (m_pid_name.size() == 0)
+    return;
 
-  if (done)
-    m_hex->showFromOffset(offset);
+  bool done;
+  QString offset = QInputDialog::getText(this, tr("Goto..."),
+                                         tr("Offset (0x for hexadecimal):"), QLineEdit::Normal,
+                                         nullptr, &done);
+
+  if (done && offset[0] == '0' && offset[1] == 'x')
+    m_hex->showFromOffset(offset.toInt(nullptr, 16));
+  else
+    m_hex->showFromOffset(offset.toInt(nullptr));
 }
 
 /**
@@ -485,13 +516,13 @@ void MainWindow::on_SaveLogButton_triggered()
   {
     QString fileName = QFileDialog::getSaveFileName(this,
                                                     tr("Save Log maProc"), "",
-                                                    tr("maProc Logs (*.mpl);;All Files (*)"));
+                                                    tr("maProc Logs (*.log);;All Files (*)"));
 
     if (fileName.isEmpty())
       return;
     else
     {
-      QFile file(fileName + ".mpl");
+      QFile file(fileName + ".log");
       if (!file.open(QIODevice::WriteOnly))
       {
         QMessageBox::information(this, tr("Unable to open file"),
@@ -508,7 +539,12 @@ void MainWindow::on_SaveLogButton_triggered()
 
 void MainWindow::on_SystemInfoButton_triggered()
 {
-  QMessageBox::information(nullptr, "System Info", "");
+
+  QString infos = "<h5>Host Name :</h5>" + m_sys_hostname +
+                  "\n<h5>Os realese :</h5>" + m_sys_osrealese +
+                  "\n<h5>Os Version :</h5>" + m_sys_version +
+                  "\n<h5>Os type :</h5>" + m_sys_type;
+  QMessageBox::about(nullptr, "System Info", infos);
 }
 
 void MainWindow::on_pidButton_triggered()
@@ -541,6 +577,7 @@ void MainWindow::on_pidButton2_clicked()
  */
 void MainWindow::on_searchButton_clicked()
 {
+   m_all_mapper = false;
   std::string varType = m_ui->type->currentText().toStdString();
   std::string find = m_ui->find->text().toStdString();
   std::size_t mem = m_ui->mem->currentIndex();
@@ -560,6 +597,7 @@ void MainWindow::on_searchButton_clicked()
     switch (mem)
     {
     case 0: // stack
+    stack:
       addr = m_ui->infos_addr->item(1, 0);
       size = m_ui->infos_addr->item(1, 2);
 
@@ -573,10 +611,13 @@ void MainWindow::on_searchButton_clicked()
         if (offsets.size() != 0)
           set_values_column_address(offsets, find, "[stack]");
       }
+      if (mem == 3)
+        goto heap;
 
       break;
 
     case 1: // heap
+    heap:
       addr = m_ui->infos_addr->item(0, 0);
       size = m_ui->infos_addr->item(0, 2);
 
@@ -590,11 +631,15 @@ void MainWindow::on_searchButton_clicked()
         if (offsets.size() != 0)
           set_values_column_address(offsets, find, "[heap]");
       }
+      if (mem == 3)
+        goto personalization;
 
       break;
 
     case 2: // personalization
     {
+    personalization:
+
       if (m_ui->StartAddress->text().size() != 0 && m_ui->StopAddress->text().size() != 0)
       {
         address_start = static_cast<off_t>(std::stoul(m_ui->StartAddress->text().toStdString(), nullptr, 16));
@@ -612,6 +657,10 @@ void MainWindow::on_searchButton_clicked()
       }
       break;
     }
+    case 3: // all
+      m_all_mapper = true;
+      goto stack;
+
     default:
       return;
     }
@@ -719,17 +768,10 @@ void MainWindow::mainMapper()
 
   try
   {
-    QFile file(QString::fromStdString("/proc/" + std::to_string(m_pid) + "/exe"));
-
-    if (file.open(QIODevice::ReadOnly))
-    {
-      QByteArray bytes = file.readAll();
-      m_hex->setData(new QHexView::DataStorageArray(bytes));
-    }
-
     verify_pid();
     m_unmap = m_mapper.get_Maps();
 
+    m_hex->loadFile(m_pid_exedir);
     set_values_column_elf();
     set_values_process();
     set_values_column_maps();
@@ -827,11 +869,6 @@ void MainWindow::mapper_find(off_t p_addr, off_t p_length, std::string p_find,
     }
     else
     {
-      //  will start mapping
-      // from 0 all the memory
-      if (m_ui->view_address->rowCount() > 0)
-        column_delete(m_ui->view_address);
-
       if (m_mapper.map_find(p_addr, p_length, p_find, p_type, p_offsets) == READ_FAIL)
         QMessageBox::critical(nullptr, "Error", "Not read memory, error in start  0x" + QString::number(p_addr, 16));
     }
