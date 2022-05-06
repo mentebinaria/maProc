@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<analyzerinfo checksum="3891456341">
+        <error id="uninitMemberVar" severity="warning" msg="Member variable &apos;RemoteProcess::m_proc&apos; is not initialized in the constructor." verbose="Member variable &apos;RemoteProcess::m_proc&apos; is not initialized in the constructor." cwe="398" file0="src/proclib.cpp">
+            <location file="src/proclib.cpp" line="107" column="16"/>
+            <symbol>RemoteProcess::m_proc</symbol>
+        </error>
+        <error id="uninitMemberVar" severity="warning" msg="Member variable &apos;RemoteProcess::m_hasProcMem&apos; is not initialized in the constructor." verbose="Member variable &apos;RemoteProcess::m_hasProcMem&apos; is not initialized in the constructor." cwe="398" file0="src/proclib.cpp">
+            <location file="src/proclib.cpp" line="107" column="16"/>
+            <symbol>RemoteProcess::m_hasProcMem</symbol>
+        </error>
+        <error id="useInitializationList" severity="performance" msg="Variable &apos;m_size&apos; is assigned in constructor body. Consider performing initialization in initialization list." verbose="When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don&apos;t explicitly write them to the initialization list. You could avoid assigning &apos;m_size&apos; a value by passing the value to the constructor in the initialization list." cwe="398" file0="src/proclib.cpp">
+            <location file="src/proclib.cpp" line="254" column="5"/>
+            <symbol>m_size</symbol>
+        </error>
+        <error id="useInitializationList" severity="performance" msg="Variable &apos;m_curr&apos; is assigned in constructor body. Consider performing initialization in initialization list." verbose="When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don&apos;t explicitly write them to the initialization list. You could avoid assigning &apos;m_curr&apos; a value by passing the value to the constructor in the initialization list." cwe="398" file0="src/proclib.cpp">
+            <location file="src/proclib.cpp" line="257" column="5"/>
+            <symbol>m_curr</symbol>
+        </error>
+        <error id="useInitializationList" severity="performance" msg="Variable &apos;m_size&apos; is assigned in constructor body. Consider performing initialization in initialization list." verbose="When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don&apos;t explicitly write them to the initialization list. You could avoid assigning &apos;m_size&apos; a value by passing the value to the constructor in the initialization list." cwe="398" file0="src/proclib.cpp">
+            <location file="src/proclib.cpp" line="264" column="5"/>
+            <symbol>m_size</symbol>
+        </error>
+        <error id="useInitializationList" severity="performance" msg="Variable &apos;m_curr&apos; is assigned in constructor body. Consider performing initialization in initialization list." verbose="When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don&apos;t explicitly write them to the initialization list. You could avoid assigning &apos;m_curr&apos; a value by passing the value to the constructor in the initialization list." cwe="398" file0="src/proclib.cpp">
+            <location file="src/proclib.cpp" line="265" column="5"/>
+            <symbol>m_curr</symbol>
+        </error>
+        <error id="functionStatic" severity="performance" msg="Technically the member function &apos;RemoteProcess::analyseMemory&apos; can be static (but you may consider moving to unnamed namespace)." verbose="The member function &apos;RemoteProcess::analyseMemory&apos; can be made a static function. Making a function static can bring a performance benefit since no &apos;this&apos; instance is passed to the function. This change should not cause compiler errors but it does not necessarily make sense conceptually. Think about your design and the task of the function first - is it a function that must not access members of class instances? And maybe it is more appropriate to move this function to a unnamed namespace." cwe="398" inconclusive="true" file0="src/proclib.cpp">
+            <location file="src/include/proclib.hpp" line="46" column="14"/>
+            <location file="src/proclib.cpp" line="25" column="21"/>
+            <symbol>RemoteProcess::analyseMemory</symbol>
+        </error>
+        <error id="noCopyConstructor" severity="warning" msg="Class &apos;Data&apos; does not have a copy constructor which is recommended since it has dynamic memory/resource allocation(s)." verbose="Class &apos;Data&apos; does not have a copy constructor which is recommended since it has dynamic memory/resource allocation(s)." cwe="398" file0="src/proclib.cpp">
+            <location file="src/proclib.cpp" line="255" column="5"/>
+            <symbol>Data</symbol>
+        </error>
+        <error id="noOperatorEq" severity="warning" msg="Class &apos;Data&apos; does not have a operator= which is recommended since it has dynamic memory/resource allocation(s)." verbose="Class &apos;Data&apos; does not have a operator= which is recommended since it has dynamic memory/resource allocation(s)." cwe="398" file0="src/proclib.cpp">
+            <location file="src/proclib.cpp" line="255" column="5"/>
+            <symbol>Data</symbol>
+        </error>
+        <error id="noExplicitConstructor" severity="style" msg="Class &apos;Data&apos; has a constructor with 1 argument that is not explicit." verbose="Class &apos;Data&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="src/proclib.cpp">
+            <location file="src/include/proclib.hpp" line="18" column="5"/>
+            <symbol>Data</symbol>
+        </error>
+        <error id="duplicateBreak" severity="style" msg="Consecutive return, break, continue, goto or throw statements are unnecessary." verbose="Consecutive return, break, continue, goto or throw statements are unnecessary. The second statement can never be executed, and so should be removed." cwe="561" file0="src/proclib.cpp">
+            <location file="src/proclib.cpp" line="202" column="9"/>
+        </error>
+        <error id="passedByValue" severity="performance" msg="Function parameter &apos;p_find&apos; should be passed by const reference." verbose="Parameter &apos;p_find&apos; is passed by value. It could be passed as a const reference which is usually faster and recommended in C++." cwe="398" file0="src/proclib.cpp">
+            <location file="src/proclib.cpp" line="197" column="90"/>
+            <symbol>p_find</symbol>
+        </error>
+  <FileInfo check="Class">
+<class name="Data" file="src/include/proclib.hpp" line="15" col="1" hash="1175546409186343462"/>
+<class name="RemoteProcess" file="src/include/proclib.hpp" line="32" col="1" hash="12377419563884671501"/>
+<class name="RemoteProcess::Process" file="src/include/proclib.hpp" line="35" col="9" hash="155466516743045739"/>
+  </FileInfo>
+  <FileInfo check="CheckUnusedFunctions">
+    <functiondecl functionName="analyseMemory" lineNumber="25"/>
+    <functiondecl functionName="openProcess" lineNumber="118"/>
+    <functiondecl functionName="readMem" lineNumber="154"/>
+    <functiondecl functionName="writeMem" lineNumber="175"/>
+    <functiondecl functionName="findMem" lineNumber="197"/>
+    <functiondecl functionName="stopPid" lineNumber="230"/>
+    <functiondecl functionName="killPid" lineNumber="242"/>
+    <functiondecl functionName="write" lineNumber="274"/>
+    <functiondecl functionName="read" lineNumber="282"/>
+    <functiondecl functionName="clear" lineNumber="287"/>
+    <functioncall functionName="Arena"/>
+    <functioncall functionName="CONT"/>
+    <functioncall functionName="Data"/>
+    <functioncall functionName="ELF_INVALID"/>
+    <functioncall functionName="ELF_VALID"/>
+    <functioncall functionName="EMPTY"/>
+    <functioncall functionName="FOUND"/>
+    <functioncall functionName="FULL"/>
+    <functioncall functionName="NOT_FOUND"/>
+    <functioncall functionName="OPEN_FAIL"/>
+    <functioncall functionName="OPEN_SUCCESS"/>
+    <functioncall functionName="O_RDWR"/>
+    <functioncall functionName="PID_NOT_FOUND"/>
+    <functioncall functionName="PID_NOT_READ"/>
+    <functioncall functionName="PID_SUCCESS"/>
+    <functioncall functionName="READ_FAIL"/>
+    <functioncall functionName="READ_SUCCESS"/>
+    <functioncall functionName="RemoteProcess"/>
+    <functioncall functionName="SIGCONT"/>
+    <functioncall functionName="SIGSTOP"/>
+    <functioncall functionName="STOPPED"/>
+    <functioncall functionName="WRITE_FAIL"/>
+    <functioncall functionName="WRITE_SUCCESS"/>
+    <functioncall functionName="_SC_PAGESIZE"/>
+    <functioncall functionName="analyseMemory"/>
+    <functioncall functionName="bool"/>
+    <functioncall functionName="break"/>
+    <functioncall functionName="bsize"/>
+    <functioncall functionName="catch"/>
+    <functioncall functionName="char"/>
+    <functioncall functionName="clear"/>
+    <functioncall functionName="close"/>
+    <functioncall functionName="const"/>
+    <functioncall functionName="data"/>
+    <functioncall functionName="default"/>
+    <functioncall functionName="dirmem"/>
+    <functioncall functionName="externalRef"/>
+    <functioncall functionName="false"/>
+    <functioncall functionName="fd"/>
+    <functioncall functionName="for"/>
+    <functioncall functionName="i"/>
+    <functioncall functionName="if"/>
+    <functioncall functionName="int"/>
+    <functioncall functionName="int64_t"/>
+    <functioncall functionName="it"/>
+    <functioncall functionName="kill"/>
+    <functioncall functionName="long"/>
+    <functioncall functionName="m_buff"/>
+    <functioncall functionName="m_curr"/>
+    <functioncall functionName="m_hasProcMem"/>
+    <functioncall functionName="m_size"/>
+    <functioncall functionName="memset"/>
+    <functioncall functionName="off_t"/>
+    <functioncall functionName="open"/>
+    <functioncall functionName="p_b"/>
+    <functioncall functionName="p_buff"/>
+    <functioncall functionName="p_buffer"/>
+    <functioncall functionName="p_find"/>
+    <functioncall functionName="p_length"/>
+    <functioncall functionName="p_offsets"/>
+    <functioncall functionName="p_pid"/>
+    <functioncall functionName="p_size"/>
+    <functioncall functionName="p_start"/>
+    <functioncall functionName="p_type"/>
+    <functioncall functionName="pid"/>
+    <functioncall functionName="pid_t"/>
+    <functioncall functionName="pread"/>
+    <functioncall functionName="push_back"/>
+    <functioncall functionName="pwrite"/>
+    <functioncall functionName="reinterpret_cast"/>
+    <functioncall functionName="req"/>
+    <functioncall functionName="return"/>
+    <functioncall functionName="runtime_error"/>
+    <functioncall functionName="size"/>
+    <functioncall functionName="sizeof"/>
+    <functioncall functionName="st"/>
+    <functioncall functionName="stat"/>
+    <functioncall functionName="stoi"/>
+    <functioncall functionName="string"/>
+    <functioncall functionName="switch"/>
+    <functioncall functionName="sysconf"/>
+    <functioncall functionName="to_string"/>
+    <functioncall functionName="true"/>
+    <functioncall functionName="uint"/>
+    <functioncall functionName="uint16_t"/>
+    <functioncall functionName="uint64_t"/>
+    <functioncall functionName="uint8_t"/>
+    <functioncall functionName="what"/>
+  </FileInfo>
+</analyzerinfo>

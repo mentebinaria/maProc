@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<analyzerinfo checksum="3839801948">
+        <error id="funcArgNamesDifferent" severity="style" msg="Function &apos;Reading_DirProcess&apos; argument 1 names different: declaration &apos;umap&apos; definition &apos;p_umap&apos;." verbose="Function &apos;Reading_DirProcess&apos; argument 1 names different: declaration &apos;umap&apos; definition &apos;p_umap&apos;." cwe="628" inconclusive="true" file0="src/ps.cpp">
+            <location file="src/ps.cpp" line="31" column="69"/>
+            <location file="src/include/ps.hpp" line="25" column="69"/>
+            <symbol>Reading_DirProcess</symbol>
+        </error>
+  <FileInfo check="Class">
+<class name="infos" file="src/include/ps.hpp" line="9" col="1" hash="15726779782453114195"/>
+<class name="Ps" file="src/include/ps.hpp" line="18" col="1" hash="11211888260321219136"/>
+  </FileInfo>
+  <FileInfo check="Uninitialized variables">
+    <unsafe-usage my-id="src/include/ps.hpp:25:8" my-argnr="1" my-argname="p_umap" file="src/ps.cpp" line="34" col="5" value="0"/>
+  </FileInfo>
+  <FileInfo check="CheckUnusedFunctions">
+    <functiondecl functionName="Reading_DirProcess" lineNumber="31"/>
+    <functioncall functionName="CONT"/>
+    <functioncall functionName="ELF_INVALID"/>
+    <functioncall functionName="ELF_VALID"/>
+    <functioncall functionName="EMPTY"/>
+    <functioncall functionName="FOUND"/>
+    <functioncall functionName="FULL"/>
+    <functioncall functionName="NOT_FOUND"/>
+    <functioncall functionName="OPEN_FAIL"/>
+    <functioncall functionName="OPEN_SUCCESS"/>
+    <functioncall functionName="PID_NOT_FOUND"/>
+    <functioncall functionName="PID_NOT_READ"/>
+    <functioncall functionName="PID_SUCCESS"/>
+    <functioncall functionName="Ps"/>
+    <functioncall functionName="READ_FAIL"/>
+    <functioncall functionName="READ_SUCCESS"/>
+    <functioncall functionName="STOPPED"/>
+    <functioncall functionName="WRITE_FAIL"/>
+    <functioncall functionName="WRITE_SUCCESS"/>
+    <functioncall functionName="catch"/>
+    <functioncall functionName="clear"/>
+    <functioncall functionName="closedir"/>
+    <functioncall functionName="d_name"/>
+    <functioncall functionName="dir"/>
+    <functioncall functionName="false"/>
+    <functioncall functionName="file"/>
+    <functioncall functionName="if"/>
+    <functioncall functionName="infos"/>
+    <functioncall functionName="infos_pid"/>
+    <functioncall functionName="insert"/>
+    <functioncall functionName="long"/>
+    <functioncall functionName="make_pair"/>
+    <functioncall functionName="name"/>
+    <functioncall functionName="opendir"/>
+    <functioncall functionName="readFS"/>
+    <functioncall functionName="readdir"/>
+    <functioncall functionName="runtime_error"/>
+    <functioncall functionName="strcmp"/>
+    <functioncall functionName="string"/>
+    <functioncall functionName="user"/>
+    <functioncall functionName="while"/>
+  </FileInfo>
+</analyzerinfo>

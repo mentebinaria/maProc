@@ -1,0 +1,15 @@
+analyseMemory call:[clear,push_back,size,sizeof,stoi] noreturn:[push_back]
+RemoteProcess
+openProcess call:[data,open,stat,to_string]
+RemoteProcess call:[close] noreturn:[close]
+readMem call:[pread]
+writeMem call:[pwrite]
+findMem global:[fast] call:[analyseMemory,pread,req,runtime_error,to_string,what] noreturn:[analyseMemory,runtime_error]
+stopPid call:[kill] noreturn:[kill]
+killPid call:[kill] noreturn:[kill]
+Data
+Data
+Data
+write
+read call:[return]
+clear call:[memset] noreturn:[memset]

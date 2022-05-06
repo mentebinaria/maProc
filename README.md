@@ -48,8 +48,7 @@ The project's main creators are [Mob](https://github.com/VitorMob), [Buzzer](htt
 
 # Features for version 0.2.0
 - [x] Create tab maps
-- [ ] Execute commands in shell maProc ex:  `read 0x5d7f324fa5`
-- [ ] Find values memory in address maps
+- [x] Find values memory in address maps
 - [ ] New help in wiki pages 
 - [x] Repage Layout 
 - [x] Save Log
@@ -57,7 +56,6 @@ The project's main creators are [Mob](https://github.com/VitorMob), [Buzzer](htt
 - [x] Date in log  
 - [x] Status loading search memory 
 - [x] Simple infos ELF 
-- [ ] Cpu graphics utilizade to process
 
 
 # Screenshots 🎦
