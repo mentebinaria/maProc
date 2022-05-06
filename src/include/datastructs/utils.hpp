@@ -1,6 +1,5 @@
 #pragma once
 
-
 /**
  * @brief clean string
  * @note using for 'free' string to buffer
@@ -17,13 +16,19 @@
     m_infos.pid_max = std::stoi(buffer);                 \
     CLEAR_STRING(buffer);
 
-
-struct maps
+struct Maps
 {
     off_t addr_on;
     off_t addr_off;
     uint64_t size_map;
-    std::string offset;
+    off_t offset;
     std::string flags;
     std::string pathname;
+};
+
+struct Infos
+{
+    pid_t pid;
+    pid_t pid_max;
+
 };

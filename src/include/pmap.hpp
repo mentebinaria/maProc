@@ -35,23 +35,17 @@ public:
     uint64_t get_sizeAddress();
     std::string get_Flags();
     
-    const std::unordered_map<std::string, maps>& get_Maps() const;
+    const std::unordered_map<std::string, Maps>& get_Maps() const;
     std::string get_utilsPid(uint8_t);
     
 private:
-    maps  m_maps;
+    Maps m_maps;
+    Infos m_infos;
     FileDescriptor m_FS;
     std::string m_maps_buf;
     
     void split_mem_address(std::string &);
     void split_maps();
 
-    std::unordered_map<std::string, maps> m_unmap;
-
-    struct Infos
-    {
-        pid_t pid;
-        pid_t pid_max;
-
-    } m_infos;
+    std::unordered_map<std::string, Maps> m_unmap;
 };

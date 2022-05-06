@@ -34,7 +34,7 @@ enum Heap_Stack
 /**
  * @brief Infos table enumeration
  */
-enum Infos
+enum 
 {
     Address_on,
     Address_off,
@@ -42,7 +42,7 @@ enum Infos
     Flags
 };
 
-enum Maps
+enum 
 {
     Address_start,
     Address_stop,
@@ -51,7 +51,7 @@ enum Maps
     Pathname
 };
 
-enum Elf
+enum 
 {
     e_magic,
     e_version,

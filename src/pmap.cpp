@@ -61,6 +61,7 @@ void Pmap::split_mem_address(std::string &p_foo)
 {
   std::string addr_on;
   std::string addr_off;
+  std::string offset;
 
   std::size_t size = p_foo.size();
 
@@ -82,7 +83,7 @@ void Pmap::split_mem_address(std::string &p_foo)
             {
               for (std::size_t m = k + 1; m <= size; m++)
               {
-                m_maps.offset += p_foo[m];
+                offset += p_foo[m];
                 if (p_foo[m] == ' ')
                   break;
               }
@@ -97,7 +98,7 @@ void Pmap::split_mem_address(std::string &p_foo)
     addr_on += p_foo[i];
   }
 
-  for (std::size_t l = m_maps.flags.size() + addr_off.size() + addr_on.size() + 26; l <= size; l++)
+  for (std::size_t l = m_maps.flags.size() + addr_off.size() + addr_on.size() + 25; l <= size; l++)
   {
     m_maps.pathname += p_foo[l];
     if (p_foo[l] == '\n')
@@ -110,6 +111,7 @@ void Pmap::split_mem_address(std::string &p_foo)
   // convert string to off_t
   m_maps.addr_on = (off_t)std::stoul(addr_on, nullptr, 16);
   m_maps.addr_off = (off_t)std::stoul(addr_off, nullptr, 16);
+  m_maps.offset = (off_t)std::stoul(offset, nullptr, 16);
   m_maps.pathname.erase(remove_if(m_maps.pathname.begin(), m_maps.pathname.end(), isspace), m_maps.pathname.end());
 
   m_unmap.insert(std::make_pair(m_maps.pathname, m_maps));
@@ -119,7 +121,7 @@ void Pmap::split_mem_address(std::string &p_foo)
   CLEAR_STRING(addr_off);
   CLEAR_STRING(addr_on);
   CLEAR_STRING(m_maps.pathname);
-  CLEAR_STRING(m_maps.offset);
+  CLEAR_STRING(offset);
 }
 
 /**
@@ -386,7 +388,7 @@ std::string Pmap::get_utilsPid(uint8_t p_utils)
   return buffer;
 }
 
-const std::unordered_map<std::string, maps> &Pmap::get_Maps() const
+const std::unordered_map<std::string, Maps> &Pmap::get_Maps() const
 {
   return m_unmap;
 }

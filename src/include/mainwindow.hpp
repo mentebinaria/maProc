@@ -68,6 +68,8 @@ private slots:
   void on_pidButton2_clicked();
   void on_PidInfoButton_triggered();
 
+  void on_search_maps_textEdited(const QString &p_arg1);
+
 private:
   bool m_all_mapper;
   int m_type;
@@ -86,7 +88,7 @@ private:
   QString m_sys_version;
   QString m_sys_type;
 
-  std::unordered_map<std::string, maps> m_unmap;
+  std::unordered_map<std::string, Maps> m_unmap;
   std::unordered_map<std::string, size_t> m_typeSizes;
   Ui::MainWindow *m_ui;
   struct SELF pelf;
