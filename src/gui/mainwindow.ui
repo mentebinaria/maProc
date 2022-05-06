@@ -201,7 +201,7 @@ p, li { white-space: pre-wrap; }
                </size>
               </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="page">
                <property name="geometry">
@@ -521,9 +521,9 @@ p, li { white-space: pre-wrap; }
                </attribute>
                <layout class="QGridLayout" name="gridLayout_5">
                 <item row="0" column="0">
-                 <widget class="QCheckBox" name="fillNopsCheck">
+                 <widget class="QCheckBox" name="FillNullCheck">
                   <property name="text">
-                   <string>Fill With Nops</string>
+                   <string>Fill with Null</string>
                   </property>
                  </widget>
                 </item>

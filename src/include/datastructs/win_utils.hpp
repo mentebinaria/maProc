@@ -50,3 +50,21 @@ enum Maps
     Offset,
     Pathname
 };
+
+enum Elf
+{
+    e_magic,
+    e_version,
+    e_entry,
+    e_phoff,
+    e_shoff,
+    e_abiversion,
+    e_flags,
+    e_shentsize,
+    e_shnum,
+    e_shstrndx,
+    e_class,
+    e_abi,
+    e_type,
+    e_machine
+};

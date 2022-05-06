@@ -72,6 +72,8 @@ private:
   bool m_all_mapper;
   int m_type;
   int m_countRow;
+  int m_countFillNull;
+
   QString m_pid_name;
   QString m_pid_cmdline;
   QString m_pid_loginuid;

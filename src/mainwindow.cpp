@@ -13,7 +13,6 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QFile>
-#include <iostream>
 
 // =======================================================================
 // Macros utilizade for mapper determinate memory
@@ -261,22 +260,22 @@ void MainWindow::set_values_column_elf()
 
   int classElf = pelf.classElf;
 
-  m_ui->elfheader_table->setItem(0, 0, new QTableWidgetItem(QString("7f 45 4c 46")));
-  m_ui->elfheader_table->setItem(0, 1, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_version : pelf.elf32.Header->e_version)));
-  m_ui->elfheader_table->setItem(0, 2, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_entry : pelf.elf32.Header->e_entry, 16)));
-  m_ui->elfheader_table->setItem(0, 3, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_phoff : pelf.elf32.Header->e_phoff)));
-  m_ui->elfheader_table->setItem(0, 4, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_shoff : pelf.elf32.Header->e_shoff)));
-  m_ui->elfheader_table->setItem(0, 5, new QTableWidgetItem(QString::number(ElfMagic()[EI_ABIVERSION])));
-  m_ui->elfheader_table->setItem(0, 6, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_flags : pelf.elf32.Header->e_flags)));
-  m_ui->elfheader_table->setItem(0, 7, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_shentsize : pelf.elf32.Header->e_shentsize)));
-  m_ui->elfheader_table->setItem(0, 8, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_shnum : pelf.elf32.Header->e_shnum)));
-  m_ui->elfheader_table->setItem(0, 9, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_shstrndx : pelf.elf32.Header->e_shstrndx)));
-  m_ui->elfheader_table->setItem(0, 10, new QTableWidgetItem(QString((classElf == ELFCLASS64) ? "ELF64" : "ELF32")));
-  m_ui->elfheader_table->setItem(0, 11, new QTableWidgetItem(QString((ElfMagic()[EI_OSABI] == 0) ? "System V" : "Not identified")));
-  m_ui->elfheader_table->setItem(0, 12, new QTableWidgetItem(QString((ElfMagic()[0x10] == ET_EXEC) ? "Executable File" : (ElfMagic()[0x10] == ET_REL) ? "Realocable File"
-                                                                                                                                                      : "Shared Object")));
-  m_ui->elfheader_table->setItem(0, 13, new QTableWidgetItem(QString((ElfMagic()[0x12] == EM_X86_64) ? "x86-64 Architecture" : (ElfMagic()[0x12] == EM_386) ? "x84_32 Architecture"
-                                                                                                                                                            : "Not identified")));
+  m_ui->elfheader_table->setItem(0, e_magic, new QTableWidgetItem(QString("7f 45 4c 46")));
+  m_ui->elfheader_table->setItem(0, e_version, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_version : pelf.elf32.Header->e_version)));
+  m_ui->elfheader_table->setItem(0, e_entry, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_entry : pelf.elf32.Header->e_entry, 16)));
+  m_ui->elfheader_table->setItem(0, e_phoff, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_phoff : pelf.elf32.Header->e_phoff)));
+  m_ui->elfheader_table->setItem(0, e_shoff, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_shoff : pelf.elf32.Header->e_shoff)));
+  m_ui->elfheader_table->setItem(0, e_abiversion, new QTableWidgetItem(QString::number(ElfMagic()[EI_ABIVERSION])));
+  m_ui->elfheader_table->setItem(0, e_flags, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_flags : pelf.elf32.Header->e_flags)));
+  m_ui->elfheader_table->setItem(0, e_shentsize, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_shentsize : pelf.elf32.Header->e_shentsize)));
+  m_ui->elfheader_table->setItem(0, e_shnum, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_shnum : pelf.elf32.Header->e_shnum)));
+  m_ui->elfheader_table->setItem(0, e_shstrndx, new QTableWidgetItem(QString::number((classElf == ELFCLASS64) ? pelf.elf64.Header->e_shstrndx : pelf.elf32.Header->e_shstrndx)));
+  m_ui->elfheader_table->setItem(0, e_class, new QTableWidgetItem(QString((classElf == ELFCLASS64) ? "ELF64" : "ELF32")));
+  m_ui->elfheader_table->setItem(0, e_abi, new QTableWidgetItem(QString((ElfMagic()[EI_OSABI] == 0) ? "System V" : "Not identified")));
+  m_ui->elfheader_table->setItem(0, e_type, new QTableWidgetItem(QString((ElfMagic()[0x10] == ET_EXEC) ? "Executable File" : (ElfMagic()[0x10] == ET_REL) ? "Realocable File"
+                                                                                                                                                          : "Shared Object")));
+  m_ui->elfheader_table->setItem(0, e_machine, new QTableWidgetItem(QString((ElfMagic()[0x12] == EM_X86_64) ? "x86-64 Architecture" : (ElfMagic()[0x12] == EM_386) ? "x84_32 Architecture"
+                                                                                                                                                                   : "Not identified")));
 }
 
 /**
@@ -332,12 +331,11 @@ void MainWindow::set_values_column_address(std::vector<off_t> &p_offsets, std::s
 
   if (m_ui->CheckHex->isChecked())
     p_value = "0x" + p_value;
-  
-  if(m_all_mapper)
+
+  if (m_all_mapper)
     m_ui->view_address->setRowCount(m_countRow);
-  else
-      if (m_ui->view_address->rowCount() > 0)   
-        column_delete(m_ui->view_address);  
+  else if (m_ui->view_address->rowCount() > 0)
+    column_delete(m_ui->view_address);
 
   for (auto &x : p_offsets)
   {
@@ -353,8 +351,8 @@ void MainWindow::set_values_column_address(std::vector<off_t> &p_offsets, std::s
     m_ui->progressFind->setValue(progress);
     progress++;
   }
-  
-  if(m_all_mapper)
+
+  if (m_all_mapper)
     m_countRow = m_ui->view_address->rowCount();
 
   m_ui->foundAddr_label->setText("Found : " + QString::number(m_ui->view_address->rowCount()));
@@ -577,7 +575,7 @@ void MainWindow::on_pidButton2_clicked()
  */
 void MainWindow::on_searchButton_clicked()
 {
-   m_all_mapper = false;
+  m_all_mapper = false;
   std::string varType = m_ui->type->currentText().toStdString();
   std::string find = m_ui->find->text().toStdString();
   std::size_t mem = m_ui->mem->currentIndex();
@@ -716,6 +714,16 @@ void MainWindow::on_editButton_clicked()
   {
     std::size_t SizeT = (varType == "string") ? value.size() : it->second;
 
+    if (m_ui->FillNullCheck->isChecked() && varType == "string")
+    {
+      if (SizeT < m_countFillNull)
+      {
+        for(int i =0; i < m_countFillNull;i++)
+          value += '\0';
+        SizeT = value.size();
+      }
+    }
+
     if (m_mapper.map_write(address, (void *)&value[0], SizeT) == true)
     {
       write_log("[EDITED] Memory edited address [0x" + QString::number(address, 16) + "]  [" + m_ui->find->text() + "] - > [" + QString::fromStdString(value) + "]");
@@ -827,6 +835,7 @@ void MainWindow::mapper_find(off_t p_addr, off_t p_length, std::string p_find,
   try
   {
     int valueMax = p_offsets.size();
+    m_countFillNull = p_find.size();
 
     // search for locations that have
     // already been found in the table
