@@ -1,5 +1,6 @@
 #include "include/proclib.hpp"
 #include "include/filedescriptor.hpp"
+#include "include/arena.hpp"
 
 #include <unordered_map>
 #include <string.h>
@@ -8,6 +9,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <limits.h>
+
+Arena fast;
 
 /**
  * @brief routine to analyze memory,
@@ -19,88 +22,62 @@
  * @param p_type p_type char, int64 ...
  * @return int
  */
-void RemoteProcess::Analyse(char *p_buffer, std::string p_find, off_t p_offsets, uint8_t p_type,
+void RemoteProcess::analyseMemory(char *p_buffer, std::string p_find, off_t p_offsets, uint8_t p_type,
                             uint64_t p_lenght, std::vector<off_t> &p_save)
 {
     switch (p_type)
     {
     case sizeof(char):
         p_save.clear();
-        if (!isdigit(p_find[0]) && p_find.size() == 1)
+        for (uint64_t i = 0; i < p_lenght; i++)
         {
-            for (uint64_t i = 0; i < p_lenght; i++)
-            {
-                if (p_buffer[i] == p_find[0])
-                    p_save.push_back(p_offsets);
-                p_offsets++;
-            }
+            if (p_buffer[i] == p_find[0])
+                p_save.push_back(p_offsets);
+            p_offsets++;
         }
-        else
-            throw std::runtime_error("Error, caracter '" + p_find + "' not valid");
         break;
     case sizeof(int):
         p_save.clear();
         {
-            try
+            int p_findP = std::stoi(p_find);
+            if (p_findP < INT_MAX && p_findP > 0)
             {
-                int p_findP = std::stoi(p_find);
-                if (p_findP < INT_MAX && p_findP > 0)
+                for (uint64_t i = 0; i < p_lenght; i++)
                 {
-                    for (uint64_t i = 0; i < p_lenght; i++)
-                    {
-                        if ((int)p_buffer[i] == p_findP)
-                            p_save.push_back(p_offsets);
-                        p_offsets++;
-                    }
+                    if ((int)p_buffer[i] == p_findP)
+                        p_save.push_back(p_offsets);
+                    p_offsets++;
                 }
-            }
-            catch (std::exception &error)
-            {
-                throw std::runtime_error("Error, caracter '" + p_find + "' not valid");
             }
         }
         break;
     case sizeof(uint16_t):
         p_save.clear();
         {
-            try
+            int16_t p_findP = (uint16_t)std::stoi(p_find);
+            if (p_findP <= UINT16_MAX && p_findP > 0)
             {
-                int16_t p_findP = (uint16_t)std::stoi(p_find);
-                if (p_findP <= UINT16_MAX && p_findP > 0)
+                for (uint64_t i = 0; i < p_lenght; i++)
                 {
-                    for (uint64_t i = 0; i < p_lenght; i++)
-                    {
-                        if ((uint16_t)p_buffer[i] == p_findP)
-                            p_save.push_back(p_offsets);
-                        p_offsets++;
-                    }
+                    if ((uint16_t)p_buffer[i] == p_findP)
+                        p_save.push_back(p_offsets);
+                    p_offsets++;
                 }
-            }
-            catch (std::exception &error)
-            {
-                throw std::runtime_error("Error, caracter '" + p_find + "' not valid");
             }
         }
         break;
     case sizeof(uint64_t):
         p_save.clear();
         {
-            try
+            int64_t p_findP = (uint64_t)std::stoi(p_find);
+            if (p_findP < UINT64_MAX && p_findP > 0)
             {
-                int64_t p_findP = (uint64_t)std::stoi(p_find);
-                if (p_findP < UINT64_MAX && p_findP > 0)
+                for (uint64_t i = 0; i < p_lenght; i++)
                 {
-                    for (uint64_t i = 0; i < p_lenght; i++)
-                    {
-                        if ((int64_t)p_buffer[i] == p_findP)
-                            p_save.push_back(p_offsets);
-                        p_offsets++;
-                    }
+                    if ((int64_t)p_buffer[i] == p_findP)
+                        p_save.push_back(p_offsets);
+                    p_offsets++;
                 }
-            }
-            catch (std::exception &error)
-            {
-                throw std::runtime_error("Error, caracter '" + p_find + "' not valid");
             }
         }
         break;
@@ -159,17 +136,16 @@ int RemoteProcess::openProcess(pid_t p_pid)
 
 /**
  * @brief Destroy the Remote Process:: Remote Process object
- * 
+ *
  */
 RemoteProcess::~RemoteProcess()
 {
     close(m_proc.fd);
 }
 
-
 /**
- * @brief read memory using pread 
- * 
+ * @brief read memory using pread
+ *
  * @param p_start start offset for read mem
  * @param p_stop offset for stop read start + size
  * @param p_data where will the reading be stored in memory
@@ -210,13 +186,13 @@ int RemoteProcess::writeMem(off_t p_start, Data *p_data)
 
 /**
  * @brief find values ​​in memory
- * 
- * @param p_start offset for start 
+ *
+ * @param p_start offset for start
  * @param p_length size for stop read
  * @param p_type type for search value
  * @param p_find what find
  * @param p_offsets store the offsets
- * @return int 
+ * @return int
  */
 int RemoteProcess::findMem(off_t p_start, uint64_t p_length, uint8_t p_type, std::string p_find, std::vector<off_t> &p_offsets)
 {
@@ -227,39 +203,29 @@ int RemoteProcess::findMem(off_t p_start, uint64_t p_length, uint8_t p_type, std
     }
     else if (!m_hasProcMem)
     {
-        char *p_buffer;
         try
         {
-            p_buffer = new char[p_length];
-            memset(p_buffer, 0, p_length); // clear memory for use memory
+            char *p_buffer = (char*)fast.req(p_length);
             if (pread(m_proc.fd, p_buffer, p_length, p_start) == -1)
                 return READ_FAIL;
             else
-                Analyse(p_buffer, p_find, p_start, p_type, p_length, p_offsets);
+                analyseMemory(p_buffer, p_find, p_start, p_type, p_length, p_offsets);
         }
         catch (std::exception &error)
         {
-            delete[] p_buffer;
             throw std::runtime_error(error.what());
-            return READ_FAIL;
         }
-
-        delete[] p_buffer;
     }
     else
-    {
         throw std::runtime_error("Not supported p_find memory, directory 'proc/" + std::to_string(m_proc.pid) + "/mem' not found, \n maProc not support for read mem with ptrace");
-        return READ_FAIL;
-    }
 
     return READ_SUCCESS;
 }
 
-
 /**
  * @brief stop process
- * 
- * @param p_enable if stopped is return cont set true parameter 
+ *
+ * @param p_enable if stopped is return cont set true parameter
  */
 void RemoteProcess::stopPid(bool p_enable)
 {

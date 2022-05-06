@@ -2,7 +2,6 @@
 
 #include <sstream>
 #include <dirent.h>
-#include <iostream>
 #include <string.h>
 
 /**
@@ -28,41 +27,41 @@ Ps::~Ps()
  * @param NameProcess pass an array as a parameter to store process names
  * @param PidProcess pass an array as a parameter to store process pids
  *
- * @return OPEN_FAIL is /proc not opened else return OPEN_SUCCESS
  */
-int Ps::Reading_DirProcess(std::unordered_map<std::string, std::string> &p_umap)
+void Ps::Reading_DirProcess(std::unordered_map<std::string, infos> &p_umap)
 {
+    infos infos_pid;
     p_umap.clear();
 
-    int status_exit = OPEN_SUCCESS;
-    DIR *dir = opendir(PROC);
+    DIR *dir = opendir("/proc/");
     struct dirent *dir_read;
 
     if (dir == nullptr)
     {
-        status_exit = OPEN_FAIL;
         throw std::runtime_error("Error not open dir /proc");
     }
 
     while ((dir_read = readdir(dir)) != nullptr)
     {
-        std::string name;
+        std::string file;
         if (strcmp(dir_read->d_name, "self") && strcmp(dir_read->d_name, "thread-self"))
         {
-            name = PROC + std::string(dir_read->d_name) + COMM;
             try
             {
-                readFS(name, name, 20);
-                (name.size() == 0) ? name = "N/S" : name;
-                p_umap.insert(std::make_pair(name, dir_read->d_name));
+                file = "/proc/" + std::string(dir_read->d_name) + "/comm";
+                readFS(file, infos_pid.name, 20);
+                file = "/proc/" + std::string(dir_read->d_name) + "/loginuid"; 
+                readFS(file, infos_pid.user, 20);
+                infos_pid.pid =  dir_read->d_name;
+                
+                p_umap.insert(std::make_pair(infos_pid.name, infos_pid));
             }
             catch (std::exception &error)
             {
-                name.clear();
+                file.clear();
             }
         }
     }
 
     closedir(dir);
-    return status_exit;
 }

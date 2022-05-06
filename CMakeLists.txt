@@ -19,46 +19,52 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 if(OPTIMIZATIONS)
     set(CMAKE_CXX_FLAGS "-mavx -fno-stack-protector -march=native -O2 -Os -fdelete-null-pointer-checks -fdelete-dead-exceptions")
-        if(DEBUGGER)
-            set(CMAKE_CXX_FLAGS "-g -gdwarf -gdwarf-version")
-        endif()
-    if(NO_FLAG)
-        set(CMAKE_CXX_FLAGS " ")
-    endif()
 endif()
+if(DEBUGGER)
+    set(CMAKE_CXX_FLAGS "-g -gdwarf -gdwarf-version")
+endif()
+if(NO_FLAG)
+    set(CMAKE_CXX_FLAGS " ")
+endif()
+
 
 
 set(PROJECT_SOURCES
 
+        src/relf.cpp
+        src/include/relf.hpp
+
         src/main.cpp
         src/mainwindow.cpp
 
-        include/ps.hpp
+        src/include/ps.hpp
         src/ps.cpp
 
-        include/filedescriptor.hpp
+        src/include/arena.hpp
+        src/arena.cpp
+
+        src/include/filedescriptor.hpp
         src/filedescriptor.cpp
 
-        include/pmap.hpp
+        src/include/pmap.hpp
         src/pmap.cpp
 
-        include/proclib.hpp
+        src/include/proclib.hpp
         src/proclib.cpp
 
         src/proclib.cpp
-        include/proclib.hpp
+        src/include/proclib.hpp
 
         src/qhexview.cpp
-        include/qhexview.hpp
+        src/include/qhexview.hpp
 
-        include/mainwindow.hpp
+        src/include/mainwindow.hpp
         src/gui/mainwindow.ui
         src/gui/about.ui
 
-        include/dirwindow.hpp
+        src/include/dirwindow.hpp
         src/dirwindow.cpp
         src/gui/dirwindow.ui
-
 
 )
 add_executable(maProc

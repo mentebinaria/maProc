@@ -1,8 +1,6 @@
 # maProc 🐉
 As the name maProc informs, it will map processes in linux, being able  to check a process's stack/heap, being able to change the memory with write permission,  you can manipulate the process by sending a SIGNAL and can stop or pause it process.
 
-![Icon](src/assets/maProc.png)
-
 
 # Infos ℹ️
 > Made in C++ lang
@@ -20,14 +18,9 @@ The project's main creators are [Mob](https://github.com/VitorMob), [Buzzer](htt
 
 # Features 🔥
 
-* Stop Process
-* Kill Process
-* Hex View
-* Read Memory
-* Edit Memory
-* Infos Pid
-* Infos Executable
-* Infos OS
+* Manipulate process
+* Mapper memory process
+* Elf Header Parser
 
 # Compile 🖨️
 
@@ -44,6 +37,7 @@ The project's main creators are [Mob](https://github.com/VitorMob), [Buzzer](htt
 
 * [Home](https://github.com/mentebinaria/maProc/wiki)
 * [Help](https://github.com/mentebinaria/maProc/wiki/Help)
+
 
 
 # Screenshots 🎦

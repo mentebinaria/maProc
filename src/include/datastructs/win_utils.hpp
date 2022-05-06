@@ -15,6 +15,8 @@
 #define ICON_STOP "../src/assets/stop.png"
 #define ICON_PLAY "../src/assets/play.png"
 #define ICON_HELP "../src/assets/help.png"
+#define ICON_SCREEN "../src/assets/show.png"
+#define ICON_SAVE "../src/assets/save.png"
 
 #define NULL_STR "null"
 #define CLEAN_ROW " "
@@ -32,10 +34,37 @@ enum Heap_Stack
 /**
  * @brief Infos table enumeration
  */
-enum Infos
+enum 
 {
     Address_on,
     Address_off,
     Size_map,
     Flags
+};
+
+enum 
+{
+    Address_start,
+    Address_stop,
+    Perms,
+    Offset,
+    Pathname
+};
+
+enum 
+{
+    e_magic,
+    e_version,
+    e_entry,
+    e_phoff,
+    e_shoff,
+    e_abiversion,
+    e_flags,
+    e_shentsize,
+    e_shnum,
+    e_shstrndx,
+    e_class,
+    e_abi,
+    e_type,
+    e_machine
 };
