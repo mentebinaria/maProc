@@ -11,6 +11,11 @@
 #include <stdexcept>
 #include <QtGlobal>
 
+static QColor g_colorCharacters{};
+static QColor g_coolorAddress{};
+
+static QColor g_colorSelection = QColor(220, 220, 220);
+
 // update
 #define UPDATE viewport()->update();
 
@@ -22,7 +27,7 @@
 #define SET_BACKGROUND_MARK(pos)                            \
   if (pos >= m_selectBegin && pos < m_selectEnd)            \
   {                                                         \
-    painter.setBackground(QBrush(QColor(COLOR_SELECTION))); \
+    painter.setBackground(QBrush(g_colorSelection)); \
     painter.setBackgroundMode(Qt::OpaqueMode);              \
   }
 
@@ -43,6 +48,22 @@ QHexView::QHexView(QWidget *parent)
   // default configs
   setFont(QFont(FONT, SIZE_FONT)); // default font
   setMinimumWidth(500);
+
+  // Default application color
+  auto palette = QApplication::palette();
+  // User is using a black theme variant?   
+  if (palette.text() == Qt::white)
+  {
+    /* Black theme variant */
+    g_colorCharacters = Qt::white;
+    g_coolorAddress = QColor(30, 30, 30);
+  }
+  else
+  {
+    /* White theme variant */
+    g_colorCharacters = Qt::black;
+    g_coolorAddress = g_colorSelection;
+  }
 }
 
 QHexView::~QHexView() {}
@@ -51,6 +72,7 @@ QHexView::~QHexView() {}
 int QHexView::loadFile(QString p_file)
 {
   int status_exit = 0;
+
   QFile qFile;
 
   qFile.setFileName(p_file);
@@ -61,8 +83,6 @@ int QHexView::loadFile(QString p_file)
   {
     setCursorPos(0);
     resetSelection(0);
-
-    status_exit = 0;
 
     m_pdata = qFile.readAll();
 
@@ -87,10 +107,10 @@ void QHexView::showFromOffset(int offset)
 
     setCursorPos(offset * 2);
 
-    int cursorY = m_cursorPos / (2 * m_bytesPerLine);
+    const int cursorY = m_cursorPos / (2 * m_bytesPerLine);
 
     verticalScrollBar()->setValue(cursorY);
-    UPDATE
+    UPDATE;
   }
 }
 
@@ -107,7 +127,7 @@ QSize QHexView::fullSize() const
   if (m_pdata.size() == 0)
     return QSize(0, 0);
 
-  int width = m_posAscii + (m_bytesPerLine * m_charWidth);
+  const int width = m_posAscii + (m_bytesPerLine * m_charWidth);
   int height = m_pdata.size() / m_bytesPerLine;
 
   if (m_pdata.size() % m_bytesPerLine)
@@ -128,7 +148,7 @@ void QHexView::updatePositions()
 
   m_charHeight = fontMetrics().height();
 
-  int serviceSymbolsWidth = ADR_LENGTH * m_charWidth + GAP_ADR_HEX + GAP_HEX_ASCII;
+  const int serviceSymbolsWidth = ADR_LENGTH * m_charWidth + GAP_ADR_HEX + GAP_HEX_ASCII;
 
   m_bytesPerLine = (width() - serviceSymbolsWidth) / (4 * m_charWidth) - 1; // 4 symbols per byte
 
@@ -158,20 +178,19 @@ void QHexView::paintEvent(QPaintEvent *event)
       lastLineIdx++;
   }
 
-  QColor addressAreaColor = QColor(COLOR_ADDRESS);
-  int linePos = m_posAscii - (GAP_HEX_ASCII / 2);
-  int yPosStart = m_charHeight;
-  QBrush def = painter.brush();
+  const int linePos = m_posAscii - (GAP_HEX_ASCII / 2);
+  const int yPosStart = m_charHeight;
+  const QBrush def = painter.brush();
 
   painter.fillRect(event->rect(), this->palette().color(QPalette::Base));
-  painter.fillRect(QRect(m_posAddr, event->rect().top(), m_posHex - GAP_ADR_HEX + 2, height()), addressAreaColor);
+  painter.fillRect(QRect(m_posAddr, event->rect().top(), m_posHex - GAP_ADR_HEX + 2, height()), g_coolorAddress);
   painter.setPen(Qt::gray);
   painter.drawLine(linePos, event->rect().top(), linePos, height());
   painter.setPen(Qt::black);
 
   QByteArray data = getData(firstLineIdx * m_bytesPerLine, (lastLineIdx - firstLineIdx) * m_bytesPerLine);
 
-  painter.setPen(COLOR_CHARACTERS); // paint white characters and binary
+  painter.setPen(g_colorCharacters); // paint white characters and binary
 
   for (int lineIdx = firstLineIdx, yPos = yPosStart; lineIdx < lastLineIdx;
        lineIdx += 1, yPos += m_charHeight)
@@ -208,7 +227,7 @@ void QHexView::paintEvent(QPaintEvent *event)
 
       if ((pos + 1) >= m_selectBegin && (pos + 1) < m_selectEnd)
       {
-        painter.setBackground(QBrush(QColor(COLOR_SELECTION)));
+        painter.setBackground(QBrush(g_colorSelection));
         painter.setBackgroundMode(Qt::OpaqueMode);
       }
       else
@@ -592,10 +611,10 @@ void QHexView::ensureVisible()
 {
   QSize areaSize = viewport()->size();
 
-  int firstLineIdx = verticalScrollBar()->value();
-  int lastLineIdx = firstLineIdx + areaSize.height() / m_charHeight;
+  const int firstLineIdx = verticalScrollBar()->value();
+  const int lastLineIdx = firstLineIdx + areaSize.height() / m_charHeight;
 
-  int cursorY = m_cursorPos / (2 * m_bytesPerLine);
+  const int cursorY = m_cursorPos / (2 * m_bytesPerLine);
 
   if (cursorY < firstLineIdx)
     verticalScrollBar()->setValue(cursorY);

@@ -261,26 +261,158 @@ void MainWindow::set_values_column_stack()
 void MainWindow::set_values_column_elf()
 {
   PElf ( m_pid_exedir.toStdString().data() );
-  ElfStruct ( pelf );
+  ElfStruct (pelf);
 
-  int classElf = pelf.classElf;
+  const int classElf = pelf.classElf;
 
-  m_ui->elfheader_table->setItem ( 0, e_magic, new QTableWidgetItem ( QString ( "7f 45 4c 46" ) ) );
-  m_ui->elfheader_table->setItem ( 0, e_version, new QTableWidgetItem ( QString::number ( ( classElf == ELFCLASS64 ) ? pelf.elf64.Header->e_version : pelf.elf32.Header->e_version ) ) );
-  m_ui->elfheader_table->setItem ( 0, e_entry, new QTableWidgetItem ( QString::number ( ( classElf == ELFCLASS64 ) ? pelf.elf64.Header->e_entry : pelf.elf32.Header->e_entry, 16 ) ) );
-  m_ui->elfheader_table->setItem ( 0, e_phoff, new QTableWidgetItem ( QString::number ( ( classElf == ELFCLASS64 ) ? pelf.elf64.Header->e_phoff : pelf.elf32.Header->e_phoff ) ) );
-  m_ui->elfheader_table->setItem ( 0, e_shoff, new QTableWidgetItem ( QString::number ( ( classElf == ELFCLASS64 ) ? pelf.elf64.Header->e_shoff : pelf.elf32.Header->e_shoff ) ) );
-  m_ui->elfheader_table->setItem ( 0, e_abiversion, new QTableWidgetItem ( QString::number ( ElfMagic() [EI_ABIVERSION] ) ) );
-  m_ui->elfheader_table->setItem ( 0, e_flags, new QTableWidgetItem ( QString::number ( ( classElf == ELFCLASS64 ) ? pelf.elf64.Header->e_flags : pelf.elf32.Header->e_flags ) ) );
-  m_ui->elfheader_table->setItem ( 0, e_shentsize, new QTableWidgetItem ( QString::number ( ( classElf == ELFCLASS64 ) ? pelf.elf64.Header->e_shentsize : pelf.elf32.Header->e_shentsize ) ) );
-  m_ui->elfheader_table->setItem ( 0, e_shnum, new QTableWidgetItem ( QString::number ( ( classElf == ELFCLASS64 ) ? pelf.elf64.Header->e_shnum : pelf.elf32.Header->e_shnum ) ) );
-  m_ui->elfheader_table->setItem ( 0, e_shstrndx, new QTableWidgetItem ( QString::number ( ( classElf == ELFCLASS64 ) ? pelf.elf64.Header->e_shstrndx : pelf.elf32.Header->e_shstrndx ) ) );
-  m_ui->elfheader_table->setItem ( 0, e_class, new QTableWidgetItem ( QString ( ( classElf == ELFCLASS64 ) ? "ELF64" : "ELF32" ) ) );
-  m_ui->elfheader_table->setItem ( 0, e_abi, new QTableWidgetItem ( QString ( ( ElfMagic() [EI_OSABI] == 0 ) ? "System V" : "Not identified" ) ) );
-  m_ui->elfheader_table->setItem ( 0, e_type, new QTableWidgetItem ( QString ( ( ElfMagic() [0x10] == ET_EXEC ) ? "Executable File" : ( ElfMagic() [0x10] == ET_REL ) ? "Realocable File"
-                                   : "Shared Object" ) ) );
-  m_ui->elfheader_table->setItem ( 0, e_machine, new QTableWidgetItem ( QString ( ( ElfMagic() [0x12] == EM_X86_64 ) ? "x86-64 Architecture" : ( ElfMagic() [0x12] == EM_386 ) ? "x84_32 Architecture"
-                                   : "Not identified" ) ) );
+  const Elf64_Ehdr *elf64Header = pelf.elf64.Header;
+  const Elf32_Ehdr *elf32Header = pelf.elf32.Header;
+
+  const auto elfMagic = ElfMagic();
+
+  const QString elfHeaderMagic = "0x7f454c46";
+
+  m_ui->elfheader_table->setItem(0, e_magic,      new QTableWidgetItem(elfHeaderMagic));
+
+  const auto dataElfVersion = classElf == ELFCLASS64 ? elf64Header->e_version : elf32Header->e_version;
+
+  m_ui->elfheader_table->setItem(0, e_version,    new QTableWidgetItem(QString::number(dataElfVersion)));
+
+  const auto dataElfEntry = classElf == ELFCLASS64 ? elf64Header->e_entry : elf32Header->e_entry;
+
+  m_ui->elfheader_table->setItem(0, e_entry,      new QTableWidgetItem(QString::asprintf("0x%08lx", dataElfEntry)));
+
+  const auto dataElfTableOffset = classElf == ELFCLASS64 ? elf64Header->e_phoff : elf32Header->e_phoff;  
+
+  m_ui->elfheader_table->setItem(0, e_phoff,      new QTableWidgetItem(QString::asprintf("0x%08x", dataElfTableOffset)));
+
+  const auto dataElfSectionOffset = classElf == ELFCLASS64 ? elf64Header->e_shoff : elf32Header->e_shoff;
+
+  m_ui->elfheader_table->setItem(0, e_shoff,      new QTableWidgetItem (QString::asprintf("0x%08lx", dataElfSectionOffset)));
+
+  const auto dataElfABIVersion = elfMagic[EI_OSABI];
+
+  m_ui->elfheader_table->setItem(0, e_abiversion, new QTableWidgetItem(QString::number(dataElfABIVersion)));
+
+  const auto dataElfFlags = classElf == ELFCLASS64 ? elf64Header->e_flags : elf32Header->e_flags;
+
+  m_ui->elfheader_table->setItem(0, e_flags,      new QTableWidgetItem (QString::number(dataElfFlags)));
+
+  const auto dataElfSectionSize = classElf == ELFCLASS64 ? elf64Header->e_shentsize : elf32Header->e_shentsize;
+
+  m_ui->elfheader_table->setItem(0, e_shentsize,  new QTableWidgetItem(QString::number(dataElfSectionSize)));
+
+  const auto dataElfSectionCount = classElf == ELFCLASS64 ? elf64Header->e_shnum : elf32Header->e_shnum;
+
+  m_ui->elfheader_table->setItem(0, e_shnum,      new QTableWidgetItem(QString::number(dataElfSectionCount)));
+
+  const auto dataElfSectionStringTable = classElf == ELFCLASS64 ? elf64Header->e_shstrndx : elf32Header->e_shstrndx;
+
+  m_ui->elfheader_table->setItem(0, e_shstrndx,   new QTableWidgetItem(QString::asprintf("0x%08x", dataElfSectionStringTable)));
+
+  const QString dataElfArch = classElf == ELFCLASS64 ? "ELF64" : "ELF32";
+
+  m_ui->elfheader_table->setItem(0, e_class,      new QTableWidgetItem(dataElfArch));
+
+  auto dataElfOSABITyep = [elfMagic]() {
+    uint abitype = elfMagic[EI_OSABI];
+    switch (abitype)
+    {
+    // ELFOSABI_NONE is equal to ELFOSABI_SYSV
+    case ELFOSABI_SYSV:
+      return "UNIX System V ABI";
+    case ELFOSABI_HPUX:
+      return "HP-UX ABI";
+    case ELFOSABI_NETBSD:
+      return "NetBSD ABI";
+    case ELFOSABI_LINUX:
+      return "Linux ABI";
+    case ELFOSABI_SOLARIS:
+      return "Solaris ABI";
+    case ELFOSABI_IRIX:
+      return "IRIX ABI";
+    case ELFOSABI_FREEBSD:
+      return "FreeBSD ABI";
+    case ELFOSABI_TRU64:
+      return "TRU64 UNIX ABI";
+    case ELFOSABI_ARM:
+      return "ARM architecture ABI";
+    case ELFOSABI_STANDALONE:
+      return "ELFOSABI_STANDALONE";
+    default:
+      return "Undefined ABI";
+    }
+  };
+
+  m_ui->elfheader_table->setItem(0, e_abi,        new QTableWidgetItem(dataElfOSABITyep()));
+
+  auto dataElfType = [classElf, elf64Header, elf32Header]() {
+    uint type = classElf == ELFCLASS64 ? elf64Header->e_type : elf32Header->e_type;
+    switch (type)
+    {
+    default:
+    case ET_NONE:
+      return "Unknown Type";
+    case ET_REL:
+      return "Relocatable File";
+    case ET_EXEC:
+      return "Executable File";
+    case ET_DYN:
+      return "Position-Independent Executable file";
+    case ET_CORE:
+      return "Core File";
+    }
+  };
+
+  m_ui->elfheader_table->setItem(0, e_type,       new QTableWidgetItem(dataElfType()));
+
+  auto dataElfMachine = [classElf, elf64Header, elf32Header]() {
+    uint archType = classElf == ELFCLASS64 ? elf64Header->e_machine : elf32Header->e_machine;
+    switch (archType)
+    {
+    default:
+    case EM_NONE:
+      return "An unknown machine";
+    case EM_M32:
+      return "AT&T WE 32100";
+    case EM_SPARC:
+      return "Sun Microsystems SPARC";
+    case EM_386:
+      return "Intel 80386";
+    case EM_68K:
+      return "Motorola 68000";
+    case EM_88K:
+      return "Motorola 88000";
+    case EM_860:
+      return "Intel 80860";
+    case EM_MIPS:
+      return "MIPS RS3000 (big-endian only)";
+    case EM_PARISC:
+      return "HP/PA";
+    case EM_SPARC32PLUS:
+      return "SPARC with enhanced instruction set";
+    case EM_PPC:
+      return "PowerPC";
+    case EM_PPC64:
+      return "PowerPC 64-bit";
+    case EM_S390:
+      return "IBM S/390";
+    case EM_ARM:
+      return "Advanced RISC Machines";
+    case EM_SH:
+      return "Renesas SuperH";
+    case EM_SPARCV9:
+      return "SPARC v9 64-bit";
+    case EM_IA_64:
+      return "Intel Itanium";
+    case EM_X86_64:
+      return "AMD x86-64";
+    case EM_VAX:
+      return "DEC Vax";
+    }
+  };
+
+  m_ui->elfheader_table->setItem(0, e_machine,    new QTableWidgetItem(dataElfMachine()));
 }
 
 /**

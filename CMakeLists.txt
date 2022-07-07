@@ -1,13 +1,14 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.8)
 
-project(maProc VERSION 0.1 LANGUAGES CXX)
+project(maProc VERSION 0.2 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(OPTIMIZATIONS ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
+
+set(OPTIMIZATIONS OFF)
 set(DEBUGGER OFF)
 set(NO_FLAG ON)
 
@@ -20,55 +21,42 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 if(OPTIMIZATIONS)
     set(CMAKE_CXX_FLAGS "-mavx -fno-stack-protector -march=native -O2 -Os -fdelete-null-pointer-checks -fdelete-dead-exceptions")
 endif()
+
 if(DEBUGGER)
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
     set(CMAKE_CXX_FLAGS "-g -gdwarf -gdwarf-version")
 endif()
+endif()
+
 if(NO_FLAG)
     set(CMAKE_CXX_FLAGS " ")
 endif()
 
-
-
 set(PROJECT_SOURCES
-
-        src/relf.cpp
-        src/include/relf.hpp
-
-        src/main.cpp
-        src/mainwindow.cpp
-
-        src/include/ps.hpp
-        src/ps.cpp
-
-        src/include/arena.hpp
-        src/arena.cpp
-
-        src/include/filedescriptor.hpp
-        src/filedescriptor.cpp
-
-        src/include/pmap.hpp
-        src/pmap.cpp
-
-        src/include/proclib.hpp
-        src/proclib.cpp
-
-        src/proclib.cpp
-        src/include/proclib.hpp
-
-        src/qhexview.cpp
-        src/include/qhexview.hpp
-
-        src/include/mainwindow.hpp
-        src/gui/mainwindow.ui
-        src/gui/about.ui
-
-        src/include/dirwindow.hpp
-        src/dirwindow.cpp
-        src/gui/dirwindow.ui
-
-)
-add_executable(maProc
-        ${PROJECT_SOURCES}
+    src/relf.cpp
+    src/include/relf.hpp
+    src/main.cpp
+    src/mainwindow.cpp
+    src/include/ps.hpp
+    src/ps.cpp
+    src/include/arena.hpp
+    src/arena.cpp
+    src/include/filedescriptor.hpp
+    src/filedescriptor.cpp
+    src/include/pmap.hpp
+    src/pmap.cpp
+    src/include/proclib.hpp
+    src/proclib.cpp
+    src/proclib.cpp
+    src/include/proclib.hpp
+    src/qhexview.cpp
+    src/include/qhexview.hpp
+    src/include/mainwindow.hpp
+    src/gui/mainwindow.ui
+    src/gui/about.ui
+    src/include/dirwindow.hpp
+    src/dirwindow.cpp
+    src/gui/dirwindow.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -76,7 +64,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
-
+else()
+    add_executable(maProc
+        ${PROJECT_SOURCES}
+    )
 endif()
 
 target_link_libraries(maProc PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)

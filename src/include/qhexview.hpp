@@ -15,9 +15,6 @@
 // config font
 #define FONT "Courier"
 #define SIZE_FONT 12
-#define COLOR_SELECTION 98, 114, 164, 0xff
-#define COLOR_ADDRESS 30, 30, 30, 0xff
-#define COLOR_CHARACTERS Qt::white
 
 // config lines
 #define MIN_HEXCHARS_IN_LINE 47
@@ -27,7 +24,6 @@
 #define ADR_LENGTH 10
 
 class QHexView : public QAbstractScrollArea
-
 {
 	Q_OBJECT
 public:
