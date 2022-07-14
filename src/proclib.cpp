@@ -10,7 +10,7 @@
 #include <fcntl.h>
 #include <limits.h>
 
-Arena fast;
+Arena fast(ARENA_BUFFER);
 
 /**
  * @brief routine to analyze memory,

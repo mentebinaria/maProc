@@ -11,6 +11,7 @@
 #include "datastructs/erros.hpp"
 
 #define PROC "/proc/"
+#define ARENA_BUFFER 2048
 
 class Data
 {
