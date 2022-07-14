@@ -13,7 +13,8 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QFile>
-#include <iostream>
+#include <QTextStream>
+
 
 // =======================================================================
 // Macros utilizade for mapper determinate memory
@@ -72,6 +73,9 @@ MainWindow::MainWindow ( QWidget *p_parent ) : QMainWindow ( p_parent ),
 
   // set values for edit address and read
   set_types_edit_read();
+
+  // default theme
+  on_ButtonLight_triggered();
 }
 
 MainWindow::~MainWindow()
@@ -170,6 +174,7 @@ void MainWindow::column_clean_all()
   m_pid_cmdline.clear();
   m_ui->Process_List->clear();
   m_ui->progressFind->reset();
+  m_ui->fileSize_label->setText("Size 0 Bytes");
 
   for ( int i = 10; i >= 0; i-- )
   {
@@ -371,6 +376,57 @@ void MainWindow::set_values_column_address ( std::vector<off_t> &p_offsets, std:
 //
 // =======================================================================
 
+// style sheets
+void MainWindow::on_ButtonDark_triggered()
+{
+  QFile f("../src/gui/style/dark.css");
+
+  if (!f.exists())
+  {
+    std::string errorMessage("Loading Error: ");
+    errorMessage.append("Error in load style dark, verify this file exist...");
+
+    QMessageBox msgBox;
+    msgBox.setText(errorMessage.c_str());
+    msgBox.exec();
+    return;
+  }
+  else
+  {
+    f.open(QFile::ReadOnly | QFile::Text);
+    QTextStream ts(&f);
+    setStyleSheet(ts.readAll());
+
+    m_hex->setColorCharacters(Qt::white);
+    m_hex->setColorAddress(QColor(30, 30, 30, 0xff));
+  }
+}
+
+void MainWindow::on_ButtonLight_triggered()
+{
+  QFile f("../src/gui/style/light.css");
+
+  if (!f.exists())
+  {
+    std::string errorMessage("Loading Error: ");
+    errorMessage.append("Error in load style light, verify this file exist...");
+
+    QMessageBox msgBox;
+    msgBox.setText(errorMessage.c_str());
+    msgBox.exec();
+    return;
+  }
+  else
+  {
+    f.open(QFile::ReadOnly | QFile::Text);
+    QTextStream ts(&f);
+    setStyleSheet(ts.readAll());
+
+    m_hex->setColorAddress(Qt::white);
+    m_hex->setColorCharacters(Qt::black);
+  }
+}
+
 void MainWindow::on_PidInfoButton_triggered()
 {
   if ( m_pid_name.size() == 0 )
@@ -381,7 +437,7 @@ void MainWindow::on_PidInfoButton_triggered()
                   "\n<h5>Login uid : </h5>" + m_pid_loginuid +
                   "\n<h5>Binary Size : </h5>" + m_pid_sizebin +
                   "\n<h5>Wchan : </h5>" + m_pid_wchan;
-  QMessageBox::about ( nullptr, "System Info", infos );
+  QMessageBox::about ( nullptr, "Pid Info", infos );
 }
 
 /**
@@ -465,6 +521,8 @@ void MainWindow::on_search_maps_textEdited ( const QString &p_arg1 )
   search.clear();
 }
 
+
+
 /**
  * @brief search table view address
  *
@@ -507,7 +565,13 @@ void MainWindow::on_gotooffsetButton_triggered()
  * */
 void MainWindow::on_quickHelpButton_triggered()
 {
-  QDesktopServices::openUrl ( QUrl ( "https://github.com/mentebinaria/maProc/wiki/Help" ) );
+  try
+  {
+    QDesktopServices::openUrl ( QUrl ( "https://github.com/mentebinaria/maProc/wiki/Help" ) );
+  }catch(std::exception &e)
+  {
+    QMessageBox::warning ( nullptr, "Warning", e.what() );
+  }
 }
 
 /**
@@ -727,11 +791,6 @@ void MainWindow::on_newButton_triggered()
 }
 
 /**
- * @brief search value in  fetch value from an address
- * on the stack or heap, will get the type using the combo box
- */
-
-/**
  * @brief edit address value
  *
  */
@@ -820,6 +879,7 @@ void MainWindow::mainMapper()
       set_values_process();
       set_values_column_maps();
       m_hex->loadFile ( m_pid_exedir );
+      m_ui->fileSize_label->setText("Size " + QString::number(m_hex->getFileSize()) + "Bytes");
 
       if ( mapper_stack )
         set_values_column_stack();
@@ -950,6 +1010,21 @@ off_t MainWindow::valid_address_edit()
   return address;
 }
 
+void MainWindow::on_maps_table_itemDoubleClicked(QTableWidgetItem *p_first)
+{
+  if ( m_pid_name.size() == 0 )
+    return;
+
+  QString AddressStart = m_ui->maps_table->item ( p_first->row(), Address_start )->text();
+  QString AddressStop =  m_ui->maps_table->item ( p_first->row(), Address_stop )->text();
+  QString PathnameMemory =  m_ui->maps_table->item ( p_first->row(), Pathname )->text();
+
+  m_ui->StartAddress->setText(AddressStart);
+  m_ui->StopAddress->setText(AddressStop);
+
+  write_log ( "[CLICKED] Address Start [" + AddressStart + "] Address Stop [" + AddressStop + "]" + " Memory [" +PathnameMemory  + "]" );
+}
+
 /**
  * @brief set address for edit value
  *
@@ -957,10 +1032,29 @@ off_t MainWindow::valid_address_edit()
  */
 void MainWindow::view_address_table ( QTableWidgetItem *p_first )
 {
+  if ( m_pid_name.size() == 0 )
+    return;
+
   QString selectedAddress = m_ui->view_address->item ( p_first->row(), Address )->text();
   QString selectedValue = m_ui->view_address->item ( p_first->row(), Value )->text();
   QString selectedMemory = m_ui->view_address->item ( p_first->row(), Memory )->text();
   m_ui->address_edit->setText ( selectedAddress );
 
   write_log ( "[CLICKED] Address [" + selectedAddress + "] Value [" + selectedValue + "]" + " Memory [" + selectedMemory + "]" );
+}
+
+
+// =======================================================================
+//  Thread and tasks window
+// =======================================================================
+
+void MainWindow::paintEvent(QPaintEvent *event)
+{
+  if(m_hex->getFileSize() == 0)
+    return;
+
+  auto offset = m_hex->getOffset();
+  m_ui->offset_label->setText("0x" + QString::number(offset, 16));
+  
+  m_ui->selecteds_label->setText("(Bytes " + QString::number(m_hex->getBytesSelecteds()) + " selected)");
 }

@@ -250,7 +250,10 @@ int Pmap::map_find(off_t p_addr, uint64_t p_length, std::string p_find, uint8_t 
   if (!isdigit(p_find[0]) &&
       p_type == sizeof(char) &&
       p_find.size() == 1)
+  {
     goto analyze;
+
+  }
   else if (p_type == sizeof(int) ||
            p_type == sizeof(uint16_t) ||
            p_type == sizeof(int64_t))
@@ -262,6 +265,7 @@ int Pmap::map_find(off_t p_addr, uint64_t p_length, std::string p_find, uint8_t 
   }
   else if (p_type == sizeof(std::string))
     goto analyze;
+
   else
     goto error;
 

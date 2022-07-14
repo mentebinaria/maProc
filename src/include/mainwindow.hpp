@@ -40,6 +40,7 @@ private slots:
   void conf_button_all();
   void column_config_all();
   void set_values_column_address(std::vector<off_t> &, std::string, std::string);
+  void on_maps_table_itemDoubleClicked(QTableWidgetItem *);
   void view_address_table(QTableWidgetItem *);
   void set_values_column_heap();
   void set_values_column_stack();
@@ -67,8 +68,10 @@ private slots:
   void on_SystemInfoButton_triggered();
   void on_pidButton2_clicked();
   void on_PidInfoButton_triggered();
-
   void on_search_maps_textEdited(const QString &p_arg1);
+  void on_ButtonLight_triggered();
+  void on_ButtonDark_triggered();
+  void paintEvent(QPaintEvent *event);
 
 private:
   bool m_all_mapper;
