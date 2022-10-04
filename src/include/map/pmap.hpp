@@ -4,12 +4,9 @@
 #include <unordered_map>
 
 #include "proclib.hpp"
-#include "datastructs/utils.hpp"
-#include "datastructs/utils_pid.hpp"
-#include "src/include/filedescriptor.hpp"
+#include "src/include/data/map/structs.hpp"
+#include "src/include/fd/filedescriptor.hpp"
 
-#define MAPS "/maps"
-#define BUFFER_READ_UTILS 15
 
 /**
  * @brief manipulation of process

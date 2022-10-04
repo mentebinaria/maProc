@@ -1,4 +1,4 @@
-#include "include/mainwindow.hpp"
+#include "mainwindow.hpp"
 #include <QApplication>
 
 int main(int p_argc, char *p_argv[])

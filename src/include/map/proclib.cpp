@@ -1,6 +1,6 @@
-#include "include/proclib.hpp"
-#include "include/filedescriptor.hpp"
-#include "include/arena.hpp"
+#include "proclib.hpp"
+#include "src/include/fd/filedescriptor.hpp"
+#include "src/include/memory/arena.hpp"
 
 #include <unordered_map>
 #include <string.h>
@@ -157,7 +157,8 @@ int RemoteProcess::readMem(off_t p_start, off_t p_stop, Data *p_data)
         return READ_FAIL;
 
     size_t bsize = p_stop - p_start;
-    pread(m_proc.fd, p_data->m_buff, bsize, p_start);
+    if(pread(m_proc.fd, p_data->m_buff, bsize, p_start) == -1)
+        return READ_FAIL;
 
     return READ_SUCCESS;
 }

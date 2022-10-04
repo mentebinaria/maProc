@@ -8,8 +8,8 @@
 #include <sys/stat.h>
 #include <algorithm>
 
-#include "include/pmap.hpp"
-#include "include/datastructs/erros.hpp"
+#include "pmap.hpp"
+#include "src/include/data/erros.hpp"
 
 /**
  * @brief function verify pid for passed in user

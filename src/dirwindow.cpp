@@ -1,5 +1,5 @@
-#include "include/dirwindow.hpp"
-#include "include/datastructs/dir_utils.hpp"
+#include "dirwindow.hpp"
+#include "include/data/win/structs.hpp"
 #include "gui/ui_dirwindow.h"
 
 #include <QMessageBox>

@@ -1,4 +1,4 @@
-#include "src/include/qhexview.hpp"
+#include "qhexview.hpp"
 
 #include <QApplication>
 #include <QClipboard>
