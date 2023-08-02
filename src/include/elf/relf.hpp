@@ -13,8 +13,8 @@
 #include <byteswap.h>
 #include <elf.h>
 
-#include "datastructs/erros.hpp"
-#include "datastructs/elf_structs.hpp"
+#include "src/include/data/erros.hpp"
+#include "src/include/data/elf/structs.hpp"
 
 //=================== functions usage for parser elf ===================
 int PElf ( const char * );    // pass elf for analisys

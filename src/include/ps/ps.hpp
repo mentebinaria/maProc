@@ -3,8 +3,8 @@
 #include <fstream>
 #include <unordered_map>
 
-#include "datastructs/erros.hpp"
-#include "filedescriptor.hpp"
+#include "src/include/data/erros.hpp"
+#include "src/include/fd/filedescriptor.hpp"
 
 struct infos
 {
@@ -13,7 +13,6 @@ struct infos
   std::string user;
 
 };
-
 
 class Ps : public FileDescriptor
 {

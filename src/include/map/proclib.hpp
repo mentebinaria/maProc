@@ -7,8 +7,9 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
+#include <cstdint>
 
-#include "datastructs/erros.hpp"
+#include "src/include/data/erros.hpp"
 
 #define PROC "/proc/"
 #define ARENA_BUFFER 2048

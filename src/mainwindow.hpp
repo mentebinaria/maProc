@@ -9,10 +9,10 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-#include "src/include/qhexview.hpp"
-#include "src/include/ps.hpp"
-#include "src/include/pmap.hpp"
-#include "src/include/relf.hpp"
+#include "qhexview.hpp"
+#include "include/ps/ps.hpp"
+#include "include/map/pmap.hpp"
+#include "include/elf/relf.hpp"
 
 namespace Ui
 {

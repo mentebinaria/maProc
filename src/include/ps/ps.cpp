@@ -1,4 +1,4 @@
-#include "include/ps.hpp"
+#include "ps.hpp"
 
 #include <sstream>
 #include <dirent.h>

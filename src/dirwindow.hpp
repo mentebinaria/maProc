@@ -1,10 +1,10 @@
 #pragma once
 
 #include <QDialog>
-
-#include "src/include/ps.hpp"
-#include "src/include/mainwindow.hpp"
 #include <unordered_map>
+
+#include "include/ps/ps.hpp"
+#include "mainwindow.hpp"
 
 namespace Ui
 {
